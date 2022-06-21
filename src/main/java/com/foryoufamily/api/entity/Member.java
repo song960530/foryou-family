@@ -1,6 +1,7 @@
 package com.foryoufamily.api.entity;
 
 import com.foryoufamily.api.entity.common.BaseTimeEntity;
+import com.foryoufamily.global.crypto.PasswordCryptoConverter;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,20 +29,21 @@ public class Member extends BaseTimeEntity {
     private Long no;
 
     @Column(
-            name = "ID"
+            name = "USER_ID"
             , unique = true
             , nullable = false
     )
-    private String id;
+    private String userId;
 
     @Column(
             name = "PASSWORD"
             , nullable = false
     )
+    @Convert(converter = PasswordCryptoConverter.class)
     private String password;
 
-    public Member(String id, String password) {
-        this.id = id;
+    public Member(String userId, String password) {
+        this.userId = userId;
         this.password = password;
     }
 }
