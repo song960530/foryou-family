@@ -3,6 +3,7 @@ package com.foryoufamily.api.entity;
 import com.foryoufamily.api.entity.common.BaseTimeEntity;
 import com.foryoufamily.global.crypto.PasswordCryptoConverter;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -42,6 +43,7 @@ public class Member extends BaseTimeEntity {
     @Convert(converter = PasswordCryptoConverter.class)
     private String password;
 
+    @Builder
     public Member(String userId, String password) {
         this.userId = userId;
         this.password = password;
