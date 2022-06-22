@@ -18,10 +18,10 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void join(JoinReqDto joinDto) {
+    public Long join(JoinReqDto joinDto) {
         if (memberRepository.existsByUserId(joinDto.getUserId()))
             throw new CustomException(ErrorCode.DUPLICATE_USERID);
 
-        memberRepository.save(joinDto.toEntity());
+        return memberRepository.save(joinDto.toEntity()).getNo();
     }
 }
