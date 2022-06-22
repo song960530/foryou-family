@@ -18,9 +18,8 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/user/join")
+    @PostMapping("/member")
     public ResponseEntity<ApiResponse> join(@Valid @RequestBody JoinReqDto joinDto) {
-
         memberService.join(joinDto);
 
         return ApiResponse.of(HttpStatus.CREATED);
