@@ -39,7 +39,7 @@ class MemberControllerTest {
     @DisplayName("회원가입 API 정상 호출")
     public void callJoin() throws Exception {
         // given
-        String content = "{\"userId\":\"test12345\",\"password\":\"password12!@3\"}";
+        String content = "{\"memberId\":\"test12345\",\"password\":\"password12!@3\"}";
 
         // when & then
         mockMvc.perform(post("/member")
@@ -53,7 +53,7 @@ class MemberControllerTest {
     @DisplayName("요청 파라미터 오류 발생")
     public void argumentNotValid() throws Exception {
         // given
-        String content = "{\"userId\":\"test12345\",\"password\":\"\"}";
+        String content = "{\"memberId\":\"test12345\",\"password\":\"\"}";
 
         // when & then
         mockMvc.perform(post("/member")
@@ -70,8 +70,8 @@ class MemberControllerTest {
     @DisplayName("중복 회원 오류 발생")
     public void duplicateMember() throws Exception {
         // given
-        String content = "{\"userId\":\"test12345\",\"password\":\"password12!@3\"}";
-        doThrow(new CustomException(ErrorCode.DUPLICATE_USERID)).when(memberService).join(any(JoinReqDto.class));
+        String content = "{\"memberId\":\"test12345\",\"password\":\"password12!@3\"}";
+        doThrow(new CustomException(ErrorCode.DUPLICATE_MEMBER_ID)).when(memberService).join(any(JoinReqDto.class));
 
         // when & then
         mockMvc.perform(post("/member")
@@ -80,7 +80,7 @@ class MemberControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.status").value(409))
                 .andExpect(jsonPath("$.error").value("CONFLICT"))
-                .andExpect(jsonPath("$.code").value("DUPLICATE_USERID"))
+                .andExpect(jsonPath("$.code").value("DUPLICATE_MEMBER_ID"))
                 .andDo(print());
     }
 }

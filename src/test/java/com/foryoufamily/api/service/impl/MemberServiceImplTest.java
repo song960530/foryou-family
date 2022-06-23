@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
@@ -24,14 +25,10 @@ import static org.mockito.Mockito.doReturn;
 @ExtendWith(MockitoExtension.class)
 class MemberServiceImplTest {
 
-    private MemberService memberService;
+    @InjectMocks
+    private MemberServiceImpl memberService;
     @Mock
     private MemberRepository memberRepository;
-
-    @BeforeEach
-    void setUp() {
-        memberService = new MemberServiceImpl(memberRepository);
-    }
 
     @Test
     @DisplayName("회원가입 성공")
@@ -40,7 +37,7 @@ class MemberServiceImplTest {
         JoinReqDto joinDto = createJoinDto();
         Member member = createMember(joinDto);
 
-        doReturn(false).when(memberRepository).existsByUserId(anyString());
+        doReturn(false).when(memberRepository).existsByMemberId(anyString());
         doReturn(member).when(memberRepository).save(any(Member.class));
 
         // when
@@ -51,12 +48,12 @@ class MemberServiceImplTest {
     }
 
     @Test
-    @DisplayName("존재하는 아디이일때 오류 발생")
-    public void duplicateUserId() throws Exception {
+    @DisplayName("존재하는 아이디일때 오류 발생")
+    public void duplicateMemberId() throws Exception {
         // given
         JoinReqDto joinDto = createJoinDto();
 
-        doReturn(true).when(memberRepository).existsByUserId(anyString());
+        doReturn(true).when(memberRepository).existsByMemberId(anyString());
 
         // when
         CustomException customException = assertThrows(CustomException.class, () -> {
@@ -64,7 +61,7 @@ class MemberServiceImplTest {
         });
 
         // then
-        assertEquals(ErrorCode.DUPLICATE_USERID, customException.getErrorCode());
+        assertEquals(ErrorCode.DUPLICATE_MEMBER_ID, customException.getErrorCode());
         assertEquals(HttpStatus.CONFLICT, customException.getErrorCode().getHttpStatus());
     }
 
@@ -78,7 +75,7 @@ class MemberServiceImplTest {
 
     private JoinReqDto createJoinDto() {
         return JoinReqDto.builder()
-                .userId("test123")
+                .memberId("test123")
                 .password("password123!@3")
                 .build();
     }
