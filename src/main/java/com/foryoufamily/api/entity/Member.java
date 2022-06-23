@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,7 +36,7 @@ public class Member extends BaseTimeEntity {
             , unique = true
             , nullable = false
     )
-    private String userId;
+    private String memberId;
 
     @Column(
             name = "PASSWORD"
@@ -43,9 +45,17 @@ public class Member extends BaseTimeEntity {
     @Convert(converter = PasswordCryptoConverter.class)
     private String password;
 
+    @ManyToMany
+    @JoinTable(
+            name = "MEMBER_ROLE"
+            , joinColumns = @JoinColumn(name = "MEMBER_NO")
+            , inverseJoinColumns = @JoinColumn(name = "ROLE_NO")
+    )
+    private List<Role> roles = new ArrayList<>();
+
     @Builder
-    public Member(String userId, String password) {
-        this.userId = userId;
+    public Member(String memberId, String password) {
+        this.memberId = memberId;
         this.password = password;
     }
 }

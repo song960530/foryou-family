@@ -15,6 +15,12 @@ spring:
         # use_sql_comments: true
     open-in-view: false
 
+config:
+  jwt:
+    secretKey: 01234567890123456789012345678912
+    accessValidTime: 30 # minutes
+    refreshValidTime: 1 # day
+
 logging.level:
   org.hibernate.SQL: debug
   # org.hibernate.type: trace

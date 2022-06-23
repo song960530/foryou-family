@@ -14,7 +14,7 @@ public class JoinReqDto {
 
     @NotBlank(message = "아이디를 입력해주세요")
     @Size(min = 6, max = 12, message = "ID는 최소 6자 최대 12자 까지 입력 가능합니다")
-    private String userId;
+    private String memberId;
 
     @NotBlank(message = "비밀번호를 입력해주세요")
     @Pattern(
@@ -25,7 +25,7 @@ public class JoinReqDto {
 
     public Member toEntity() {
         return Member.builder()
-                .userId(userId)
+                .memberId(memberId)
                 .password(password)
                 .build();
     }
