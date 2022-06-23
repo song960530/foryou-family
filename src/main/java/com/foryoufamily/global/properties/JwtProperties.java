@@ -11,10 +11,17 @@ public class JwtProperties {
     @Value("${config.jwt.secretKey}")
     private String secretKey;
 
-    @Value("${config.jwt.validTime}")
-    private long validTime;
+    @Value("${config.jwt.accessValidTime}")
+    private long accessValidTime;
 
-    public long getValidTime() {
-        return validTime * 60_000L;
+    @Value("${config.jwt.refreshValidTime}")
+    private long refreshValidTime;
+
+    public long getAccessValidTime() {
+        return accessValidTime * 60_000;
+    }
+
+    public long getRefreshValidTime() {
+        return refreshValidTime * (60_000 * 60 * 24);
     }
 }

@@ -18,7 +18,8 @@ spring:
 config:
   jwt:
     secretKey: 01234567890123456789012345678912
-    validTime: 30 # minutes
+    accessValidTime: 30 # minutes
+    refreshValidTime: 1 # day
 
 logging.level:
   org.hibernate.SQL: debug

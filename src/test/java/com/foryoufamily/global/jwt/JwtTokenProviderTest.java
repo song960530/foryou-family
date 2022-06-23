@@ -30,7 +30,8 @@ class JwtTokenProviderTest {
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(jwtProperties, "secretKey", "01234567890123456789012345678912");
-        ReflectionTestUtils.setField(jwtProperties, "validTime", 30L);
+        ReflectionTestUtils.setField(jwtProperties, "accessValidTime", 30);
+        ReflectionTestUtils.setField(jwtProperties, "refreshValidTime", 1);
         jwtTokenProvider.init();
     }
 
@@ -39,7 +40,7 @@ class JwtTokenProviderTest {
     public void testProperties() throws Exception {
         // given
         String secretKey = jwtProperties.getSecretKey();
-        long validTime = jwtProperties.getValidTime();
+        long validTime = jwtProperties.getAccessValidTime();
 
         // when
 
@@ -49,14 +50,27 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    @DisplayName("JWT 정상 생성")
-    public void successCreateJwt() throws Exception {
+    @DisplayName("Access 토큰 정상 생성")
+    public void successCreateAccess() throws Exception {
         // given
         String memberId = "test1234";
         List<Role> roles = Arrays.stream(MemberRole.values()).map(Role::new).collect(Collectors.toList());
 
         // when
         String token = jwtTokenProvider.createAccessToken(memberId, roles);
+
+        // then
+        assertNotNull(token);
+    }
+
+    @Test
+    @DisplayName("Refresh 토큰 정상 생성")
+    public void successCreateRefresh() throws Exception {
+        // given
+        String memberId = "test1234";
+
+        // when
+        String token = jwtTokenProvider.createRefreshToken(memberId);
 
         // then
         assertNotNull(token);

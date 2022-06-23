@@ -30,23 +30,52 @@ public class JwtTokenProvider {
         encSecretKey = Base64.getEncoder().encodeToString(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
     }
 
-    // JWT 토큰 생성
+    // Access 토큰 생성
     public String createAccessToken(String memberId, List<Role> roles) {
-        Map<String, Object> headers = new HashMap<>();
-        headers.put("typ", "JWT");
-        headers.put("alg", "HS256");
-
+        Map<String, Object> headers = createHeader();
+        Claims claims = createClaims(memberId, roles);
         Date now = new Date();
-        Claims claims = Jwts.claims().setSubject(memberId); // JWT payload에 저장되는 정보단위
-        List<MemberRole> memberRoles = roles.stream().map(Role::getRole).collect(Collectors.toList());
-        claims.put("roles", memberRoles);
 
         return Jwts.builder()
                 .setHeader(headers) // 헤더 설정
                 .setClaims(claims) // 정보 저장
                 .setIssuedAt(now) // 토큰 발생 시간 정보
-                .setExpiration(new Date(now.getTime() + jwtProperties.getValidTime())) // 만료시간
+                .setExpiration(new Date(now.getTime() + jwtProperties.getAccessValidTime())) // 만료시간
                 .signWith(Keys.hmacShaKeyFor(encSecretKey.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256) // 암호화 및 encSecretKey 세팅
                 .compact();
+    }
+
+    // Refresh 토큰 생성
+    public String createRefreshToken(String memberId) {
+        Map<String, Object> headers = createHeader();
+        Claims claims = createClaims(memberId);
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setHeader(headers) // 헤더 설정
+                .setClaims(claims) // 정보 저장
+                .setIssuedAt(now) // 토큰 발생 시간 정보
+                .setExpiration(new Date(now.getTime() + jwtProperties.getRefreshValidTime())) // 만료시간
+                .signWith(Keys.hmacShaKeyFor(encSecretKey.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256) // 암호화 및 encSecretKey 세팅
+                .compact();
+    }
+
+    private Claims createClaims(String memberId, List<Role> roles) {
+        Claims claims = Jwts.claims().setSubject(memberId); // JWT payload에 저장되는 정보단위
+        List<MemberRole> memberRoles = roles.stream().map(Role::getRole).collect(Collectors.toList());
+        claims.put("roles", memberRoles);
+        return claims;
+    }
+
+    private Claims createClaims(String memberId) {
+        Claims claims = Jwts.claims().setSubject(memberId); // JWT payload에 저장되는 정보단위
+        return claims;
+    }
+
+    private Map<String, Object> createHeader() {
+        Map<String, Object> headers = new HashMap<>();
+        headers.put("typ", "JWT");
+        headers.put("alg", "HS256");
+        return headers;
     }
 }
