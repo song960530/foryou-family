@@ -1,8 +1,11 @@
 package com.foryoufamily.api.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.foryoufamily.api.entity.Member;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -10,6 +13,8 @@ import javax.validation.constraints.Size;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class JoinReqDto {
 
     @NotBlank(message = "아이디를 입력해주세요")

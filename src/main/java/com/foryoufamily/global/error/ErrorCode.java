@@ -11,6 +11,10 @@ public enum ErrorCode {
     /* 400 BAD_REQUEST: 파라미터가 잘못 넘어옴 */
     ARGUMENT_NOT_VALID(HttpStatus.BAD_REQUEST, "요청 정보가 잘못되었습니다"),
 
+    /* 404: 요청에 대한 리소스를 찾지 못하였거나 없음*/
+    NOT_EXIST_MEMBER_ID(HttpStatus.NOT_FOUND, "존재하지 않는 아이디입니다"),
+    NOT_MATCHED_PASSWORD(HttpStatus.NOT_FOUND, "비밀번호가 맞지 않습니다"),
+
     /* 409 CONFLICT: 중복 Resource 존재 */
     DUPLICATE_MEMBER_ID(HttpStatus.CONFLICT, "존재하는 아이디입니다"),
 
