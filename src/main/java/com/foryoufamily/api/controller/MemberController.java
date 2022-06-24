@@ -1,6 +1,7 @@
 package com.foryoufamily.api.controller;
 
 import com.foryoufamily.api.dto.request.JoinReqDto;
+import com.foryoufamily.api.dto.request.LoginReqDto;
 import com.foryoufamily.api.service.MemberService;
 import com.foryoufamily.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,5 +24,10 @@ public class MemberController {
         memberService.join(joinDto);
 
         return ApiResponse.of(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/member/login")
+    public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginReqDto loginReqDto) {
+        return ApiResponse.of(HttpStatus.OK, memberService.login(loginReqDto));
     }
 }
