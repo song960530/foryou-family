@@ -1,6 +1,8 @@
 package com.foryoufamily.api.controller;
 
 import com.foryoufamily.api.dto.request.JoinReqDto;
+import com.foryoufamily.api.dto.request.LoginReqDto;
+import com.foryoufamily.api.dto.response.LoginResDto;
 import com.foryoufamily.api.service.MemberService;
 import com.foryoufamily.global.error.CustomException;
 import com.foryoufamily.global.error.ErrorCode;
@@ -17,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -81,6 +84,32 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.status").value(409))
                 .andExpect(jsonPath("$.error").value("CONFLICT"))
                 .andExpect(jsonPath("$.code").value("DUPLICATE_MEMBER_ID"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("로그인 API 정상 호출")
+    public void callLogin() throws Exception {
+        // given
+        String content = "{\"memberId\":\"test12345\",\"password\":\"password12!@3\"}";
+
+        doReturn(LoginResDto.builder()
+                .accessToken("accessToken")
+                .refreshToken("refreshToken")
+                .type("BEARER")
+                .build())
+                .when(memberService)
+                .login(any(LoginReqDto.class));
+
+        // when & then
+        mockMvc.perform(post(("/member/login"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.data.accessToken").value("accessToken"))
+                .andExpect(jsonPath("$.data.refreshToken").value("refreshToken"))
+                .andExpect(jsonPath("$.data.type").value("BEARER"))
                 .andDo(print());
     }
 }
