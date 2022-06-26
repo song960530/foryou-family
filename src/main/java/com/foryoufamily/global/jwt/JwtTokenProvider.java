@@ -2,6 +2,7 @@ package com.foryoufamily.global.jwt;
 
 import com.foryoufamily.api.entity.Role;
 import com.foryoufamily.api.enums.MemberRole;
+import com.foryoufamily.global.Constants;
 import com.foryoufamily.global.error.CustomException;
 import com.foryoufamily.global.error.ErrorCode;
 import com.foryoufamily.global.properties.JwtProperties;
@@ -26,11 +27,9 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider {
     private final JwtProperties jwtProperties;
     private String encSecretKey;
-    private String headerName;
 
     @PostConstruct
     public void init() {
-        headerName = "Authorization";
         encSecretKey = Base64.getEncoder().encodeToString(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
     }
 
@@ -84,18 +83,21 @@ public class JwtTokenProvider {
     }
 
     public String resolveToken(HttpServletRequest request) {
-        String token = findTokenFromHeader(request);
-
-        return Optional.of(token)
-                .filter(t -> Pattern.matches("^(?i)Bearer .*", t))
-                .map(s -> s.replaceAll("^(?i)Bearer( )*", ""))
+        return Optional
+                .ofNullable(request.getHeader(Constants.TOKEN_HEADER_NAME))
+                .or(() -> Optional.of(Constants.TOKEN_TYPE + " "))
+                .filter(this::isMatchedPrefix)
+                .map(this::removeTokenPrefix)
                 .orElseThrow(() -> {
                     throw new CustomException(ErrorCode.NOT_VALID_TOKEN_FORM);
                 });
     }
 
-    private String findTokenFromHeader(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(headerName))
-                .orElse("Bearer ");
+    private String removeTokenPrefix(String token) {
+        return token.replaceAll(Constants.TOKEN_PREFIX_REGEX + "( )*", "");
+    }
+
+    private boolean isMatchedPrefix(String token) {
+        return Pattern.matches(Constants.TOKEN_PREFIX_REGEX + " .*", token);
     }
 }
