@@ -29,15 +29,19 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public Long join(JoinReqDto joinDto) {
-        if (memberRepository.existsByMemberId(joinDto.getMemberId()))
-            throw new CustomException(ErrorCode.DUPLICATE_MEMBER_ID);
+        checkExistMember(joinDto.getMemberId());
 
         return memberRepository.save(joinDto.toEntity()).getNo();
     }
 
+    private void checkExistMember(String memberId) {
+        if (memberRepository.existsByMemberId(memberId))
+            throw new CustomException(ErrorCode.DUPLICATE_MEMBER_ID);
+    }
+    
     @Override
     public LoginResDto login(LoginReqDto loginReqDto) {
-        Member member = validLogin(loginReqDto);
+        Member member = validLogin(loginReqDto.getMemberId(), loginReqDto.getPassword());
 
         return LoginResDto.builder()
                 .accessToken(jwtTokenProvider.createAccessToken(member.getMemberId(), member.getRoles()))
@@ -46,12 +50,12 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
-    private Member validLogin(LoginReqDto loginReqDto) {
-        return Optional.of(memberRepository.findByMemberId(loginReqDto.getMemberId())
+    private Member validLogin(String memberId, String password) {
+        return Optional.of(memberRepository.findByMemberId(memberId)
                         .orElseThrow(() -> {
                             throw new CustomException(ErrorCode.NOT_EXIST_MEMBER_ID);
                         }))
-                .filter(m -> passwordEncoder.matches(loginReqDto.getPassword(), m.getPassword()))
+                .filter(m -> passwordEncoder.matches(password, m.getPassword()))
                 .orElseThrow(() -> {
                     throw new CustomException(ErrorCode.NOT_MATCHED_PASSWORD);
                 });
