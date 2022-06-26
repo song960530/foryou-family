@@ -1,6 +1,7 @@
 package com.foryoufamily.api.entity;
 
 import com.foryoufamily.api.entity.common.BaseTimeEntity;
+import com.foryoufamily.api.enums.MemberRole;
 import com.foryoufamily.global.crypto.PasswordCryptoConverter;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -45,7 +46,7 @@ public class Member extends BaseTimeEntity {
     @Convert(converter = PasswordCryptoConverter.class)
     private String password;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "MEMBER_ROLE"
             , joinColumns = @JoinColumn(name = "MEMBER_NO")
@@ -57,5 +58,6 @@ public class Member extends BaseTimeEntity {
     public Member(String memberId, String password) {
         this.memberId = memberId;
         this.password = password;
+        this.roles.add(new Role(MemberRole.ROLE_MEMBER));
     }
 }
