@@ -6,6 +6,7 @@ import com.foryoufamily.api.dto.response.LoginResDto;
 import com.foryoufamily.api.service.MemberService;
 import com.foryoufamily.global.error.CustomException;
 import com.foryoufamily.global.error.ErrorCode;
+import com.foryoufamily.global.jwt.JwtTokenProvider;
 import com.foryoufamily.global.security.SecurityConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,8 @@ class MemberControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private MemberService memberService;
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
 
     @Test
     @DisplayName("회원가입 API 정상 호출")

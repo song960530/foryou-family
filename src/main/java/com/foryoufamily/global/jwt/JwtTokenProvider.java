@@ -2,6 +2,8 @@ package com.foryoufamily.global.jwt;
 
 import com.foryoufamily.api.entity.Role;
 import com.foryoufamily.api.enums.MemberRole;
+import com.foryoufamily.global.error.CustomException;
+import com.foryoufamily.global.error.ErrorCode;
 import com.foryoufamily.global.properties.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -12,8 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -77,5 +81,21 @@ public class JwtTokenProvider {
         headers.put("typ", "JWT");
         headers.put("alg", "HS256");
         return headers;
+    }
+
+    public String resolveToken(HttpServletRequest request) {
+        String token = findTokenFromHeader(request);
+
+        return Optional.of(token)
+                .filter(t -> Pattern.matches("^(?i)Bearer .*", t))
+                .map(s -> s.replaceAll("^(?i)Bearer( )*", ""))
+                .orElseThrow(() -> {
+                    throw new CustomException(ErrorCode.NOT_VALID_TOKEN_FORM);
+                });
+    }
+
+    private String findTokenFromHeader(HttpServletRequest request) {
+        return Optional.ofNullable(request.getHeader(headerName))
+                .orElse("Bearer ");
     }
 }
