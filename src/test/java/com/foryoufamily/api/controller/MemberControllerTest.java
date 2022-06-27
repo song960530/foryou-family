@@ -6,11 +6,11 @@ import com.foryoufamily.api.dto.response.LoginResDto;
 import com.foryoufamily.api.service.MemberService;
 import com.foryoufamily.global.error.CustomException;
 import com.foryoufamily.global.error.ErrorCode;
-import com.foryoufamily.global.jwt.JwtTokenProvider;
 import com.foryoufamily.global.security.SecurityConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
@@ -29,7 +29,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(
         value = MemberController.class
-        , includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class)
+        , excludeAutoConfiguration = SecurityAutoConfiguration.class
+        , excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class)
 )
 @MockBean(value = JpaMetamodelMappingContext.class)
 class MemberControllerTest {
@@ -38,8 +39,6 @@ class MemberControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private MemberService memberService;
-    @MockBean
-    private JwtTokenProvider jwtTokenProvider;
 
     @Test
     @DisplayName("회원가입 API 정상 호출")
