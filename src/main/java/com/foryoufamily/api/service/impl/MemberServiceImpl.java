@@ -6,7 +6,7 @@ import com.foryoufamily.api.dto.response.LoginResDto;
 import com.foryoufamily.api.entity.Member;
 import com.foryoufamily.api.repository.MemberRepository;
 import com.foryoufamily.api.service.MemberService;
-import com.foryoufamily.global.Constants;
+import com.foryoufamily.global.constants.Constants;
 import com.foryoufamily.global.error.CustomException;
 import com.foryoufamily.global.error.ErrorCode;
 import com.foryoufamily.global.jwt.JwtTokenProvider;

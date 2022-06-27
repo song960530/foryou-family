@@ -2,16 +2,19 @@ package com.foryoufamily.global.jwt;
 
 import com.foryoufamily.api.entity.Role;
 import com.foryoufamily.api.enums.MemberRole;
-import com.foryoufamily.global.Constants;
+import com.foryoufamily.global.constants.Constants;
 import com.foryoufamily.global.error.CustomException;
 import com.foryoufamily.global.error.ErrorCode;
 import com.foryoufamily.global.properties.JwtProperties;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -25,7 +28,9 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
+
     private final JwtProperties jwtProperties;
+    private final UserDetailsService userDetailsService;
     private String encSecretKey;
 
     @PostConstruct
@@ -82,7 +87,7 @@ public class JwtTokenProvider {
         return headers;
     }
 
-    public String resolveToken(HttpServletRequest request) {
+    public String extractToken(HttpServletRequest request) {
         return Optional
                 .ofNullable(request.getHeader(Constants.TOKEN_HEADER_NAME))
                 .or(() -> Optional.of(Constants.TOKEN_TYPE + " " + Constants.DEFAULT_TOKEN_VALUE))
@@ -99,5 +104,29 @@ public class JwtTokenProvider {
 
     private boolean isMatchedPrefix(String token) {
         return Pattern.matches(Constants.TOKEN_PREFIX_REGEX + " .*", token);
+    }
+
+    public String extractSubject(String token) {
+        String subject = null;
+
+        try {
+            subject = Jwts.parserBuilder()
+                    .setSigningKey(Keys.hmacShaKeyFor(encSecretKey.getBytes(StandardCharsets.UTF_8)))
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+        } catch (ExpiredJwtException e) {
+            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
+        } catch (MalformedJwtException | UnsupportedJwtException | SignatureException | IllegalArgumentException e) {
+            throw new CustomException(ErrorCode.NOT_VALID_TOKEN_VALUE);
+        }
+
+        return subject;
+    }
+
+    public Authentication createAuthentication(String subject) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(subject);
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 }

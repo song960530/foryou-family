@@ -1,4 +1,4 @@
-package com.foryoufamily.global;
+package com.foryoufamily.global.constants;
 
 public final class Constants {
     public static final String TOKEN_TYPE = "BEARER";
