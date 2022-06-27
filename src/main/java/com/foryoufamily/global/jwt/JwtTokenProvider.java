@@ -85,7 +85,7 @@ public class JwtTokenProvider {
     public String resolveToken(HttpServletRequest request) {
         return Optional
                 .ofNullable(request.getHeader(Constants.TOKEN_HEADER_NAME))
-                .or(() -> Optional.of(Constants.TOKEN_TYPE + " "))
+                .or(() -> Optional.of(Constants.TOKEN_TYPE + " " + Constants.DEFAULT_TOKEN_VALUE))
                 .filter(this::isMatchedPrefix)
                 .map(this::removeTokenPrefix)
                 .orElseThrow(() -> {

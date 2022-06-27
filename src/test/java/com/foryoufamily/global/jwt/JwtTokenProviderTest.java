@@ -2,6 +2,7 @@ package com.foryoufamily.global.jwt;
 
 import com.foryoufamily.api.entity.Role;
 import com.foryoufamily.api.enums.MemberRole;
+import com.foryoufamily.global.Constants;
 import com.foryoufamily.global.error.CustomException;
 import com.foryoufamily.global.error.ErrorCode;
 import com.foryoufamily.global.properties.JwtProperties;
@@ -94,7 +95,7 @@ class JwtTokenProviderTest {
         String token = jwtTokenProvider.resolveToken(request);
 
         // then
-        Assertions.assertEquals("", token);
+        Assertions.assertEquals(Constants.DEFAULT_TOKEN_VALUE, token);
     }
 
     @Test
