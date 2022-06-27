@@ -1,0 +1,24 @@
+server:
+  port: 8000
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port} # eureka? ??? instance id
+
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      routes:
+        - id: member-service
+          uri: lb://MEMBER-SERVICE # ??? ??
+          predicates:
+            - Path=/member/** # ?? path? ???? member-service? ?????? ??
