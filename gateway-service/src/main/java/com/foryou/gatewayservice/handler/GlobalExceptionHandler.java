@@ -30,8 +30,8 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
     public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
         ApiErrorResponse errorResponse = Optional.of(ex)
                 .map(e -> (CustomException) e)
-                .map(e -> e.getErrorCode())
-                .map(errorCode -> ApiErrorResponse.of(errorCode))
+                .map(CustomException::getErrorCode)
+                .map(ApiErrorResponse::of)
                 .orElse(ApiErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR));
 
         String errorBody = "";

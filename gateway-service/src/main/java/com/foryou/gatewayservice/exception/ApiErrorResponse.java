@@ -25,15 +25,4 @@ public class ApiErrorResponse {
                 .build()
                 ;
     }
-
-    public static final ApiErrorResponse of(final ErrorCode errorCode, final Object data) {
-        return ApiErrorResponse.builder()
-                .status(errorCode.getHttpStatus().value())
-                .error(errorCode.getHttpStatus().name())
-                .code(errorCode.name())
-                .message(errorCode.getMessage())
-                .data(data)
-                .build()
-                ;
-    }
 }
