@@ -46,7 +46,7 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
                 .map(bytes -> exchange.getResponse().bufferFactory().wrap(bytes))
                 .get();
 
-        log.error(errorResponse.getCode());
+        log.error("GateWay ERROR >>>>>> {}", errorResponse.getMessage());
 
         exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
         exchange.getResponse().setStatusCode(HttpStatus.valueOf(errorResponse.getStatus()));

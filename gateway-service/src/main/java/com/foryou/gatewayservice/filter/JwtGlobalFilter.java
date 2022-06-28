@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -28,18 +28,19 @@ public class JwtGlobalFilter extends AbstractGatewayFilterFactory<JwtGlobalFilte
     @Override
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
-            log.info(config.getBaseMessage() + " START >>>>>>");
+            log.info("{} START >>>>>>", config.getBaseMessage());
+            log.info("Request URI: {}", exchange.getRequest().getURI());
+            log.info("Request Authorization: {}", exchange.getRequest().getHeaders().get("Authorization"));
 
-            List<String> roles = Stream.of(jwtTokenProvider.extractToken(exchange))
-                    .filter(t -> !t.equals(Constants.DEFAULT_TOKEN_VALUE))
-                    .map(t -> jwtTokenProvider.extractRoles(t))
-                    .findAny()
+            List<String> roles = Optional.of(jwtTokenProvider.extractToken(exchange))
+                    .filter(token -> !token.equals(Constants.DEFAULT_TOKEN_VALUE))
+                    .map(token -> jwtTokenProvider.extractRoles(token))
                     .orElse(new ArrayList<>());
 
             exchange.getResponse().getHeaders().set("roles", String.join(" ", roles));
 
             return chain.filter(exchange).then(Mono.fromRunnable(() -> {
-                log.info(config.getBaseMessage() + " END >>>>>>");
+                log.info("{} END >>>>>>", config.getBaseMessage());
             }));
         });
     }
