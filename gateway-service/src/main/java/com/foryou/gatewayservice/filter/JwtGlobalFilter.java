@@ -38,6 +38,7 @@ public class JwtGlobalFilter extends AbstractGatewayFilterFactory<JwtGlobalFilte
                     .orElse(new ArrayList<>());
 
             exchange.getResponse().getHeaders().set("roles", String.join(" ", roles));
+            exchange.getResponse().getHeaders().set("path", exchange.getRequest().getPath().toString());
 
             return chain.filter(exchange).then(Mono.fromRunnable(() -> {
                 log.info("{} END >>>>>>", config.getBaseMessage());

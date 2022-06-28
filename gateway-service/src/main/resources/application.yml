@@ -4,7 +4,7 @@ server:
 eureka:
   instance:
     prefer-ip-address: true
-    instance-id: ${spring.application.name}:${server.port} # eureka? ??? instance id
+    instance-id: ${spring.application.name}:${server.port} # eureka에서 인식할 instance id
 
   client:
     fetch-registry: true
@@ -21,13 +21,17 @@ spring:
         - name: JwtGlobalFilter
           args:
             baseMessage: GateWay JwtGlobalFilter
-
       routes:
         - id: member-service
           uri: lb://MEMBER-SERVICE
           predicates:
             - Path=/member/**
           filters:
+            - name: MemberFilter
+              args:
+                baseMessage: GateWay MemberFilter
+                excludePath: /member /member/login # 여러개 적을 경우 공백으로 띄어서
+                requiredRole: ROLE_MEMBER # 한개만 작성
 
 config:
   jwt:
