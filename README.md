@@ -23,3 +23,4 @@ For You Four Users
 
 ### 📝아이디어 스케치
 - [Service Discovery패턴과 API GateWay 패턴](https://github.com/song960530/foryou-family/issues/11)
+- [Spring Cloud GateWay 에서의 JWT 검증, 인증, 인가 고민](https://github.com/song960530/foryou-family/issues/18)
