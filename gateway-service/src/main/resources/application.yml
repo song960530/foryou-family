@@ -17,8 +17,18 @@ spring:
     name: gateway-service
   cloud:
     gateway:
+      default-filters:
+        - name: JwtGlobalFilter
+          args:
+            baseMessage: GateWay JwtGlobalFilter
+
       routes:
         - id: member-service
-          uri: lb://MEMBER-SERVICE # ??? ??
+          uri: lb://MEMBER-SERVICE
           predicates:
-            - Path=/member/** # ?? path? ???? member-service? ?????? ??
+            - Path=/member/**
+          filters:
+
+config:
+  jwt:
+    secretKey: 01234567890123456789012345678912
