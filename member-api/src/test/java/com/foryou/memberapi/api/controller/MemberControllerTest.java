@@ -6,15 +6,11 @@ import com.foryou.memberapi.api.dto.response.LoginResDto;
 import com.foryou.memberapi.api.service.MemberService;
 import com.foryou.memberapi.global.error.CustomException;
 import com.foryou.memberapi.global.error.ErrorCode;
-import com.foryou.memberapi.global.security.SecurityConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,11 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(
-        value = MemberController.class
-        , excludeAutoConfiguration = SecurityAutoConfiguration.class
-        , excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class)
-)
+@WebMvcTest(value = MemberController.class)
 @MockBean(value = JpaMetamodelMappingContext.class)
 class MemberControllerTest {
 
