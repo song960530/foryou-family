@@ -22,8 +22,8 @@ spring:
           args:
             baseMessage: GateWay JwtGlobalFilter
       routes:
-        - id: member-service
-          uri: lb://MEMBER-SERVICE
+        - id: member-api
+          uri: lb://MEMBER-API
           predicates:
             - Path=/member/**
           filters:
