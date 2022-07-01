@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -30,20 +28,26 @@ public class Role {
     )
     private Long no;
 
-    @Column(name = "ROLE", unique = true, nullable = false)
+    @Column(
+            name = "ROLE"
+            , nullable = false
+    )
     @Enumerated(value = EnumType.STRING)
     private MemberRole role;
 
-    @ManyToMany
-    @JoinTable(
-            name = "MEMBER_ROLE"
-            , joinColumns = @JoinColumn(name = "ROLE_NO")
-            , inverseJoinColumns = @JoinColumn(name = "MEMBER_NO")
+    @ManyToOne
+    @JoinColumn(
+            name = "MEMBER_NO"
+            , nullable = false
     )
-    private List<Member> members = new ArrayList<>();
+    private Member member;
 
     @Builder
     public Role(MemberRole role) {
         this.role = role;
+    }
+
+    public void addMember(Member member) {
+        this.member = member;
     }
 }
