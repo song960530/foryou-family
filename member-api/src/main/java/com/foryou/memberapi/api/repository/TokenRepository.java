@@ -16,5 +16,5 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
             "where m.memberId =:memberId " +
             "and t.accessToken=:accessToken " +
             "and t.refreshToken=:refreshToken")
-    Optional<Token> existsByAllColumn(@Param("memberId") String memberId, @Param("accessToken") String accessToken, @Param("refreshToken") String refreshToken);
+    Optional<Token> findByAllColumn(@Param("memberId") String memberId, @Param("accessToken") String accessToken, @Param("refreshToken") String refreshToken);
 }

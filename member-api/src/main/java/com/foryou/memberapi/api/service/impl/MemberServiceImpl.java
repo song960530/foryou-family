@@ -94,7 +94,7 @@ public class MemberServiceImpl implements MemberService {
     private Token findBeforeToken(String accessToken, String refreshToken) {
         String memberId = jwtTokenProvider.extractSubject(refreshToken);
 
-        return tokenRepository.existsByAllColumn(memberId
+        return tokenRepository.findByAllColumn(memberId
                         , jwtTokenProvider.removeTokenPrefix(accessToken)
                         , jwtTokenProvider.removeTokenPrefix(refreshToken)
                 )
