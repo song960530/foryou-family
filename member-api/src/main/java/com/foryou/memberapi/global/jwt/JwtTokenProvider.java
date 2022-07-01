@@ -2,11 +2,13 @@ package com.foryou.memberapi.global.jwt;
 
 import com.foryou.memberapi.api.entity.Role;
 import com.foryou.memberapi.api.enums.MemberRole;
+import com.foryou.memberapi.global.constants.Constants;
+import com.foryou.memberapi.global.error.CustomException;
+import com.foryou.memberapi.global.error.ErrorCode;
 import com.foryou.memberapi.global.properties.JwtProperties;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -76,5 +79,32 @@ public class JwtTokenProvider {
         headers.put("typ", "JWT");
         headers.put("alg", "HS256");
         return headers;
+    }
+
+    public String extractSubject(String token) {
+        String subject = null;
+
+        try {
+            subject = Jwts.parserBuilder()
+                    .setSigningKey(Keys.hmacShaKeyFor(encSecretKey.getBytes(StandardCharsets.UTF_8)))
+                    .build()
+                    .parseClaimsJws(removeTokenPrefix(token))
+                    .getBody()
+                    .getSubject();
+        } catch (ExpiredJwtException e) {
+            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
+        } catch (MalformedJwtException | UnsupportedJwtException | SignatureException | IllegalArgumentException e) {
+            throw new CustomException(ErrorCode.NOT_VALID_TOKEN_VALUE);
+        }
+
+        return subject;
+    }
+
+    public String removeTokenPrefix(String token) {
+        return token.replaceAll(Constants.TOKEN_PREFIX_REGEX + "( )*", "");
+    }
+
+    public boolean isMatchedPrefix(String token) {
+        return Pattern.matches(Constants.TOKEN_PREFIX_REGEX + " .*", token);
     }
 }
