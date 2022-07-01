@@ -180,7 +180,7 @@ class MemberServiceImplTest {
         doReturn(true).when(jwtTokenProvider).isMatchedPrefix(anyString());
         doReturn(memberId).when(jwtTokenProvider).extractSubject(anyString());
         doReturn("test").when(jwtTokenProvider).removeTokenPrefix(anyString());
-        doReturn(Optional.empty()).when(tokenRepository).existsByAllColumn(anyString(), anyString(), anyString());
+        doReturn(Optional.empty()).when(tokenRepository).findByAllColumn(anyString(), anyString(), anyString());
 
 
         // when
@@ -210,7 +210,7 @@ class MemberServiceImplTest {
         doReturn(true).when(jwtTokenProvider).isMatchedPrefix(anyString());
         doReturn(memberId).when(jwtTokenProvider).extractSubject(anyString());
         doReturn("test").when(jwtTokenProvider).removeTokenPrefix(anyString());
-        doReturn(Optional.of(token)).when(tokenRepository).existsByAllColumn(anyString(), anyString(), anyString());
+        doReturn(Optional.of(token)).when(tokenRepository).findByAllColumn(anyString(), anyString(), anyString());
         doReturn(Optional.of(token)).when(tokenRepository).findByMember(any(Member.class));
         doReturn("test").when(jwtTokenProvider).createAccessToken(anyString(), anyList());
         doReturn("test").when(jwtTokenProvider).createRefreshToken(anyString());
