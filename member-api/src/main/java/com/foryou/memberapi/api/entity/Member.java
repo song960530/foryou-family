@@ -46,11 +46,9 @@ public class Member extends BaseTimeEntity {
     @Convert(converter = PasswordCryptoConverter.class)
     private String password;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
-    @JoinTable(
-            name = "MEMBER_ROLE"
-            , joinColumns = @JoinColumn(name = "MEMBER_NO")
-            , inverseJoinColumns = @JoinColumn(name = "ROLE_NO")
+    @OneToMany(
+            mappedBy = "member"
+            , cascade = CascadeType.PERSIST
     )
     private List<Role> roles = new ArrayList<>();
 
@@ -58,6 +56,12 @@ public class Member extends BaseTimeEntity {
     public Member(String memberId, String password) {
         this.memberId = memberId;
         this.password = password;
-        this.roles.add(new Role(MemberRole.ROLE_MEMBER));
+        addRole(MemberRole.ROLE_MEMBER);
+    }
+
+    public void addRole(MemberRole memberRole) {
+        Role role = Role.builder().role(memberRole).build();
+        this.roles.add(role);
+        role.addMember(this);
     }
 }
