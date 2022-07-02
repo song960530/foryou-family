@@ -1,5 +1,6 @@
 package com.foryou.partyapi.api.dto.request;
 
+import com.foryou.partyapi.api.entity.Party;
 import com.foryou.partyapi.api.enums.OttType;
 import com.foryou.partyapi.api.enums.PartyRole;
 import lombok.Data;
@@ -18,4 +19,18 @@ public class PartyReqDto {
 
     @NotNull(message = "역할정보를 입력해주세요")
     private PartyRole role;
+
+    private String id;
+
+    private String password;
+
+    private Integer inwon;
+
+    public Party toEntity() {
+        return Party.builder()
+                .memberId(memberId)
+                .role(role)
+                .ott(ott)
+                .build();
+    }
 }

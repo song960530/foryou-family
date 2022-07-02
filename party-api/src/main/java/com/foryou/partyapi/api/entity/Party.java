@@ -1,7 +1,9 @@
 package com.foryou.partyapi.api.entity;
 
+import com.foryou.partyapi.api.enums.OttType;
 import com.foryou.partyapi.api.enums.PartyRole;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,10 +35,11 @@ public class Party {
     private String memberId;
 
     @Column(
-            name = "PROFILE_NAME"
-            , columnDefinition = "default '아무개'"
+            name = "OTT"
+            , nullable = false
     )
-    private String profileName;
+    @Enumerated(value = EnumType.STRING)
+    private OttType ott;
 
     @Column(
             name = "ROLE"
@@ -45,10 +48,25 @@ public class Party {
     @Enumerated(value = EnumType.STRING)
     private PartyRole role;
 
-    @OneToOne
+    @Column(
+            name = "PROFILE_NAME"
+    )
+    private String profileName;
+
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(
             name = "PARTY_INFO_NO"
-            , columnDefinition = "default -99"
     )
     private PartyInfo partyInfo;
+
+    @Builder
+    public Party(String memberId, OttType ott, PartyRole role) {
+        this.memberId = memberId;
+        this.ott = ott;
+        this.role = role;
+    }
+
+    public void addPartyInfo(PartyInfo partyInfo) {
+        this.partyInfo = partyInfo;
+    }
 }

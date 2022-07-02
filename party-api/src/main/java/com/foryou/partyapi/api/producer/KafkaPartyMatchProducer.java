@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class KafkaPartyRequestProducer {
+public class KafkaPartyMatchProducer {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 

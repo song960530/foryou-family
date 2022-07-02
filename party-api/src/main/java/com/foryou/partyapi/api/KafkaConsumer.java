@@ -1,5 +1,6 @@
 package com.foryou.partyapi.api;
 
+import com.foryou.partyapi.Constants;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -7,7 +8,7 @@ import org.springframework.stereotype.Service;
 public class KafkaConsumer {
 
     @KafkaListener(
-            topics = "party"
+            topics = Constants.TOPIC_PARTY
             , groupId = "party_group"
     )
     public void listen(String msg) {
@@ -15,7 +16,7 @@ public class KafkaConsumer {
     }
 
     @KafkaListener(
-            topics = "party"
+            topics = Constants.TOPIC_PARTY
             , groupId = "party_group"
     )
     public void listen2(String msg) {

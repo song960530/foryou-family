@@ -2,6 +2,7 @@ package com.foryou.partyapi.api.entity;
 
 import com.foryou.partyapi.api.enums.OttType;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,6 +35,12 @@ public class PartyInfo {
     private OttType ottType;
 
     @Column(
+            name = "INWON"
+            , nullable = false
+    )
+    private Integer inwon;
+
+    @Column(
             name = "PARTY_SHARE_ID"
             , nullable = false
     )
@@ -44,4 +51,12 @@ public class PartyInfo {
             , nullable = false
     )
     private String partySharePassword;
+
+    @Builder
+    public PartyInfo(OttType ottType, Integer inwon, String partyShareId, String partySharePassword) {
+        this.ottType = ottType;
+        this.inwon = inwon;
+        this.partyShareId = partyShareId;
+        this.partySharePassword = partySharePassword;
+    }
 }

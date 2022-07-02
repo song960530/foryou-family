@@ -1,7 +1,8 @@
 package com.foryou.partyapi.api.controller;
 
 import com.foryou.partyapi.api.dto.request.PartyReqDto;
-import com.foryou.partyapi.api.producer.KafkaPartyRequestProducer;
+import com.foryou.partyapi.api.entity.Party;
+import com.foryou.partyapi.api.producer.KafkaPartyMatchProducer;
 import com.foryou.partyapi.api.service.PartyService;
 import com.foryou.partyapi.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +21,13 @@ import javax.validation.Valid;
 public class PartyController {
 
     private final PartyService partyService;
-    private final KafkaPartyRequestProducer producer;
+    private final KafkaPartyMatchProducer producer;
 
     @PostMapping("/party")
     public ResponseEntity<ApiResponse> requestParty(@Valid @RequestBody PartyReqDto partyReqDto) {
-        producer.sendMessage(partyReqDto.toString());
+        Party party = partyService.createParty(partyReqDto);
+        partyService.createMatchingMessage(party);
+        producer.sendMessage(partyService.createMatchingMessage(party).toString());
 
         return ApiResponse.of(HttpStatus.OK);
     }
