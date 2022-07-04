@@ -2,7 +2,7 @@ package com.foryou.partyapi.api.entity;
 
 import com.foryou.partyapi.api.enums.OttType;
 import com.foryou.partyapi.api.enums.PartyRole;
-import com.foryou.partyapi.global.BooleanToYNConverter;
+import com.foryou.partyapi.global.converter.BooleanToYNConverter;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

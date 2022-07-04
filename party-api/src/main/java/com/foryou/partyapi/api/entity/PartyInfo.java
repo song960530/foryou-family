@@ -1,6 +1,7 @@
 package com.foryou.partyapi.api.entity;
 
 import com.foryou.partyapi.api.enums.OttType;
+import com.foryou.partyapi.global.converter.PartyPasswordCryptoConverter;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -50,6 +51,7 @@ public class PartyInfo {
             name = "PARTY_SHARE_PASSWORD"
             , nullable = false
     )
+    @Convert(converter = PartyPasswordCryptoConverter.class)
     private String partySharePassword;
 
     @Builder

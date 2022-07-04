@@ -1,4 +1,4 @@
-package com.foryou.partyapi.global;
+package com.foryou.partyapi.global.converter;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
