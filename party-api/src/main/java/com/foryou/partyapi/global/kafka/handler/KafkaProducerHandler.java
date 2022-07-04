@@ -1,4 +1,4 @@
-package com.foryou.partyapi.api;
+package com.foryou.partyapi.global.kafka.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;

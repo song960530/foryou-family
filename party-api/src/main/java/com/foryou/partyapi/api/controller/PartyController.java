@@ -1,8 +1,10 @@
 package com.foryou.partyapi.api.controller;
 
-import com.foryou.partyapi.api.dto.request.PartyReqDto;
-import com.foryou.partyapi.api.producer.KafkaPartyRequestProducer;
+import com.foryou.partyapi.api.dto.request.PartyMemberReqDto;
+import com.foryou.partyapi.api.dto.request.PartyOwnerReqDto;
+import com.foryou.partyapi.api.entity.Party;
 import com.foryou.partyapi.api.service.PartyService;
+import com.foryou.partyapi.api.service.kafka.KafkaPartyMatchProducer;
 import com.foryou.partyapi.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +22,20 @@ import javax.validation.Valid;
 public class PartyController {
 
     private final PartyService partyService;
-    private final KafkaPartyRequestProducer producer;
+    private final KafkaPartyMatchProducer producer;
 
-    @PostMapping("/party")
-    public ResponseEntity<ApiResponse> requestParty(@Valid @RequestBody PartyReqDto partyReqDto) {
-        producer.sendMessage(partyReqDto.toString());
+    @PostMapping("/party/member")
+    public ResponseEntity<ApiResponse> requestPartyMember(@Valid @RequestBody PartyMemberReqDto partyReqDto) {
+        Party party = partyService.createMemberParty(partyReqDto);
+        producer.sendMessage(partyService.createMatchingMessage(party));
+
+        return ApiResponse.of(HttpStatus.OK);
+    }
+
+    @PostMapping("/party/owner")
+    public ResponseEntity<ApiResponse> requestPartyOwner(@Valid @RequestBody PartyOwnerReqDto partyReqDto) {
+        Party party = partyService.createOwnerParty(partyReqDto);
+        producer.sendMessage(partyService.createMatchingMessage(party));
 
         return ApiResponse.of(HttpStatus.OK);
     }

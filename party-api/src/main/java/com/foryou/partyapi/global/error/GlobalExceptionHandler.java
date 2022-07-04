@@ -25,6 +25,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ApiErrorResponse errorResponse = ApiErrorResponse.of(errorCode);
 
         log.error("ERROR CustomException : {}", errorCode);
+        e.printStackTrace();
 
         return new ResponseEntity<>(errorResponse, errorCode.getHttpStatus());
     }
