@@ -3,12 +3,14 @@ package com.foryou.partyapi.api.dto.request;
 import com.foryou.partyapi.api.entity.Party;
 import com.foryou.partyapi.api.enums.OttType;
 import com.foryou.partyapi.api.enums.PartyRole;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
+@Builder
 public class PartyMemberReqDto {
 
     @NotBlank(message = "요청자 아이디를 입력해주세요")
