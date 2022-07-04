@@ -25,13 +25,17 @@ spring:
         - id: member-api
           uri: lb://MEMBER-API
           predicates:
-            - Path=/member/**
-          filters:
-            - name: MemberFilter
-              args:
-                baseMessage: GateWay MemberFilter
-                excludePath: /member /member/login # 여러개 적을 경우 공백으로 띄어서
-                requiredRole: ROLE_MEMBER # 한개만 작성
+            - Path=/member/**,/auth/**
+#          filters:
+#            - name: MemberFilter
+#              args:
+#                baseMessage: GateWay MemberFilter
+#                excludePath: /member /member/login # 여러개 적을 경우 공백으로 띄어서
+#                requiredRole: ROLE_MEMBER # 한개만 작성
+        - id: party-api
+          uri: lb://PARTY-API
+          predicates:
+            - Path=/party/**
 
 config:
   jwt:
