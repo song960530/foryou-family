@@ -18,7 +18,10 @@ public enum ErrorCode {
     DUPLICATE_OTT_JOIN(HttpStatus.CONFLICT, "이미 가입한 ott파티가 존재합니다"),
 
     /* 500 INTERNAL_SERVER_ERROR: 지정하지  않은 오류 발생 */
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "알 수 없는 오류가 발생했습니다");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "알 수 없는 오류가 발생했습니다"),
+    CIPHER_INIT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AES256 초기화를 실패하였습니다"),
+    CIPHER_ENCRYPT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AES256 암호화를 실패하였습니다"),
+    CIPHER_DECRYPT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AES256 복호화를 실패하였습니다");
 
     private final HttpStatus httpStatus;
     private final String message;
