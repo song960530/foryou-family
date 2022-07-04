@@ -2,6 +2,7 @@ package com.foryou.partyapi.api.entity;
 
 import com.foryou.partyapi.api.enums.OttType;
 import com.foryou.partyapi.api.enums.PartyRole;
+import com.foryou.partyapi.global.BooleanToYNConverter;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -59,11 +60,18 @@ public class Party {
     )
     private PartyInfo partyInfo;
 
+    @Column(
+            name = "leaveYN"
+    )
+    @Convert(converter = BooleanToYNConverter.class)
+    private Boolean leaveYN;
+
     @Builder
-    public Party(String memberId, OttType ott, PartyRole role) {
+    public Party(String memberId, OttType ott, PartyRole role, Boolean leaveYN) {
         this.memberId = memberId;
         this.ott = ott;
         this.role = role;
+        this.leaveYN = leaveYN;
     }
 
     public void addPartyInfo(PartyInfo partyInfo) {

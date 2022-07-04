@@ -20,15 +20,3 @@ spring:
         format_sql: true
         # use_sql_comments: true
     open-in-view: false
-
-  kafka:
-    consumer:
-      bootstrap-servers: localhost:9093, olocalhost:9094, localhost:9095
-      group-id: party_group
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    producer:
-      bootstrap-servers: localhost:9093, olocalhost:9094, localhost:9095
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer

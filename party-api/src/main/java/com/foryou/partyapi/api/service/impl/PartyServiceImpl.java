@@ -1,18 +1,20 @@
 package com.foryou.partyapi.api.service.impl;
 
-import com.foryou.partyapi.api.dto.request.KafKaPartyMatchReqDto;
-import com.foryou.partyapi.api.dto.request.PartyReqDto;
+import com.foryou.partyapi.api.dto.request.MatchingRequestMessage;
+import com.foryou.partyapi.api.dto.request.PartyMemberReqDto;
+import com.foryou.partyapi.api.dto.request.PartyOwnerReqDto;
 import com.foryou.partyapi.api.entity.Party;
 import com.foryou.partyapi.api.entity.PartyInfo;
+import com.foryou.partyapi.api.enums.OttType;
 import com.foryou.partyapi.api.enums.PartyRole;
 import com.foryou.partyapi.api.repository.PartyRepository;
 import com.foryou.partyapi.api.service.PartyService;
+import com.foryou.partyapi.global.error.CustomException;
+import com.foryou.partyapi.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -24,14 +26,30 @@ public class PartyServiceImpl implements PartyService {
 
     @Override
     @Transactional
-    public Party createParty(PartyReqDto partyReqDto) {
-        return partyRepository.save(createPartyEntity(partyReqDto));
+    public Party createMemberParty(PartyMemberReqDto partyReqDto) {
+        checkSameRole(PartyRole.MEMBER, partyReqDto.getRole());
+        checkExistOtt(partyReqDto.getMemberId(), partyReqDto.getOtt());
+
+        return partyRepository.save(partyReqDto.toEntity());
     }
 
     @Override
-    public KafKaPartyMatchReqDto createMatchingMessage(Party party) {
+    @Transactional
+    public Party createOwnerParty(PartyOwnerReqDto partyReqDto) {
+        checkSameRole(PartyRole.OWNER, partyReqDto.getRole());
+        checkExistOtt(partyReqDto.getMemberId(), partyReqDto.getOtt());
+
+        Party party = partyReqDto.toEntityParty();
+        PartyInfo partyInfo = partyReqDto.toEntityPartyInfo();
+        party.addPartyInfo(partyInfo);
+
+        return partyRepository.save(party);
+    }
+
+    @Override
+    public MatchingRequestMessage createMatchingMessage(Party party) {
         if (party.getRole() == PartyRole.OWNER) {
-            return KafKaPartyMatchReqDto.builder()
+            return MatchingRequestMessage.builder()
                     .partyNo(party.getNo())
                     .partyInfoNo(party.getPartyInfo().getNo())
                     .inwon(party.getPartyInfo().getInwon())
@@ -39,7 +57,7 @@ public class PartyServiceImpl implements PartyService {
                     .role(party.getRole())
                     .build();
         } else {
-            return KafKaPartyMatchReqDto.builder()
+            return MatchingRequestMessage.builder()
                     .partyNo(party.getNo())
                     .ott(party.getOtt())
                     .role(party.getRole())
@@ -47,21 +65,13 @@ public class PartyServiceImpl implements PartyService {
         }
     }
 
-    private Party createPartyEntity(PartyReqDto partyReqDto) {
-        return Optional.of(partyReqDto)
-                .filter(dto -> dto.getRole() == PartyRole.OWNER)
-                .map(dto -> dto.toEntity())
-                .map(party -> {
-                    party.addPartyInfo(
-                            PartyInfo.builder()
-                                    .ottType(partyReqDto.getOtt())
-                                    .inwon(partyReqDto.getInwon())
-                                    .partyShareId(partyReqDto.getId())
-                                    .partySharePassword(partyReqDto.getPassword())
-                                    .build());
+    private void checkSameRole(PartyRole expect, PartyRole actual) {
+        if (expect != actual)
+            throw new CustomException(ErrorCode.ROLE_NOT_MATCHED);
+    }
 
-                    return party;
-                })
-                .orElseGet(() -> partyReqDto.toEntity());
+    private void checkExistOtt(String memberId, OttType ott) {
+        if (partyRepository.existOttForMember(memberId, ott))
+            throw new CustomException(ErrorCode.DUPLICATE_OTT_JOIN);
     }
 }
