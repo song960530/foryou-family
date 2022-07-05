@@ -24,7 +24,7 @@ public class MemberFilter extends AbstractGatewayFilterFactory<MemberFilter.Conf
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
             String roles = exchange.getResponse().getHeaders().get("roles").get(0);
-            String requestPath = exchange.getResponse().getHeaders().get("path").get(0);
+            String requestPath = exchange.getRequest().getPath().toString();
 
             if (!config.getExcludePath().contains(requestPath)) {
                 if (roles.indexOf(config.getRequiredRole()) < 0) {
