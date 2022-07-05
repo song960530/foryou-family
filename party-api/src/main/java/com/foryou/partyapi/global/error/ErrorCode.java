@@ -10,7 +10,7 @@ public enum ErrorCode {
 
     /* 400 BAD_REQUEST: 파라미터가 잘못 넘어옴 */
     ARGUMENT_NOT_VALID(HttpStatus.BAD_REQUEST, "요청 정보가 잘못되었습니다"),
-    NOT_VALID_REQUEST_MEMBER(HttpStatus.BAD_REQUEST, "요청자 정보가 잘못되었습니다"),
+    NOT_MATCHED_MEMBER_ID(HttpStatus.BAD_REQUEST, "요청자 정보가 잘못되었습니다"),
 
     /* 401 UNAUTHORIZED: 리소스에 유효한 인증 자격이 증명되지 않음*/
     ROLE_NOT_MATCHED(HttpStatus.UNAUTHORIZED, "파티원/파티장 역할정보가 잘못되었습니다"),

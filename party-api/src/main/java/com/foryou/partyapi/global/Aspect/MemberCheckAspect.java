@@ -12,6 +12,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import java.util.stream.Stream;
 
+/**
+ * GATEWAY에서 설정한 MEMBER-ID와 PathVariable의 memberId 값 비교
+ */
 @Aspect
 @Component
 public class MemberCheckAspect {
@@ -21,11 +24,11 @@ public class MemberCheckAspect {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         String memberId = request.getHeader(Constants.REQUEST_HEADER_MEMBER_ID);
 
-        long count = Stream.of(request.getHeader(Constants.REQUEST_HEADER_PATH).split("/"))
+        long count = Stream.of(request.getRequestURI().split("/"))
                 .filter(s -> s.equals(memberId))
                 .count();
 
         if (count < 1)
-            throw new CustomException(ErrorCode.NOT_VALID_REQUEST_MEMBER);
+            throw new CustomException(ErrorCode.NOT_MATCHED_MEMBER_ID);
     }
 }

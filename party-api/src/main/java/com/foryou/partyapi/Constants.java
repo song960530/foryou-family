@@ -7,5 +7,4 @@ public final class Constants {
     public static final String KAFKA_AUTO_OFFSET_RESET_EARLIEST = "earliest";
 
     public static final String REQUEST_HEADER_MEMBER_ID = "MEMBER-ID";
-    public static final String REQUEST_HEADER_PATH = "PATH";
 }
