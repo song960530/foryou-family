@@ -1,7 +1,10 @@
-package com.foryou.partyapi.api.service.kafka;
+package com.foryou.matchingservice.api.service.kafka;
 
-import com.foryou.partyapi.Constants;
-import com.foryou.partyapi.api.dto.request.MatchingRequestMessage;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.foryou.matchingservice.api.dto.MatchingRequestMessage;
+import com.foryou.matchingservice.global.Constants;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
@@ -11,7 +14,10 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class KafkaConsumer {
+
+    private final ObjectMapper objMapper;
 
     @KafkaListener(
             topics = Constants.KAFKA_TOPIC_PARTY
@@ -24,9 +30,14 @@ public class KafkaConsumer {
             , @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition
             , @Header(KafkaHeaders.OFFSET) long offset
             , @Header(KafkaHeaders.RECEIVED_TIMESTAMP) long ts
-            , MatchingRequestMessage msg) {
-
-        log.info("message: {}, topic: {}, groupId: {}, partition: {}, offset: {}, time: {}", msg, topic, groupId, partition, offset, ts);
+            , String msg) {
+        MatchingRequestMessage request = null;
+        try {
+            request = objMapper.readValue(msg, MatchingRequestMessage.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        log.info("message: {}, topic: {}, groupId: {}, partition: {}, offset: {}, time: {}", request, topic, groupId, partition, offset, ts);
         ack.acknowledge();
     }
 }
