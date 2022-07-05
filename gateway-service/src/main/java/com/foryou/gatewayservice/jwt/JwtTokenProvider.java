@@ -4,10 +4,7 @@ import com.foryou.gatewayservice.constants.Constants;
 import com.foryou.gatewayservice.exception.CustomException;
 import com.foryou.gatewayservice.exception.ErrorCode;
 import com.foryou.gatewayservice.properties.JwtProperties;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +15,6 @@ import javax.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
-import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -57,22 +53,21 @@ public class JwtTokenProvider {
         return token.replaceAll(Constants.TOKEN_PREFIX_REGEX + "( )*", "");
     }
 
-    public List<String> extractRoles(String token) {
-        Object roles = null;
+    public Claims extractRoles(String token) {
+        Claims claims;
 
         try {
-            roles = Jwts.parserBuilder()
+            claims = Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token)
-                    .getBody()
-                    .get("roles");
+                    .getBody();
         } catch (ExpiredJwtException e) {
             throw new CustomException(ErrorCode.EXPIRED_TOKEN);
         } catch (MalformedJwtException | UnsupportedJwtException | SignatureException | IllegalArgumentException e) {
             throw new CustomException(ErrorCode.NOT_VALID_TOKEN_VALUE);
         }
 
-        return (List<String>) roles;
+        return claims;
     }
 }
