@@ -33,15 +33,11 @@ public class JwtGlobalFilter extends AbstractGatewayFilterFactory<JwtGlobalFilte
             log.info("Request URI: {}", exchange.getRequest().getURI());
             log.info("Request Authorization: {}", exchange.getRequest().getHeaders().get("Authorization"));
 
-            Optional<Claims> claims = extractClaims(exchange);
-
-            if (claims.isPresent()) {
-                addHeader(exchange, claims);
-            }
+            extractClaims(exchange)
+                    .ifPresent(claims -> addHeader(exchange, claims));
 
             return chain.filter(exchange).then(Mono.fromRunnable(() -> {
                 log.info("{} END >>>>>>", config.getBaseMessage());
-                removeHeader(exchange);
             }));
         });
     }
@@ -49,19 +45,14 @@ public class JwtGlobalFilter extends AbstractGatewayFilterFactory<JwtGlobalFilte
     private Optional<Claims> extractClaims(ServerWebExchange exchange) {
         return Optional.of(jwtTokenProvider.extractToken(exchange))
                 .filter(token -> !token.equals(Constants.DEFAULT_TOKEN_VALUE))
-                .map(token -> jwtTokenProvider.extractRoles(token));
+                .map(token -> jwtTokenProvider.extractClaims(token));
     }
 
-    private void removeHeader(ServerWebExchange exchange) {
-        exchange.getResponse().getHeaders().remove("ROLES");
-        exchange.getResponse().getHeaders().remove("MEMBERID");
-        exchange.getResponse().getHeaders().remove("PATH");
-    }
-
-    private void addHeader(ServerWebExchange exchange, Optional<Claims> claims) {
-        exchange.getResponse().getHeaders().set("ROLES", String.join(" ", (List<String>) claims.get().get("roles")));
-        exchange.getResponse().getHeaders().set("MEMBERID", claims.get().getSubject());
-        exchange.getResponse().getHeaders().set("PATH", exchange.getRequest().getPath().toString());
+    private void addHeader(ServerWebExchange exchange, Claims claims) {
+        exchange.getRequest().mutate()
+                .header("ROLES", String.join(" ", (List<String>) claims.get("roles")))
+                .header("MEMBER-ID", claims.getSubject())
+                .build();
     }
 
     @Getter

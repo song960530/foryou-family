@@ -53,7 +53,7 @@ public class JwtTokenProvider {
         return token.replaceAll(Constants.TOKEN_PREFIX_REGEX + "( )*", "");
     }
 
-    public Claims extractRoles(String token) {
+    public Claims extractClaims(String token) {
         Claims claims;
 
         try {
