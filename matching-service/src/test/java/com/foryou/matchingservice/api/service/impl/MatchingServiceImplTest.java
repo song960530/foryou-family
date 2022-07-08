@@ -53,7 +53,7 @@ class MatchingServiceImplTest {
         doReturn(match).when(matchRepository).save(any(Match.class));
 
         // when
-        List<Long> results = matchingService.createMatch(memberDto);
+        List<Match> results = matchingService.createMatch(memberDto);
 
         // then
         assertEquals(1, results.size());
@@ -70,7 +70,7 @@ class MatchingServiceImplTest {
         doReturn(match).when(matchRepository).save(any(Match.class));
 
         // when
-        List<Long> results = matchingService.createMatch(memberDto);
+        List<Match> results = matchingService.createMatch(memberDto);
 
         // then
         assertEquals(3, results.size());
