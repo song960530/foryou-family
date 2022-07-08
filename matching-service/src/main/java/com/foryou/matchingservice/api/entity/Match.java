@@ -4,6 +4,7 @@ import com.foryou.matchingservice.api.enums.OttType;
 import com.foryou.matchingservice.api.enums.PartyRole;
 import com.foryou.matchingservice.api.enums.StatusType;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,7 +32,6 @@ public class Match {
             name = "PARTY_NO"
             , nullable = false
             , updatable = false
-            , unique = true
     )
     private Long partyNo;
 
@@ -57,4 +57,12 @@ public class Match {
     )
     @Enumerated(value = EnumType.STRING)
     private StatusType status;
+
+    @Builder
+    public Match(Long partyNo, OttType ott, PartyRole role) {
+        this.partyNo = partyNo;
+        this.ott = ott;
+        this.role = role;
+        this.status = StatusType.WAIT;
+    }
 }
