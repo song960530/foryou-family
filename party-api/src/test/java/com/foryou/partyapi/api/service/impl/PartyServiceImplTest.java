@@ -146,14 +146,13 @@ class PartyServiceImplTest {
         ReflectionTestUtils.setField(member, "no", fakeNo);
 
         // when
-        MatchingRequestMessage result = service.createMatchingMessage(member);
+        MatchingRequestMessage result = service.createMatchingMessage(member, 1);
 
         // then
         assertEquals(member.getNo(), result.getPartyNo());
         assertEquals(member.getOtt(), result.getOtt());
         assertEquals(member.getRole(), result.getRole());
-        assertNull(result.getInwon());
-        assertNull(result.getPartyInfoNo());
+        assertEquals(1, result.getInwon());
     }
 
     @Test
@@ -167,13 +166,12 @@ class PartyServiceImplTest {
         ReflectionTestUtils.setField(owner.getPartyInfo(), "no", fakeNo);
 
         // when
-        MatchingRequestMessage result = service.createMatchingMessage(owner);
+        MatchingRequestMessage result = service.createMatchingMessage(owner, owner.getPartyInfo().getInwon());
 
         // then
         assertEquals(owner.getNo(), result.getPartyNo());
         assertEquals(owner.getOtt(), result.getOtt());
         assertEquals(owner.getRole(), result.getRole());
         assertEquals(owner.getPartyInfo().getInwon(), result.getInwon());
-        assertEquals(owner.getPartyInfo().getNo(), result.getPartyInfoNo());
     }
 }

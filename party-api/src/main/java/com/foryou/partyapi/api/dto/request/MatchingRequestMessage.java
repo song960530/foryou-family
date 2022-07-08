@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MatchingRequestMessage {
     private Long partyNo;
-    private Long partyInfoNo;
     private Integer inwon;
     private OttType ott;
     private PartyRole role;
