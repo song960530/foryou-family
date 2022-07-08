@@ -27,7 +27,7 @@ public class PartyController {
     @PostMapping("/party/member")
     public ResponseEntity<ApiResponse> requestPartyMember(@Valid @RequestBody PartyMemberReqDto partyReqDto) {
         Party party = partyService.createMemberParty(partyReqDto);
-        producer.sendMessage(partyService.createMatchingMessage(party));
+        producer.sendMessage(partyService.createMatchingMessage(party, 1));
 
         return ApiResponse.of(HttpStatus.OK);
     }
@@ -35,7 +35,7 @@ public class PartyController {
     @PostMapping("/party/owner")
     public ResponseEntity<ApiResponse> requestPartyOwner(@Valid @RequestBody PartyOwnerReqDto partyReqDto) {
         Party party = partyService.createOwnerParty(partyReqDto);
-        producer.sendMessage(partyService.createMatchingMessage(party));
+        producer.sendMessage(partyService.createMatchingMessage(party, party.getPartyInfo().getInwon()));
 
         return ApiResponse.of(HttpStatus.OK);
     }

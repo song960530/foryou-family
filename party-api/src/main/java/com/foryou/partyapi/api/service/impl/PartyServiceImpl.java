@@ -47,22 +47,13 @@ public class PartyServiceImpl implements PartyService {
     }
 
     @Override
-    public MatchingRequestMessage createMatchingMessage(Party party) {
-        if (party.getRole() == PartyRole.OWNER) {
-            return MatchingRequestMessage.builder()
-                    .partyNo(party.getNo())
-                    .partyInfoNo(party.getPartyInfo().getNo())
-                    .inwon(party.getPartyInfo().getInwon())
-                    .ott(party.getOtt())
-                    .role(party.getRole())
-                    .build();
-        } else {
-            return MatchingRequestMessage.builder()
-                    .partyNo(party.getNo())
-                    .ott(party.getOtt())
-                    .role(party.getRole())
-                    .build();
-        }
+    public MatchingRequestMessage createMatchingMessage(Party party, int MatchCnt) {
+        return MatchingRequestMessage.builder()
+                .partyNo(party.getNo())
+                .inwon(MatchCnt)
+                .ott(party.getOtt())
+                .role(party.getRole())
+                .build();
     }
 
     private void checkSameRole(PartyRole expect, PartyRole actual) {
