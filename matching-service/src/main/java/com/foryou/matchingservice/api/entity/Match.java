@@ -65,4 +65,8 @@ public class Match {
         this.role = role;
         this.status = StatusType.WAIT;
     }
+
+    public void changeStatus(StatusType status) {
+        this.status = status;
+    }
 }

@@ -2,6 +2,7 @@ package com.foryou.matchingservice.api;
 
 import com.foryou.matchingservice.api.dto.response.Response;
 import com.foryou.matchingservice.api.queue.QueueService;
+import com.foryou.matchingservice.api.service.ScheduledService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,15 +16,20 @@ public class NetfilxFirstScheduled {
 
     @Qualifier("Netflix")
     private final QueueService netflix;
+    private final ScheduledService service;
 
     @Scheduled(
             fixedRate = 500
             , initialDelay = 10000
     )
     public void FirstMatch() {
-        Response test = netflix.pollQueues();
-        if (test != null) {
-            log.info(Thread.currentThread().getName() + ": " + test.toString());
+        Response pollQueue = netflix.pollQueues();
+        if (pollQueue != null) {
+            log.info(Thread.currentThread().getName() + ": " + pollQueue.toString());
+
+            service.changeStatus(pollQueue.getOwner(), pollQueue.getMember());
+
+//          TODO: 2차 큐로 넘기는 부분 구현
 
         }
     }
