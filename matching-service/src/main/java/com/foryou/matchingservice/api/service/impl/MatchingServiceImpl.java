@@ -4,11 +4,12 @@ import com.foryou.matchingservice.api.dto.request.MatchingRequestMessage;
 import com.foryou.matchingservice.api.entity.Match;
 import com.foryou.matchingservice.api.enums.OttType;
 import com.foryou.matchingservice.api.enums.PartyRole;
-import com.foryou.matchingservice.api.queue.WaitQueue.Netflix;
+import com.foryou.matchingservice.api.queue.QueueService;
 import com.foryou.matchingservice.api.repository.MatchRepository;
 import com.foryou.matchingservice.api.service.MatchingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +24,12 @@ import java.util.stream.Stream;
 public class MatchingServiceImpl implements MatchingService {
 
     private final MatchRepository matchRepository;
-    private final Netflix netflix;
+    @Qualifier("Netflix")
+    private final QueueService netflix;
 
+    /**
+     * 요청 인원수 개수만큼 생성
+     */
     @Override
     @Transactional
     public List<Match> createMatch(MatchingRequestMessage request) {
