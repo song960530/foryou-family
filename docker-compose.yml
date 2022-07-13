@@ -1,0 +1,170 @@
+version: '3'
+
+services:
+  zoo1:
+    image: confluentinc/cp-zookeeper:7.1.1
+    restart: always
+    hostname: zoo1
+    container_name: zoo1
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_SERVERS: zoo1:2888:3888
+
+
+  kafka1:
+    image: confluentinc/cp-kafka:7.1.1
+    hostname: kafka1
+    container_name: kafka1
+    ports:
+      - "9093:9093"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka1:19093,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP}:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
+      KAFKA_BROKER_ID: 1
+      KAFKA_NUM_PARTITIONS: 10
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+    depends_on:
+      - zoo1
+
+
+  kafka2:
+    image: confluentinc/cp-kafka:7.1.1
+    hostname: kafka2
+    container_name: kafka2
+    ports:
+      - "9094:9094"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka2:19094,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP}:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
+      KAFKA_BROKER_ID: 2
+      KAFKA_NUM_PARTITIONS: 10
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+    depends_on:
+      - zoo1
+
+
+  kafka3:
+    image: confluentinc/cp-kafka:7.1.1
+    hostname: kafka3
+    container_name: kafka3
+    ports:
+      - "9095:9095"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka3:19095,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP}:9095
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
+      KAFKA_BROKER_ID: 3
+      KAFKA_NUM_PARTITIONS: 10
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+    depends_on:
+      - zoo1
+
+
+  h2:
+    image: oscarfonts/h2
+    restart: always
+    container_name: h2
+    environment:
+      - H2_OPTIONS=-ifNotExists
+    ports:
+      - 1521:1521
+      - 81:81
+    volumes:
+      - C:/Users/MunJun/h2:/opt/h2-data
+
+
+  eureka-server:
+    build:
+      context: ./eureka-server
+      dockerfile: Dockerfile_eureka-server
+    container_name: eureka-server
+    environment:
+      - EUREKA_SERVER_NAME=eureka-server
+      - PORT=8761
+    ports:
+      - 8761:8761
+
+
+  party-api:
+    build:
+      context: ./party-api
+      dockerfile: Dockerfile_party-api
+    container_name: party-api
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:h2:tcp://h2:1521/partyapi
+      - SPRING_DATASOURCE_USERNAME=partyapi
+      - SPRING_DATASOURCE_PASSWORD= 
+      - PORT=8091
+      - EUREKA_SERVER_NAME=eureka-server
+      - EUREKA_SERVER_PORT=8761
+      - KAFKA_SERVER_NAME1=kafka1
+      - KAFKA_SERVER_PORT1=9093
+      - KAFKA_SERVER_NAME2=kafka2
+      - KAFKA_SERVER_PORT2=9094
+      - KAFKA_SERVER_NAME3=kafka3
+      - KAFKA_SERVER_PORT3=9095
+    ports:
+      - 8091:8091
+    depends_on:
+      - h2
+      - eureka-server
+      - kafka1
+      - kafka2
+      - kafka3
+
+
+  member-api:
+    build:
+      context: ./member-api
+      dockerfile: Dockerfile_member-api
+    container_name: member-api
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:h2:tcp://h2:1521/memberapi
+      - SPRING_DATASOURCE_USERNAME=memberapi
+      - SPRING_DATASOURCE_PASSWORD= 
+      - PORT=8090
+      - EUREKA_SERVER_NAME=eureka-server
+      - EUREKA_SERVER_PORT=8761
+    ports:
+      - 8090:8090
+    depends_on:
+      - h2
+      - eureka-server
+      - kafka1
+      - kafka2
+      - kafka3
+
+
+  gateway-server:
+    restart: always
+    build:
+      context: ./gateway-service
+      dockerfile: Dockerfile_gateway-server
+    container_name: gateway-server
+    environment:
+      - PORT=8000
+      - EUREKA_SERVER_NAME=eureka-server
+      - EUREKA_SERVER_PORT=8761
+    ports:
+      - 8000:8000
+    depends_on:
+      - eureka-server
+      - member-api
+      - party-api
