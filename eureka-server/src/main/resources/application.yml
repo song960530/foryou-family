@@ -1,10 +1,10 @@
 server:
-  port: 8761
+  port: ${PORT:8761}
 
 spring:
   application:
-    name: eureka-service # Application 이름 지정
-    
+    name: ${EUREKA_SERVER_NAME:eureka-server} # Application 이름 지정
+
 eureka:
   client:
     register-with-eureka: false # 클라이언트가 아닌 서버로 동작
