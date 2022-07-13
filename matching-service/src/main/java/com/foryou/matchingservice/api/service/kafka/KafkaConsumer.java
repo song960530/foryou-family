@@ -2,7 +2,9 @@ package com.foryou.matchingservice.api.service.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.foryou.matchingservice.api.dto.MatchingRequestMessage;
+import com.foryou.matchingservice.api.dto.request.MatchingRequestMessage;
+import com.foryou.matchingservice.api.entity.Match;
+import com.foryou.matchingservice.api.service.MatchingService;
 import com.foryou.matchingservice.global.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,12 +14,15 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class KafkaConsumer {
 
     private final ObjectMapper objMapper;
+    private final MatchingService matchingService;
 
     @KafkaListener(
             topics = Constants.KAFKA_TOPIC_PARTY
@@ -38,6 +43,10 @@ public class KafkaConsumer {
             e.printStackTrace();
         }
         log.info("message: {}, topic: {}, groupId: {}, partition: {}, offset: {}, time: {}", request, topic, groupId, partition, offset, ts);
+
+        List<Match> Matches = matchingService.createMatch(request);
+        matchingService.offerQueue(Matches);
+
         ack.acknowledge();
     }
 }

@@ -152,6 +152,34 @@ services:
       - kafka3
 
 
+  matching-service:
+    build:
+      context: ./matching-service
+      dockerfile: Dockerfile_matching-service
+    container_name: matching-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:h2:tcp://h2:1521/matchingservice
+      - SPRING_DATASOURCE_USERNAME=matchingservice
+      - SPRING_DATASOURCE_PASSWORD=
+      - PORT=8092
+      - EUREKA_SERVER_NAME=eureka-server
+      - EUREKA_SERVER_PORT=8761
+      - KAFKA_SERVER_NAME1=kafka1
+      - KAFKA_SERVER_PORT1=9093
+      - KAFKA_SERVER_NAME2=kafka2
+      - KAFKA_SERVER_PORT2=9094
+      - KAFKA_SERVER_NAME3=kafka3
+      - KAFKA_SERVER_PORT3=9095
+    ports:
+      - 8092:8092
+    depends_on:
+      - h2
+      - eureka-server
+      - kafka1
+      - kafka2
+      - kafka3
+
+
   gateway-server:
     restart: always
     build:
