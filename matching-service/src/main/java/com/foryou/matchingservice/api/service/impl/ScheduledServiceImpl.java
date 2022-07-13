@@ -4,6 +4,8 @@ import com.foryou.matchingservice.api.entity.Match;
 import com.foryou.matchingservice.api.enums.StatusType;
 import com.foryou.matchingservice.api.repository.MatchRepository;
 import com.foryou.matchingservice.api.service.ScheduledService;
+import com.foryou.matchingservice.global.error.CustomException;
+import com.foryou.matchingservice.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,7 @@ public class ScheduledServiceImpl implements ScheduledService {
 
     private Match findWaitPeople(Long no) {
         return repository.findByNoAndStatus(no, StatusType.WAIT).orElseThrow(() -> {
-            // TODO: CustomException 처리
+            throw new CustomException(ErrorCode.NOT_EXIST_WAIT_PEOPLE);
         });
     }
 
