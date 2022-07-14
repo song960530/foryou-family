@@ -1,6 +1,7 @@
 package com.foryou.matchingservice.api.queue;
 
 import com.foryou.matchingservice.api.dto.response.Response;
+import com.foryou.matchingservice.api.queue.first.Netflix;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +31,8 @@ class NetflixTest {
             netflix.offerMember(2L);
         }).start();
 
+        Thread.sleep(500);
+
         // when
         Thread t1 = new Thread(() -> {
             response1[0] = netflix.pollQueues();
@@ -38,16 +41,17 @@ class NetflixTest {
             response2[0] = netflix.pollQueues();
         });
 
+
         t1.start();
         t2.start();
         t1.join();
         t2.join();
 
         // then
-        assertEquals(1L, response1[0].getMember());
-        assertEquals(1L, response1[0].getOwner());
-        assertEquals(2L, response2[0].getOwner());
-        assertEquals(2L, response2[0].getOwner());
+        assertEquals(1L, response1[0].getMemberPk());
+        assertEquals(1L, response1[0].getOwnerPk());
+        assertEquals(2L, response2[0].getOwnerPk());
+        assertEquals(2L, response2[0].getOwnerPk());
         assertNull(netflix.pollQueues());
     }
 
@@ -62,6 +66,7 @@ class NetflixTest {
             }
         });
 
+
         // when
         Thread t2 = new Thread(() -> {
             for (Long i = 0L; i < 100; i++) {
@@ -70,6 +75,7 @@ class NetflixTest {
         });
 
         t1.start();
+        Thread.sleep(100);
         t2.start();
 
         t1.join();

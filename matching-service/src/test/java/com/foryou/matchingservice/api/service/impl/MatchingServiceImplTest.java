@@ -4,6 +4,7 @@ import com.foryou.matchingservice.api.dto.request.MatchingRequestMessage;
 import com.foryou.matchingservice.api.entity.Match;
 import com.foryou.matchingservice.api.enums.OttType;
 import com.foryou.matchingservice.api.enums.PartyRole;
+import com.foryou.matchingservice.api.queue.first.Netflix;
 import com.foryou.matchingservice.api.repository.MatchRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -27,12 +29,29 @@ class MatchingServiceImplTest {
     private MatchingServiceImpl matchingService;
     @Mock
     private MatchRepository matchRepository;
+    @Spy
+    private Netflix netflix;
 
     private MatchingRequestMessage memberDto;
+    private MatchingRequestMessage ownerDto;
+    private Match owner;
+    private Match member;
 
     @BeforeEach
     void setUp() {
+        ownerDto = createOwner();
         memberDto = createMember();
+        owner = ownerDto.toEntity();
+        member = memberDto.toEntity();
+    }
+
+    private MatchingRequestMessage createOwner() {
+        return MatchingRequestMessage.builder()
+                .partyNo(2L)
+                .inwon(3)
+                .ott(OttType.NETFLIX)
+                .role(PartyRole.OWNER)
+                .build();
     }
 
     private MatchingRequestMessage createMember() {
@@ -74,5 +93,16 @@ class MatchingServiceImplTest {
 
         // then
         assertEquals(3, results.size());
+    }
+
+    @Test
+    @DisplayName("Member일때 MemberQueue로 Offer")
+    public void offerWhenMember() throws Exception {
+        // given
+
+        // when
+        matchingService.offerQueue(List.of(member, owner));
+
+        // then
     }
 }
