@@ -28,9 +28,9 @@ public class ScheduledServiceImpl implements ScheduledService {
 
     @Override
     @Transactional
-    public void changeStatus(Long ownerNo, Long memberNo) {
-        Match owner = findWaitPeople(ownerNo);
-        Match member = findWaitPeople(memberNo);
+    public void changeStatus(Long ownerPk, Long memberPk) {
+        Match owner = findWaitPeople(ownerPk);
+        Match member = findWaitPeople(memberPk);
 
         owner.changeStatus(StatusType.START);
         member.changeStatus(StatusType.START);
