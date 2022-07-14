@@ -58,15 +58,23 @@ public class Match {
     @Enumerated(value = EnumType.STRING)
     private StatusType status;
 
+    @Column(name = "LINKED_NO")
+    private Long linkedNo;
+
     @Builder
     public Match(Long partyNo, OttType ott, PartyRole role) {
         this.partyNo = partyNo;
         this.ott = ott;
         this.role = role;
         this.status = StatusType.WAIT;
+        this.linkedNo = 0L;
     }
 
     public void changeStatus(StatusType status) {
         this.status = status;
+    }
+
+    public void link(Long no) {
+        this.linkedNo = no;
     }
 }

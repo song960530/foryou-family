@@ -45,10 +45,10 @@ class NetflixTest {
         t2.join();
 
         // then
-        assertEquals(1L, response1[0].getMember());
-        assertEquals(1L, response1[0].getOwner());
-        assertEquals(2L, response2[0].getOwner());
-        assertEquals(2L, response2[0].getOwner());
+        assertEquals(1L, response1[0].getMemberPk());
+        assertEquals(1L, response1[0].getOwnerPk());
+        assertEquals(2L, response2[0].getOwnerPk());
+        assertEquals(2L, response2[0].getOwnerPk());
         assertNull(netflix.pollQueues());
     }
 

@@ -1,5 +1,6 @@
 package com.foryou.matchingservice.api.service.impl;
 
+import com.foryou.matchingservice.api.dto.response.Response;
 import com.foryou.matchingservice.api.entity.Match;
 import com.foryou.matchingservice.api.enums.StatusType;
 import com.foryou.matchingservice.api.repository.MatchRepository;
@@ -28,11 +29,20 @@ public class ScheduledServiceImpl implements ScheduledService {
 
     @Override
     @Transactional
-    public void changeStatus(Long ownerPk, Long memberPk) {
+    public Response firstMatchJob(Long ownerPk, Long memberPk) {
         Match owner = findWaitPeople(ownerPk);
         Match member = findWaitPeople(memberPk);
 
-        owner.changeStatus(StatusType.START);
-        member.changeStatus(StatusType.START);
+        changeStatus(owner);
+        changeStatus(member);
+
+        owner.link(memberPk);
+        member.link(ownerPk);
+
+        return new Response(ownerPk, memberPk);
+    }
+
+    private void changeStatus(Match match) {
+        match.changeStatus(StatusType.START);
     }
 }

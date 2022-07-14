@@ -27,10 +27,7 @@ public class NetfilxFirstScheduled {
         if (pollQueue != null) {
             log.info(Thread.currentThread().getName() + ": " + pollQueue.toString());
 
-            service.changeStatus(pollQueue.getOwner(), pollQueue.getMember());
-
-//          TODO: 2차 큐로 넘기는 부분 구현
-
+            Response matchedPk = service.firstMatchJob(pollQueue.getOwnerPk(), pollQueue.getMemberPk());
         }
     }
 }
