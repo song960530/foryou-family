@@ -1,6 +1,7 @@
-package com.foryou.matchingservice.api.queue;
+package com.foryou.matchingservice.api.queue.first;
 
 import com.foryou.matchingservice.api.dto.response.Response;
+import com.foryou.matchingservice.api.queue.QueueService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 

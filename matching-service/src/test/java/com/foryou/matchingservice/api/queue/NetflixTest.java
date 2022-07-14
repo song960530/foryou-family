@@ -1,6 +1,7 @@
 package com.foryou.matchingservice.api.queue;
 
 import com.foryou.matchingservice.api.dto.response.Response;
+import com.foryou.matchingservice.api.queue.first.Netflix;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
