@@ -2,6 +2,7 @@ package com.foryou.matchingservice.api;
 
 import com.foryou.matchingservice.api.dto.response.Response;
 import com.foryou.matchingservice.api.queue.FirstQueue;
+import com.foryou.matchingservice.api.queue.SecondQueue;
 import com.foryou.matchingservice.api.service.ScheduledService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ public class NetfilxFirstScheduled {
 
     @Qualifier("Netflix")
     private final FirstQueue netflix;
+    private final SecondQueue secondQueue;
     private final ScheduledService service;
 
     @Scheduled(
@@ -27,7 +29,8 @@ public class NetfilxFirstScheduled {
         if (pollQueue != null) {
             log.info(Thread.currentThread().getName() + ": " + pollQueue.toString());
 
-            Response matchedPk = service.firstMatchJob(pollQueue.getOwnerPk(), pollQueue.getMemberPk());
+            Response matched = service.firstMatchJob(pollQueue.getOwnerPk(), pollQueue.getMemberPk());
+            secondQueue.offerMatched(matched);
         }
     }
 }
