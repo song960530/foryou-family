@@ -82,4 +82,35 @@ class ScheduledServiceImplTest {
         assertNotNull(result);
         assertEquals(owner.getNo(), result.getOwnerPk());
     }
+
+
+    @Test
+    @DisplayName("상태가 START가 아닐 경우 오류 발생")
+    public void ExceptionWhenNotStart() throws Exception {
+        // given
+        doReturn(Optional.empty()).when(repository).findByNoAndStatus(anyLong(), any(StatusType.class));
+
+        // when
+        CustomException customException = assertThrows(CustomException.class, () -> {
+            service.secondMatchJob(owner.getNo(), member.getNo());
+        });
+
+        // then
+        assertEquals(ErrorCode.NOT_EXIST_START_PEOPLE, customException.getErrorCode());
+        assertEquals(HttpStatus.BAD_REQUEST, customException.getErrorCode().getHttpStatus());
+    }
+
+    @Test
+    @DisplayName("secondMatchJob 정상동작_Owner")
+    public void successSecondMatchJob() throws Exception {
+        // given
+        doReturn(Optional.of(owner)).when(repository).findByNoAndStatus(anyLong(), any(StatusType.class));
+
+        // when
+        Response result = service.secondMatchJob(owner.getNo(), member.getNo());
+
+        // then
+        assertNotNull(result);
+        assertEquals(owner.getNo(), result.getOwnerPk());
+    }
 }
