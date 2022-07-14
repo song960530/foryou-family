@@ -31,6 +31,8 @@ class NetflixTest {
             netflix.offerMember(2L);
         }).start();
 
+        Thread.sleep(500);
+
         // when
         Thread t1 = new Thread(() -> {
             response1[0] = netflix.pollQueues();
@@ -38,6 +40,7 @@ class NetflixTest {
         Thread t2 = new Thread(() -> {
             response2[0] = netflix.pollQueues();
         });
+
 
         t1.start();
         t2.start();
@@ -63,6 +66,7 @@ class NetflixTest {
             }
         });
 
+
         // when
         Thread t2 = new Thread(() -> {
             for (Long i = 0L; i < 100; i++) {
@@ -71,6 +75,7 @@ class NetflixTest {
         });
 
         t1.start();
+        Thread.sleep(100);
         t2.start();
 
         t1.join();
