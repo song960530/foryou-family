@@ -4,7 +4,7 @@ import com.foryou.matchingservice.api.dto.request.MatchingRequestMessage;
 import com.foryou.matchingservice.api.entity.Match;
 import com.foryou.matchingservice.api.enums.OttType;
 import com.foryou.matchingservice.api.enums.PartyRole;
-import com.foryou.matchingservice.api.queue.QueueService;
+import com.foryou.matchingservice.api.queue.FirstQueue;
 import com.foryou.matchingservice.api.repository.MatchRepository;
 import com.foryou.matchingservice.api.service.MatchingService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class MatchingServiceImpl implements MatchingService {
 
     private final MatchRepository matchRepository;
     @Qualifier("Netflix")
-    private final QueueService netflix;
+    private final FirstQueue netflix;
 
     /**
      * 요청 인원수 개수만큼 생성

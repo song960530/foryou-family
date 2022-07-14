@@ -2,7 +2,7 @@ package com.foryou.matchingservice.api.queue;
 
 import com.foryou.matchingservice.api.dto.response.Response;
 
-public interface QueueService {
+public interface FirstQueue {
     public void offerMember(Long no);
 
     public void offerOwner(Long no);
