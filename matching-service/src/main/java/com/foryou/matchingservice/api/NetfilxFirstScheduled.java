@@ -27,13 +27,13 @@ public class NetfilxFirstScheduled {
             , initialDelay = 10000
     )
     public void FirstMatch() {
-        Response pollQueue = netflix.pollQueues();
-        if (pollQueue != null) {
-            log.info("{}: [First Match] OwnerPk: {}, MemberPk: {}", Thread.currentThread().getName(), pollQueue.getOwnerPk(), pollQueue.getMemberPk());
+        netflix.pollQueues()
+                .ifPresent(pollQueue -> {
+                    log.info("{}: [First Match] OwnerPk: {}, MemberPk: {}", Thread.currentThread().getName(), pollQueue.getOwnerPk(), pollQueue.getMemberPk());
 
-            Response matched = service.firstMatchJob(pollQueue.getOwnerPk(), pollQueue.getMemberPk());
-            secondQueue.offerMatched(matched);
-        }
+                    Response matched = service.firstMatchJob(pollQueue.getOwnerPk(), pollQueue.getMemberPk());
+                    secondQueue.offerMatched(matched);
+                });
     }
 
     @Scheduled(

@@ -8,8 +8,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
 class NetflixTest {
@@ -35,10 +36,10 @@ class NetflixTest {
 
         // when
         Thread t1 = new Thread(() -> {
-            response1[0] = netflix.pollQueues();
+            response1[0] = netflix.pollQueues().get();
         });
         Thread t2 = new Thread(() -> {
-            response2[0] = netflix.pollQueues();
+            response2[0] = netflix.pollQueues().get();
         });
 
 
@@ -52,7 +53,7 @@ class NetflixTest {
         assertEquals(1L, response1[0].getOwnerPk());
         assertEquals(2L, response2[0].getOwnerPk());
         assertEquals(2L, response2[0].getOwnerPk());
-        assertNull(netflix.pollQueues());
+        assertEquals(Optional.empty(), netflix.pollQueues());
     }
 
     @Test
@@ -82,6 +83,6 @@ class NetflixTest {
         t2.join();
 
         // then
-        assertNull(netflix.pollQueues());
+        assertEquals(Optional.empty(), netflix.pollQueues());
     }
 }
