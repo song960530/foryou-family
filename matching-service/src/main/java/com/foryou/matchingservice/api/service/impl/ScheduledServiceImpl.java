@@ -33,6 +33,12 @@ public class ScheduledServiceImpl implements ScheduledService {
         });
     }
 
+    private Match findCompletePeople(Long no) {
+        return repository.findByNoAndStatus(no, StatusType.COMPLETE).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_EXIST_START_PEOPLE);
+        });
+    }
+
     @Override
     @Transactional
     public Response firstMatchJob(Long ownerPk, Long memberPk) {
@@ -58,5 +64,12 @@ public class ScheduledServiceImpl implements ScheduledService {
         member.changeStatus(StatusType.COMPLETE);
 
         return new Response(ownerPk, memberPk);
+    }
+
+    @Override
+    @Transactional
+    public void thirdMatchJob(Long ownerPk, Long memberPk) {
+        Match owner = findCompletePeople(ownerPk);
+        Match member = findCompletePeople(memberPk);
     }
 }

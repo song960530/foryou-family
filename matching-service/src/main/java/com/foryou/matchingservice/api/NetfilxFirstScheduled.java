@@ -49,4 +49,17 @@ public class NetfilxFirstScheduled {
                     thirdQueue.offerCompleted(completed);
                 });
     }
+
+    @Scheduled(
+            fixedRate = 500
+            , initialDelay = 2000
+    )
+    public void ThirdMatch() {
+        thirdQueue.pollQueue()
+                .ifPresent(pollQueue -> {
+                    log.info("{}: [Third Match] OwnerPk: {}, MemberPk: {}", Thread.currentThread().getName(), pollQueue.getOwnerPk(), pollQueue.getMemberPk());
+
+                    service.thirdMatchJob(pollQueue.getOwnerPk(), pollQueue.getMemberPk());
+                });
+    }
 }
