@@ -1,10 +1,12 @@
 package com.foryou.matchingservice.api.service.impl;
 
+import com.foryou.matchingservice.api.dto.response.MatchingResultMessage;
 import com.foryou.matchingservice.api.dto.response.Response;
 import com.foryou.matchingservice.api.entity.Match;
 import com.foryou.matchingservice.api.enums.StatusType;
 import com.foryou.matchingservice.api.repository.MatchRepository;
 import com.foryou.matchingservice.api.service.ScheduledService;
+import com.foryou.matchingservice.api.service.kafka.KafkaMatchResultProducer;
 import com.foryou.matchingservice.global.error.CustomException;
 import com.foryou.matchingservice.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScheduledServiceImpl implements ScheduledService {
 
     private final MatchRepository repository;
+    private final KafkaMatchResultProducer producer;
 
 
     private Match findWaitPeople(Long no) {
@@ -71,5 +74,18 @@ public class ScheduledServiceImpl implements ScheduledService {
     public void thirdMatchJob(Long ownerPk, Long memberPk) {
         Match owner = findCompletePeople(ownerPk);
         Match member = findCompletePeople(memberPk);
+
+        producer.sendMessage(createResultMessage(owner, member));
+
+        owner.changeStatus(StatusType.ALL_COMPLETE);
+        member.changeStatus(StatusType.ALL_COMPLETE);
+    }
+
+    private MatchingResultMessage createResultMessage(Match owner, Match member) {
+        return MatchingResultMessage.builder()
+                .ownerNo(owner.getPartyNo())
+                .memberNo(member.getPartyNo())
+                .ott(owner.getOtt())
+                .build();
     }
 }
