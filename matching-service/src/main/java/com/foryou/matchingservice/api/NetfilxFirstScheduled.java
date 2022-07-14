@@ -27,7 +27,7 @@ public class NetfilxFirstScheduled {
     public void FirstMatch() {
         Response pollQueue = netflix.pollQueues();
         if (pollQueue != null) {
-            log.info(Thread.currentThread().getName() + ": " + pollQueue.toString());
+            log.info("{}: OwnerPk: {}, MemberPk: {}", Thread.currentThread().getName(), pollQueue.getOwnerPk(), pollQueue.getMemberPk());
 
             Response matched = service.firstMatchJob(pollQueue.getOwnerPk(), pollQueue.getMemberPk());
             secondQueue.offerMatched(matched);

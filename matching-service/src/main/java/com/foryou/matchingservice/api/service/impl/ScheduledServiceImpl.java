@@ -33,16 +33,12 @@ public class ScheduledServiceImpl implements ScheduledService {
         Match owner = findWaitPeople(ownerPk);
         Match member = findWaitPeople(memberPk);
 
-        changeStatus(owner);
-        changeStatus(member);
+        owner.changeStatus(StatusType.START);
+        member.changeStatus(StatusType.START);
 
         owner.link(memberPk);
         member.link(ownerPk);
 
         return new Response(ownerPk, memberPk);
-    }
-
-    private void changeStatus(Match match) {
-        match.changeStatus(StatusType.START);
     }
 }
