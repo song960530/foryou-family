@@ -4,9 +4,8 @@ import com.foryou.matchingservice.api.dto.response.Response;
 
 import java.util.Optional;
 
-public interface SecondQueue {
-
-    void offerMatched(Response matched);
+public interface ThirdQueue {
+    void offerCompleted(Response complete);
 
     Optional<Response> pollQueue();
 }
