@@ -38,7 +38,7 @@ public class ScheduledServiceImpl implements ScheduledService {
 
     private Match findCompletePeople(Long no) {
         return repository.findByNoAndStatus(no, StatusType.COMPLETE).orElseThrow(() -> {
-            throw new CustomException(ErrorCode.NOT_EXIST_START_PEOPLE);
+            throw new CustomException(ErrorCode.NOT_EXIST_COMPLETE_PEOPLE);
         });
     }
 
