@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum StatusType {
-    WAIT("WAIT"), START("START"), COMPLETE("COMPLETE");
+    WAIT("WAIT"), START("START"), COMPLETE("COMPLETE"), ALL_COMPLETE("ALL_COMPLETE");
 
     private final String value;
 }
