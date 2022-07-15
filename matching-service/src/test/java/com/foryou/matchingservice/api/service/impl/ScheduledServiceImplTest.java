@@ -6,6 +6,7 @@ import com.foryou.matchingservice.api.enums.OttType;
 import com.foryou.matchingservice.api.enums.PartyRole;
 import com.foryou.matchingservice.api.enums.StatusType;
 import com.foryou.matchingservice.api.repository.MatchRepository;
+import com.foryou.matchingservice.api.service.kafka.KafkaMatchResultProducer;
 import com.foryou.matchingservice.global.error.CustomException;
 import com.foryou.matchingservice.global.error.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +33,8 @@ class ScheduledServiceImplTest {
     private ScheduledServiceImpl service;
     @Mock
     private MatchRepository repository;
+    @Mock
+    private KafkaMatchResultProducer producer;
     private Match owner;
     private Match member;
 
@@ -112,5 +115,33 @@ class ScheduledServiceImplTest {
         // then
         assertNotNull(result);
         assertEquals(owner.getNo(), result.getOwnerPk());
+    }
+
+    @Test
+    @DisplayName("상태가 COMPLETE가 아닐 경우 오류 발생")
+    public void ExceptionWhenNotComplete() throws Exception {
+        // given
+        doReturn(Optional.empty()).when(repository).findByNoAndStatus(anyLong(), any(StatusType.class));
+
+        // when
+        CustomException customException = assertThrows(CustomException.class, () -> {
+            service.thirdMatchJob(owner.getNo(), member.getNo());
+        });
+
+        // then
+        assertEquals(ErrorCode.NOT_EXIST_COMPLETE_PEOPLE, customException.getErrorCode());
+        assertEquals(HttpStatus.BAD_REQUEST, customException.getErrorCode().getHttpStatus());
+    }
+
+    @Test
+    @DisplayName("thirdMatchJob 정상동작_Owner")
+    public void successThirdMatchJob() throws Exception {
+        // given
+        doReturn(Optional.of(owner)).when(repository).findByNoAndStatus(anyLong(), any(StatusType.class));
+
+        // when
+        service.thirdMatchJob(owner.getNo(), member.getNo());
+
+        // then
     }
 }
