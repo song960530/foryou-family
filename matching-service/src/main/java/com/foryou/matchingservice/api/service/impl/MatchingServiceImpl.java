@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,6 +27,30 @@ public class MatchingServiceImpl implements MatchingService {
     private final MatchRepository matchRepository;
     @Qualifier("Netflix")
     private final FirstQueue netflix;
+
+    /**
+     * 서비스 재기동 시 미처리건 Queue에 저장
+     */
+    @PostConstruct
+    public void init() {
+        uploadWaitUnprocessData(OttType.NETFLIX, PartyRole.OWNER);
+        uploadWaitUnprocessData(OttType.NETFLIX, PartyRole.MEMBER);
+    }
+
+    private void uploadWaitUnprocessData(OttType ott, PartyRole role) {
+        log.info("START Unprocessed Data Upload ({}, {})", ott, role);
+
+        List<Long> noList = matchRepository
+                .selectUnprocessedWait(ott, role);
+
+        if (PartyRole.MEMBER.equals(role)) {
+            noList.forEach(no -> netflix.offerMember(no));
+        } else {
+            noList.forEach(no -> netflix.offerOwner(no));
+        }
+
+        log.info("END Unprocessed Data Upload ({}, {}): {}", ott, role, noList.size());
+    }
 
     /**
      * 요청 인원수 개수만큼 생성
