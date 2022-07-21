@@ -10,4 +10,8 @@ public interface FirstQueue {
     void offerOwner(Long no);
 
     Optional<Response> pollQueues();
+
+    int memberQueueSize();
+
+    int ownerQueueSize();
 }

@@ -26,6 +26,16 @@ public class Netflix implements FirstQueue {
     }
 
     @Override
+    public int memberQueueSize() {
+        return memberQueue.size();
+    }
+
+    @Override
+    public int ownerQueueSize() {
+        return ownerQueue.size();
+    }
+
+    @Override
     public Optional<Response> pollQueues() {
         synchronized (this) {
             if (!ownerQueue.isEmpty() && !memberQueue.isEmpty())
