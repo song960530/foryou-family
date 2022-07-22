@@ -1,6 +1,8 @@
 package com.foryou.matchingservice.api.repository.impl;
 
 
+import com.foryou.matchingservice.api.dto.response.QResponse;
+import com.foryou.matchingservice.api.dto.response.Response;
 import com.foryou.matchingservice.api.enums.OttType;
 import com.foryou.matchingservice.api.enums.PartyRole;
 import com.foryou.matchingservice.api.enums.StatusType;
@@ -29,6 +31,21 @@ public class InitRepositoryImpl implements InitRepository {
                         match.status.eq(StatusType.WAIT)
                         , ottEq(ott)
                         , roleEq(role)
+                )
+                .fetch();
+    }
+
+    @Override
+    public List<Response> selectUnprocessedStart() {
+        return queryFactory
+                .select(new QResponse(
+                        match.no
+                        , match.linkedNo
+                ))
+                .from(match)
+                .where(
+                        match.status.eq(StatusType.START)
+                        , match.role.eq(PartyRole.OWNER)
                 )
                 .fetch();
     }

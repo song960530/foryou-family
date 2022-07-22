@@ -105,36 +105,4 @@ class MatchingServiceImplTest {
 
         // then
     }
-
-    @Test
-    @DisplayName("미처리된 데이터가 있으면 재기동시 Queue에 저장한다")
-    public void uploadUnprocessDataInQueue() throws Exception {
-        // given
-        List<Long> noList = List.of(1L, 2L, 3L);
-
-        doReturn(noList).when(matchRepository).selectUnprocessedWait(any(OttType.class), any(PartyRole.class));
-
-        // when
-        matchingService.init();
-
-        // then
-        assertEquals(3, netflix.memberQueueSize());
-        assertEquals(3, netflix.ownerQueueSize());
-    }
-
-    @Test
-    @DisplayName("미처리된 데이터가 없으면 재기동시 Queue는 비어있다")
-    public void emptyNoExistUnprocessData() throws Exception {
-        // given
-        List<Long> noList = List.of();
-
-        doReturn(noList).when(matchRepository).selectUnprocessedWait(any(OttType.class), any(PartyRole.class));
-
-        // when
-        matchingService.init();
-
-        // then
-        assertEquals(0, netflix.memberQueueSize());
-        assertEquals(0, netflix.ownerQueueSize());
-    }
 }
