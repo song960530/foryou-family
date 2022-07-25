@@ -36,7 +36,7 @@ public class InitRepositoryImpl implements InitRepository {
     }
 
     @Override
-    public List<Response> selectUnprocessedStart() {
+    public List<Response> selectUnprocessedAfterWait(StatusType status) {
         return queryFactory
                 .select(new QResponse(
                         match.no
@@ -44,10 +44,14 @@ public class InitRepositoryImpl implements InitRepository {
                 ))
                 .from(match)
                 .where(
-                        match.status.eq(StatusType.START)
+                        statusEq(status)
                         , match.role.eq(PartyRole.OWNER)
                 )
                 .fetch();
+    }
+
+    public BooleanExpression statusEq(StatusType status) {
+        return status != null ? match.status.eq(status) : null;
     }
 
     private BooleanExpression roleEq(PartyRole role) {

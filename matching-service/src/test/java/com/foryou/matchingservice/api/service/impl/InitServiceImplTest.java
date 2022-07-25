@@ -3,6 +3,7 @@ package com.foryou.matchingservice.api.service.impl;
 import com.foryou.matchingservice.api.dto.response.Response;
 import com.foryou.matchingservice.api.enums.OttType;
 import com.foryou.matchingservice.api.enums.PartyRole;
+import com.foryou.matchingservice.api.enums.StatusType;
 import com.foryou.matchingservice.api.queue.first.Netflix;
 import com.foryou.matchingservice.api.queue.second.MatchQueue;
 import com.foryou.matchingservice.api.repository.InitRepository;
@@ -69,7 +70,7 @@ class InitServiceImplTest {
     @DisplayName("미처리된 데이터가 없으면 재기동시 Queue는 비어있다")
     public void emptyNoExistUnprocessData() throws Exception {
         // given
-        doReturn(new ArrayList<Response>()).when(initRepository).selectUnprocessedStart();
+        doReturn(new ArrayList<Response>()).when(initRepository).selectUnprocessedAfterWait(StatusType.START);
 
         // when
         service.uploadStartUnprocessData();
@@ -88,7 +89,7 @@ class InitServiceImplTest {
                 .memberPk(2L)
                 .build();
 
-        doReturn(List.of(response)).when(initRepository).selectUnprocessedStart();
+        doReturn(List.of(response)).when(initRepository).selectUnprocessedAfterWait(StatusType.START);
 
         // when
         service.uploadStartUnprocessData();
