@@ -6,6 +6,7 @@ import com.foryou.matchingservice.api.enums.PartyRole;
 import com.foryou.matchingservice.api.enums.StatusType;
 import com.foryou.matchingservice.api.queue.first.Netflix;
 import com.foryou.matchingservice.api.queue.second.MatchQueue;
+import com.foryou.matchingservice.api.queue.third.CompleteQueue;
 import com.foryou.matchingservice.api.repository.InitRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,8 @@ class InitServiceImplTest {
     private Netflix netflix;
     @Spy
     private MatchQueue secondQueue;
+    @Spy
+    private CompleteQueue thirdQueue;
 
 
     @Test
@@ -96,5 +99,23 @@ class InitServiceImplTest {
 
         // then
         assertSame(response, secondQueue.pollQueue().get());
+    }
+
+    @Test
+    @DisplayName("미처리된 COMPLETE상태의 데이터가 있으면 재기동시 Queue에 저장된다")
+    public void uploadUnprocessCOMPLETEdataInQueue() throws Exception {
+        // given
+        Response response = Response.builder()
+                .ownerPk(1L)
+                .memberPk(2L)
+                .build();
+
+        doReturn(List.of(response)).when(initRepository).selectUnprocessedAfterWait(StatusType.COMPLETE);
+
+        // when
+        service.uploadCompleteUnprocessData();
+
+        // then
+        assertSame(response, thirdQueue.pollQueue().get());
     }
 }
