@@ -46,7 +46,7 @@ public class InitServiceImpl implements InitService {
         log.info("START Status {} Unprocessed Data Upload", StatusType.COMPLETE);
 
         List<Response> responses = initRepository.selectUnprocessedAfterWait(StatusType.COMPLETE);
-        
+
         responses.forEach(match -> thirdQueue.offerCompleted(match));
 
         log.info("END Status {} Unprocessed Data Upload: {}", StatusType.COMPLETE, responses.size());
