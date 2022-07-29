@@ -31,7 +31,7 @@ public class InitServiceImpl implements InitService {
     private final ThirdQueue thirdQueue;
 
     /**
-     * 서비스 재기동 시 미처리건 Queue에 저장
+     * 서비스 재기동 시 미처리건 Queue에 저 장
      */
     @PostConstruct
     private void init() {
