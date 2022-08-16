@@ -16,6 +16,7 @@ services:
 
   kafka1:
     image: confluentinc/cp-kafka:7.1.1
+    restart: always
     hostname: kafka1
     container_name: kafka1
     ports:
@@ -37,6 +38,7 @@ services:
 
   kafka2:
     image: confluentinc/cp-kafka:7.1.1
+    restart: always
     hostname: kafka2
     container_name: kafka2
     ports:
@@ -58,6 +60,7 @@ services:
 
   kafka3:
     image: confluentinc/cp-kafka:7.1.1
+    restart: always
     hostname: kafka3
     container_name: kafka3
     ports:
@@ -94,6 +97,7 @@ services:
     build:
       context: ./eureka-server
       dockerfile: Dockerfile_eureka-server
+    restart: always
     container_name: eureka-server
     environment:
       - EUREKA_SERVER_NAME=eureka-server
