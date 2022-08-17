@@ -37,6 +37,8 @@ public class InitServiceImpl implements InitService {
     private void init() {
         uploadWaitUnprocessData(OttType.NETFLIX, PartyRole.OWNER);
         uploadWaitUnprocessData(OttType.NETFLIX, PartyRole.MEMBER);
+        uploadWaitUnprocessData(OttType.TVING, PartyRole.OWNER);
+        uploadWaitUnprocessData(OttType.TVING, PartyRole.MEMBER);
         uploadStartUnprocessData();
         uploadCompleteUnprocessData();
     }
