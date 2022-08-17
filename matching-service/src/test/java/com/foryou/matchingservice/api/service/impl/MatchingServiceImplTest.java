@@ -4,8 +4,7 @@ import com.foryou.matchingservice.api.dto.request.MatchingRequestMessage;
 import com.foryou.matchingservice.api.entity.Match;
 import com.foryou.matchingservice.api.enums.OttType;
 import com.foryou.matchingservice.api.enums.PartyRole;
-import com.foryou.matchingservice.api.queue.first.Netflix;
-import com.foryou.matchingservice.api.queue.first.Tving;
+import com.foryou.matchingservice.api.queue.first.*;
 import com.foryou.matchingservice.api.repository.MatchRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,10 +31,16 @@ class MatchingServiceImplTest {
     private Netflix netflix;
     @Spy
     private Tving tving;
+    @Spy
+    private Disney disney;
+    @Spy
+    private Watcha watcha;
+    @Spy
+    private Wavve wavve;
 
     @BeforeEach
     void setUp() {
-        this.matchingService = new MatchingServiceImpl(matchRepository, netflix, tving);
+        this.matchingService = new MatchingServiceImpl(matchRepository, netflix, tving, disney, watcha, wavve);
     }
 
     private MatchingRequestMessage createOwner(OttType type) {
@@ -118,5 +123,50 @@ class MatchingServiceImplTest {
         // then
         assertEquals(1, tving.memberQueueSize());
         assertEquals(1, tving.ownerQueueSize());
+    }
+
+    @Test
+    @DisplayName("Disney는 Disney Queue로 offer한다")
+    public void offerWhenDisney() throws Exception {
+        // given
+        Match member = createMember(OttType.DISNEY_PLUS).toEntity();
+        Match owner = createOwner(OttType.DISNEY_PLUS).toEntity();
+
+        // when
+        matchingService.offerQueue(List.of(member, owner));
+
+        // then
+        assertEquals(1, disney.memberQueueSize());
+        assertEquals(1, disney.ownerQueueSize());
+    }
+
+    @Test
+    @DisplayName("Watcha는 Watcha Queue로 offer한다")
+    public void offerWhenWatcha() throws Exception {
+        // given
+        Match member = createMember(OttType.WATCHA).toEntity();
+        Match owner = createOwner(OttType.WATCHA).toEntity();
+
+        // when
+        matchingService.offerQueue(List.of(member, owner));
+
+        // then
+        assertEquals(1, watcha.memberQueueSize());
+        assertEquals(1, watcha.ownerQueueSize());
+    }
+
+    @Test
+    @DisplayName("Wavve은 Wavve Queue로 offer한다")
+    public void offerWhenWavve() throws Exception {
+        // given
+        Match member = createMember(OttType.WAVVE).toEntity();
+        Match owner = createOwner(OttType.WAVVE).toEntity();
+
+        // when
+        matchingService.offerQueue(List.of(member, owner));
+
+        // then
+        assertEquals(1, wavve.memberQueueSize());
+        assertEquals(1, wavve.ownerQueueSize());
     }
 }

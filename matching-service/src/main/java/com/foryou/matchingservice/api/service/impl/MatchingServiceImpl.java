@@ -28,6 +28,12 @@ public class MatchingServiceImpl implements MatchingService {
     private final FirstQueue netflix;
     @Qualifier("Tving")
     private final FirstQueue tving;
+    @Qualifier("Disney")
+    private final FirstQueue disney;
+    @Qualifier("Watcha")
+    private final FirstQueue watcha;
+    @Qualifier("Wavve")
+    private final FirstQueue wavve;
 
     /**
      * 요청 인원수 개수만큼 생성
@@ -63,10 +69,13 @@ public class MatchingServiceImpl implements MatchingService {
                 tving.offerMember(no);
                 break;
             case DISNEY_PLUS:
+                disney.offerMember(no);
                 break;
             case WATCHA:
+                watcha.offerMember(no);
                 break;
             case WAVVE:
+                wavve.offerMember(no);
                 break;
         }
     }
@@ -80,10 +89,13 @@ public class MatchingServiceImpl implements MatchingService {
                 tving.offerOwner(no);
                 break;
             case DISNEY_PLUS:
+                disney.offerOwner(no);
                 break;
             case WATCHA:
+                watcha.offerOwner(no);
                 break;
             case WAVVE:
+                wavve.offerOwner(no);
                 break;
         }
     }
