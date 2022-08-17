@@ -4,12 +4,15 @@ import com.foryou.matchingservice.api.dto.request.MatchingRequestMessage;
 import com.foryou.matchingservice.api.entity.Match;
 import com.foryou.matchingservice.api.enums.OttType;
 import com.foryou.matchingservice.api.enums.PartyRole;
+import com.foryou.matchingservice.api.queue.first.Netflix;
+import com.foryou.matchingservice.api.queue.first.Tving;
 import com.foryou.matchingservice.api.repository.MatchRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -22,10 +25,18 @@ import static org.mockito.Mockito.doReturn;
 @ExtendWith(MockitoExtension.class)
 class MatchingServiceImplTest {
 
-    @InjectMocks
     private MatchingServiceImpl matchingService;
     @Mock
     private MatchRepository matchRepository;
+    @Spy
+    private Netflix netflix;
+    @Spy
+    private Tving tving;
+
+    @BeforeEach
+    void setUp() {
+        this.matchingService = new MatchingServiceImpl(matchRepository, netflix, tving);
+    }
 
     private MatchingRequestMessage createOwner(OttType type) {
         return MatchingRequestMessage.builder()
@@ -80,8 +91,8 @@ class MatchingServiceImplTest {
     }
 
     @Test
-    @DisplayName("Member일때 MemberQueue로 Offer")
-    public void offerWhenMember() throws Exception {
+    @DisplayName("Netflix는 Netflix Queue로 offer한다")
+    public void offerWhenNetflix() throws Exception {
         // given
         Match member = createMember(OttType.NETFLIX).toEntity();
         Match owner = createOwner(OttType.NETFLIX).toEntity();
@@ -90,5 +101,22 @@ class MatchingServiceImplTest {
         matchingService.offerQueue(List.of(member, owner));
 
         // then
+        assertEquals(1, netflix.memberQueueSize());
+        assertEquals(1, netflix.ownerQueueSize());
+    }
+
+    @Test
+    @DisplayName("Tving은 Tving Queue로 offer한다")
+    public void offerWhenTving() throws Exception {
+        // given
+        Match member = createMember(OttType.TVING).toEntity();
+        Match owner = createOwner(OttType.TVING).toEntity();
+
+        // when
+        matchingService.offerQueue(List.of(member, owner));
+
+        // then
+        assertEquals(1, tving.memberQueueSize());
+        assertEquals(1, tving.ownerQueueSize());
     }
 }
