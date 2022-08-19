@@ -26,6 +26,14 @@ public class MatchingServiceImpl implements MatchingService {
     private final MatchRepository matchRepository;
     @Qualifier("Netflix")
     private final FirstQueue netflix;
+    @Qualifier("Tving")
+    private final FirstQueue tving;
+    @Qualifier("Disney")
+    private final FirstQueue disney;
+    @Qualifier("Watcha")
+    private final FirstQueue watcha;
+    @Qualifier("Wavve")
+    private final FirstQueue wavve;
 
     /**
      * 요청 인원수 개수만큼 생성
@@ -33,6 +41,7 @@ public class MatchingServiceImpl implements MatchingService {
     @Override
     @Transactional
     public List<Match> createMatch(MatchingRequestMessage request) {
+
         return Stream.iterate(0, i -> i + 1)
                 .map(i -> request.toEntity())
                 .map(entity -> matchRepository.save(entity))
@@ -57,12 +66,16 @@ public class MatchingServiceImpl implements MatchingService {
                 netflix.offerMember(no);
                 break;
             case TVING:
+                tving.offerMember(no);
                 break;
             case DISNEY_PLUS:
+                disney.offerMember(no);
                 break;
             case WATCHA:
+                watcha.offerMember(no);
                 break;
             case WAVVE:
+                wavve.offerMember(no);
                 break;
         }
     }
@@ -73,12 +86,16 @@ public class MatchingServiceImpl implements MatchingService {
                 netflix.offerOwner(no);
                 break;
             case TVING:
+                tving.offerOwner(no);
                 break;
             case DISNEY_PLUS:
+                disney.offerOwner(no);
                 break;
             case WATCHA:
+                watcha.offerOwner(no);
                 break;
             case WAVVE:
+                wavve.offerOwner(no);
                 break;
         }
     }
