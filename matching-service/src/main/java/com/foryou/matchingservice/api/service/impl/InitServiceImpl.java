@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -35,10 +36,10 @@ public class InitServiceImpl implements InitService {
      */
     @PostConstruct
     private void init() {
-        uploadWaitUnprocessData(OttType.NETFLIX, PartyRole.OWNER);
-        uploadWaitUnprocessData(OttType.NETFLIX, PartyRole.MEMBER);
-        uploadWaitUnprocessData(OttType.TVING, PartyRole.OWNER);
-        uploadWaitUnprocessData(OttType.TVING, PartyRole.MEMBER);
+        Arrays.stream(OttType.values()).forEach(ott -> {
+            uploadWaitUnprocessData(ott, PartyRole.OWNER);
+            uploadWaitUnprocessData(ott, PartyRole.MEMBER);
+        });
         uploadStartUnprocessData();
         uploadCompleteUnprocessData();
     }
@@ -70,8 +71,7 @@ public class InitServiceImpl implements InitService {
     public void uploadWaitUnprocessData(OttType ott, PartyRole role) {
         log.info("START Status {} Unprocessed Data Upload ({}, {})", StatusType.WAIT, ott, role);
 
-        List<Long> noList = initRepository
-                .selectUnprocessedWait(ott, role);
+        List<Long> noList = initRepository.selectUnprocessedWait(ott, role);
 
         if (PartyRole.MEMBER.equals(role)) {
             noList.forEach(no -> netflix.offerMember(no));
