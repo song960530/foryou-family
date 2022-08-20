@@ -3,6 +3,7 @@ package com.foryou.partyapi.api.service.impl;
 import com.foryou.partyapi.api.dto.request.MatchingRequestMessage;
 import com.foryou.partyapi.api.dto.request.PartyMemberReqDto;
 import com.foryou.partyapi.api.dto.request.PartyOwnerReqDto;
+import com.foryou.partyapi.api.dto.response.MatchingResponseMessage;
 import com.foryou.partyapi.api.entity.Party;
 import com.foryou.partyapi.api.entity.PartyInfo;
 import com.foryou.partyapi.api.enums.OttType;
@@ -20,9 +21,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
@@ -173,5 +175,46 @@ class PartyServiceImplTest {
         assertEquals(owner.getOtt(), result.getOtt());
         assertEquals(owner.getRole(), result.getRole());
         assertEquals(owner.getPartyInfo().getInwon(), result.getInwon());
+    }
+
+    @Test
+    @DisplayName("파티 매칭이되어 마무리 매칭 중 Owner의 No값이 잘못 넘어와서 Party 조회를 실패하였을 때")
+    public void incorrectOwnerNo() throws Exception {
+        // given
+        MatchingResponseMessage response = MatchingResponseMessage.builder()
+                .ownerNo(1L)
+                .memberNo(2L)
+                .ott(OttType.NETFLIX)
+                .build();
+
+        doReturn(Optional.empty()).when(repository).findById(anyLong());
+
+        // when
+        CustomException customException = assertThrows(CustomException.class, () -> {
+            service.finishMatch(response);
+        });
+
+        // then
+        assertEquals(ErrorCode.NOT_MATCHED_PARTY_NO, customException.getErrorCode());
+        assertEquals(HttpStatus.BAD_REQUEST, customException.getErrorCode().getHttpStatus());
+    }
+
+
+    @Test
+    @DisplayName("파티매칭이 완료되어 정상적으로 마무리 매칭")
+    public void successMatching() throws Exception {
+        // given
+        MatchingResponseMessage response = MatchingResponseMessage.builder()
+                .ownerNo(1L)
+                .memberNo(2L)
+                .ott(OttType.NETFLIX)
+                .build();
+
+        doReturn(Optional.of(partyOwner.toEntityParty())).when(repository).findById(anyLong());
+
+        // when
+        service.finishMatch(response);
+
+        // then
     }
 }
