@@ -3,6 +3,7 @@ package com.foryou.partyapi.api.service.impl;
 import com.foryou.partyapi.api.dto.request.MatchingRequestMessage;
 import com.foryou.partyapi.api.dto.request.PartyMemberReqDto;
 import com.foryou.partyapi.api.dto.request.PartyOwnerReqDto;
+import com.foryou.partyapi.api.dto.response.MatchingResponseMessage;
 import com.foryou.partyapi.api.entity.Party;
 import com.foryou.partyapi.api.entity.PartyInfo;
 import com.foryou.partyapi.api.enums.OttType;
@@ -54,6 +55,23 @@ public class PartyServiceImpl implements PartyService {
                 .ott(party.getOtt())
                 .role(party.getRole())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void finishMatch(MatchingResponseMessage response) {
+        Party owner = findPartyByNo(response.getOwnerNo());
+        Party member = findPartyByNo(response.getMemberNo());
+
+        log.info("Success Matching. MemberId: {}, OwnerId: {}, OTT: {}", member.getMemberId(), owner.getMemberId(), owner.getOtt());
+
+        member.addPartyInfo(owner.getPartyInfo());
+    }
+
+    private Party findPartyByNo(Long no) {
+        return partyRepository.findById(no).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_MATCHED_PARTY_NO);
+        });
     }
 
     private void checkSameRole(PartyRole expect, PartyRole actual) {
