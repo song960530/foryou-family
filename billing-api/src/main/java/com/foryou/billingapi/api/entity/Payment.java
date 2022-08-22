@@ -1,10 +1,15 @@
 package com.foryou.billingapi.api.entity;
 
 import com.foryou.billingapi.global.converter.converter.BooleanToYNConverter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SequenceGenerator(
         name = "SEQ_PAYMENT_GENERATOR"
         , sequenceName = "SEQ_PAYMENT"
@@ -51,4 +56,9 @@ public class Payment {
     @Convert(converter = BooleanToYNConverter.class)
     private boolean delYN;
 
+    @OneToMany(
+            mappedBy = "payment"
+            , cascade = CascadeType.ALL
+    )
+    private List<Product> products = new ArrayList<>();
 }
