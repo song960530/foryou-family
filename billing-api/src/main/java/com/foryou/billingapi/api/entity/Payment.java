@@ -2,6 +2,8 @@ package com.foryou.billingapi.api.entity;
 
 import com.foryou.billingapi.global.converter.converter.BooleanToYNConverter;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -9,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SequenceGenerator(
         name = "SEQ_PAYMENT_GENERATOR"
@@ -61,4 +64,21 @@ public class Payment {
             , cascade = CascadeType.ALL
     )
     private List<Product> products = new ArrayList<>();
+
+    @Builder
+    public Payment(String userId, String customerUid, String cardNum4Digit) {
+        this.userId = userId;
+        this.customerUid = customerUid;
+        this.cardNum4Digit = cardNum4Digit;
+        this.delYN = false;
+    }
+
+    public void delete() {
+        this.delYN = true;
+    }
+
+    public void addProduct(Product product) {
+        this.products.add(product);
+        product.addPayment(this);
+    }
 }

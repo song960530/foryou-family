@@ -2,14 +2,17 @@ package com.foryou.billingapi.api.entity;
 
 import com.foryou.billingapi.global.converter.converter.BooleanToYNConverter;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SequenceGenerator(
         name = "SEQ_PRODUCT_GENERATOR"
@@ -60,11 +63,36 @@ public class Product {
             name = "DUE_DATE"
             , nullable = false
     )
-    private LocalDateTime dueDate;
+    private LocalDate dueDate;
 
     @OneToMany(
             mappedBy = "product"
             , cascade = CascadeType.ALL
     )
     private List<PaymentHistory> paymentHistories = new ArrayList<>();
+
+    @Builder
+    public Product(Long partyNo, Long price) {
+        this.partyNo = partyNo;
+        this.price = price;
+        changeCancel(false);
+        setNextDueDate();
+    }
+
+    public void changeCancel(boolean cancel) {
+        this.cancelYN = cancel;
+    }
+
+    public void setNextDueDate() {
+        this.dueDate = LocalDate.now().plusMonths(1);
+    }
+
+    public void addPayment(Payment payment) {
+        this.payment = payment;
+    }
+
+    public void addPaymentHistory(PaymentHistory history) {
+        this.paymentHistories.add(history);
+        history.addProduct(this);
+    }
 }

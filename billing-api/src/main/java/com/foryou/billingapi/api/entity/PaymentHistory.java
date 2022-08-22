@@ -3,11 +3,14 @@ package com.foryou.billingapi.api.entity;
 import com.foryou.billingapi.api.enums.PaymentType;
 import com.foryou.billingapi.global.converter.converter.BooleanToYNConverter;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SequenceGenerator(
         name = "SEQ_PAYMENT_HISTORY_GENERATOR"
@@ -62,4 +65,17 @@ public class PaymentHistory {
             , updatable = false
     )
     private String response;
+
+    @Builder
+    public PaymentHistory(Product product, PaymentType status, Long price, boolean successYN, String response) {
+        this.product = product;
+        this.status = status;
+        this.price = price;
+        this.successYN = successYN;
+        this.response = response;
+    }
+
+    public void addProduct(Product product) {
+        this.product = product;
+    }
 }
