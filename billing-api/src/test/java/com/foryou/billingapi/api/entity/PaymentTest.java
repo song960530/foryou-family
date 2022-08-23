@@ -61,7 +61,7 @@ class PaymentTest {
     public void associationProducts() throws Exception {
         // given
         Product product = Product.builder()
-                .price(1000L)
+                .price(1000)
                 .partyNo(1L)
                 .build();
 
