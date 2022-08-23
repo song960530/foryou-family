@@ -50,7 +50,7 @@ public class Product {
             name = "PRICE"
             , nullable = false
     )
-    private Long price;
+    private int price;
 
     @Column(
             name = "CANCEL_YN"
@@ -60,10 +60,23 @@ public class Product {
     private boolean cancelYN;
 
     @Column(
+            name = "JOIN_DATE"
+            , nullable = false
+            , updatable = false
+    )
+    private LocalDate joinDate;
+
+    @Column(
             name = "DUE_DATE"
             , nullable = false
     )
     private LocalDate dueDate;
+
+    @Column(
+            name = "SUB_MONTHS"
+            , nullable = false
+    )
+    private int subMonth;
 
     @OneToMany(
             mappedBy = "product"
@@ -72,19 +85,16 @@ public class Product {
     private List<PaymentHistory> paymentHistories = new ArrayList<>();
 
     @Builder
-    public Product(Long partyNo, Long price) {
+    public Product(Long partyNo, int price) {
         this.partyNo = partyNo;
         this.price = price;
-        changeCancel(false);
-        setNextDueDate();
+        this.joinDate = LocalDate.now();
+        this.subMonth = 0;
+        calcNextDueDate();
     }
 
-    public void changeCancel(boolean cancel) {
-        this.cancelYN = cancel;
-    }
-
-    public void setNextDueDate() {
-        this.dueDate = LocalDate.now().plusMonths(1);
+    public void calcNextDueDate() {
+        this.dueDate = this.joinDate.plusMonths(this.subMonth++);
     }
 
     public void addPayment(Payment payment) {
