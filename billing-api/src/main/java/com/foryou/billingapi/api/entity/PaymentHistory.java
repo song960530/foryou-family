@@ -1,5 +1,6 @@
 package com.foryou.billingapi.api.entity;
 
+import com.foryou.billingapi.api.entity.common.BaseTimeEntity;
 import com.foryou.billingapi.api.enums.PaymentType;
 import com.foryou.billingapi.global.converter.converter.BooleanToYNConverter;
 import lombok.AccessLevel;
@@ -20,7 +21,7 @@ import javax.persistence.*;
 
 )
 @Table(name = "PAYMENT_HISTORY")
-public class PaymentHistory {
+public class PaymentHistory extends BaseTimeEntity {
     @Id
     @Column(name = "PAYMENT_HISTORY_NO")
     @GeneratedValue(

@@ -1,5 +1,6 @@
 package com.foryou.billingapi.api.entity;
 
+import com.foryou.billingapi.api.entity.common.BaseTimeEntity;
 import com.foryou.billingapi.global.converter.converter.BooleanToYNConverter;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -22,7 +23,7 @@ import java.util.List;
 
 )
 @Table(name = "PRODUCT")
-public class Product {
+public class Product extends BaseTimeEntity {
     @Id
     @Column(name = "PRODUCT_NO")
     @GeneratedValue(
