@@ -49,7 +49,7 @@ public class PaymentHistory {
             , nullable = false
             , updatable = false
     )
-    private Long price;
+    private int price;
 
     @Column(
             name = "SUCCESS_YN"
@@ -67,7 +67,7 @@ public class PaymentHistory {
     private String response;
 
     @Builder
-    public PaymentHistory(Product product, PaymentType status, Long price, boolean successYN, String response) {
+    public PaymentHistory(Product product, PaymentType status, int price, boolean successYN, String response) {
         this.product = product;
         this.status = status;
         this.price = price;
