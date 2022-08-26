@@ -5,6 +5,9 @@ import com.foryou.billingapi.global.error.ErrorCode;
 import com.foryou.billingapi.global.properties.IamPortProperties;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
+import com.siot.IamportRestClient.request.OnetimePaymentData;
+import com.siot.IamportRestClient.response.IamportResponse;
+import com.siot.IamportRestClient.response.Payment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -40,6 +43,20 @@ public class IamPortProvider {
             }
         } catch (IOException e) {
             throw new CustomException(ErrorCode.IAMPORT_SERVER_ERROR);
+        }
+
+        return response;
+    }
+
+    public IamportResponse<Payment> pay(OnetimePaymentData onetimePaymentData) {
+        IamportResponse<Payment> response = null;
+
+        try {
+            response = client.onetimePayment(onetimePaymentData);
+        } catch (IamportResponseException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return response;
