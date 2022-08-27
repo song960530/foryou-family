@@ -54,11 +54,23 @@ public class IamPortProvider {
         try {
             response = client.onetimePayment(onetimePaymentData);
         } catch (IamportResponseException e) {
-            e.printStackTrace();
+            switch (e.getHttpStatusCode()) {
+                case 401:
+                    throw new CustomException(ErrorCode.NOT_VALID_IAMPORT_KEY);
+                case 500:
+                    throw new CustomException(ErrorCode.IAMPORT_SERVER_ERROR);
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new CustomException(ErrorCode.IAMPORT_SERVER_ERROR);
         }
 
         return response;
+    }
+
+    public boolean checkResponse(IamportResponse<Payment> response) {
+        if (response.getCode() != 0 || !"paid".equals(response.getResponse().getStatus()))
+            return false;
+
+        return true;
     }
 }
