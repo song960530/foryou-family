@@ -189,6 +189,32 @@ class IamPortProviderTest {
         assertEquals(false, check);
     }
 
+    @Test
+    @DisplayName("결제된 금액이 예상 결제금액과 맞을 경우")
+    public void successCheckAmount() throws Exception {
+        // given
+        IamportResponse<Payment> response = iamPortProvider.pay(successDto);
+
+        // when
+        boolean checkAmount = iamPortProvider.validAmount(BigDecimal.valueOf(100), response.getResponse().getAmount());
+
+        // then
+        assertEquals(true, checkAmount);
+    }
+
+    @Test
+    @DisplayName("결제된 금액이 예상 결제금액과 맞지 않을 경우")
+    public void failCheckAmount() throws Exception {
+        // given
+        IamportResponse<Payment> response = iamPortProvider.pay(successDto);
+
+        // when
+        boolean checkAmount = iamPortProvider.validAmount(BigDecimal.valueOf(1000), response.getResponse().getAmount());
+
+        // then
+        assertEquals(false, checkAmount);
+    }
+
     public OnetimePaymentData createSuccessOnetimePaymentData() {
         long milliSeconds = Timestamp.valueOf(LocalDateTime.now()).getTime();
         String merchantUid = Constants.MERCHANT_UID_PREFIX + Constants.UNDER_BAR + milliSeconds;

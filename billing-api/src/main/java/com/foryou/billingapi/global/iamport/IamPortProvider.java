@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.math.BigDecimal;
 
 @Slf4j
 @Component
@@ -69,5 +70,9 @@ public class IamPortProvider {
 
     public boolean checkResponse(IamportResponse<Payment> response) {
         return (response.getCode() == 0 && "paid".equals(response.getResponse().getStatus()));
+    }
+
+    public boolean validAmount(BigDecimal expected, BigDecimal actual) {
+        return expected.equals(actual);
     }
 }
