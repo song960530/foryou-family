@@ -215,6 +215,67 @@ class IamPortProviderTest {
         assertEquals(false, checkAmount);
     }
 
+    @Test
+    @DisplayName("결제 정상 취소")
+    public void successCancelPay() throws Exception {
+        // given
+        IamportResponse<Payment> payResponse = iamPortProvider.pay(successDto);
+
+        // when
+        IamportResponse<Payment> cancelResponse = iamPortProvider.cancelPay(
+                payResponse.getResponse().getMerchantUid()
+                , payResponse.getResponse().getAmount()
+                , "결제 취소"
+        );
+
+        // then
+        assertEquals(0, cancelResponse.getCode());
+        assertEquals("cancelled", cancelResponse.getResponse().getStatus());
+        assertNull(cancelResponse.getMessage());
+    }
+
+    @Test
+    @DisplayName("취소 가능 금액을 초과하여 결제 취소 실패")
+    public void failCancelPay() throws Exception {
+        // given
+        IamportResponse<Payment> payResponse = iamPortProvider.pay(successDto);
+
+        // when
+        IamportResponse<Payment> cancelResponse = iamPortProvider.cancelPay(
+                payResponse.getResponse().getMerchantUid()
+                , BigDecimal.valueOf(1000)
+                , "결제 취소"
+        );
+
+        // then
+        assertNotEquals(0, cancelResponse.getCode());
+        assertNotNull(cancelResponse.getMessage());
+        assertNull(cancelResponse.getResponse());
+    }
+
+    @Test
+    @DisplayName("취소 가능 금액을 초과하여 결제 취소 실패")
+    public void failCancelPayCauseAuth() throws Exception {
+        // given
+        IamportResponse<Payment> payResponse = iamPortProvider.pay(successDto);
+        ReflectionTestUtils.setField(properties, "apiKey", "1111111111111111");
+        ReflectionTestUtils.setField(properties, "apiSecret", "11111111111111111111111111111111111111111111111111111111111111111111111111111111");
+        iamPortProvider.init();
+
+        // when
+        CustomException customException = assertThrows(CustomException.class, () -> {
+            iamPortProvider.cancelPay(
+                    payResponse.getResponse().getMerchantUid()
+                    , payResponse.getResponse().getAmount()
+                    , "결제 취소"
+            );
+        });
+
+        // then
+        assertEquals(ErrorCode.NOT_VALID_IAMPORT_KEY, customException.getErrorCode());
+        assertEquals(ErrorCode.NOT_VALID_IAMPORT_KEY.getHttpStatus(), HttpStatus.UNAUTHORIZED);
+    }
+
     public OnetimePaymentData createSuccessOnetimePaymentData() {
         long milliSeconds = Timestamp.valueOf(LocalDateTime.now()).getTime();
         String merchantUid = Constants.MERCHANT_UID_PREFIX + Constants.UNDER_BAR + milliSeconds;
