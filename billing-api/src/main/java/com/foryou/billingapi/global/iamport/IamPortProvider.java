@@ -68,9 +68,6 @@ public class IamPortProvider {
     }
 
     public boolean checkResponse(IamportResponse<Payment> response) {
-        if (response.getCode() != 0 || !"paid".equals(response.getResponse().getStatus()))
-            return false;
-
-        return true;
+        return (response.getCode() == 0 && "paid".equals(response.getResponse().getStatus()));
     }
 }
