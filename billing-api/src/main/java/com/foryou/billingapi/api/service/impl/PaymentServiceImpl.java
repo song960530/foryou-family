@@ -60,6 +60,16 @@ public class PaymentServiceImpl implements PaymentService {
             throw new CustomException(ErrorCode.CARD_REGISTRATION_FAILED);
         }
 
+        if (!iamPortProvider.validAmount(BigDecimal.valueOf(100), response.getResponse().getAmount())) {
+            log.info("결제 금액 불일치로 인하여 결제 취소 처리 진행");
+            iamPortProvider.cancelPay(
+                    response.getResponse().getMerchantUid()
+                    , response.getResponse().getAmount()
+                    , Constants.PAYMENT_AMOUNT_MISMATCH
+            );
+            throw new CustomException(ErrorCode.CARD_REGISTRATION_FAILED);
+        }
+
         return null;
     }
 }

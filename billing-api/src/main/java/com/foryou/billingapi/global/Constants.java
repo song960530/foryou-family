@@ -9,4 +9,5 @@ public class Constants {
     public static final String UNDER_BAR = "_";
 
     public static final String CHECK_CARD = "정상카드확인";
+    public static final String PAYMENT_AMOUNT_MISMATCH = "결제 금액 불일치";
 }
