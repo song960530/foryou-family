@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     /* 400 BAD_REQUEST: 파라미터가 잘못 넘어옴 */
+    CARD_REGISTRATION_FAILED(HttpStatus.BAD_REQUEST, "결제카드 등록을 실패하였습니다."),
 
     /* 401 UNAUTHORIZED: 리소스에 유효한 인증 자격이 증명되지 않음*/
     NOT_VALID_IAMPORT_KEY(HttpStatus.UNAUTHORIZED, "Key 정보가 잘못되었습니다. 인증에 실패하였습니다"),

@@ -3,6 +3,8 @@ package com.foryou.billingapi.api.service.impl;
 import com.foryou.billingapi.api.dto.CreatePaymentDto;
 import com.foryou.billingapi.api.service.PaymentService;
 import com.foryou.billingapi.global.Constants;
+import com.foryou.billingapi.global.error.CustomException;
+import com.foryou.billingapi.global.error.ErrorCode;
 import com.foryou.billingapi.global.iamport.IamPortProvider;
 import com.siot.IamportRestClient.request.CardInfo;
 import com.siot.IamportRestClient.request.OnetimePaymentData;
@@ -49,8 +51,15 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @Transactional
     public IamportResponse<Payment> pay(OnetimePaymentData onetimePaymentData) {
+        IamportResponse<Payment> response = iamPortProvider.pay(onetimePaymentData);
 
-        return iamPortProvider.pay(onetimePaymentData);
+        if (!iamPortProvider.checkResponse(response)) {
+            log.info(response.getMessage() != null ? response.getMessage() : response.getResponse().getFailReason());
+            throw new CustomException(ErrorCode.CARD_REGISTRATION_FAILED);
+        }
+
+        return null;
     }
 }
