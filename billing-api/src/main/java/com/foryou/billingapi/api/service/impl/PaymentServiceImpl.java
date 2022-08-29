@@ -52,7 +52,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public IamportResponse<Payment> pay(OnetimePaymentData onetimePaymentData) {
+    public void cardRegist(OnetimePaymentData onetimePaymentData) {
         IamportResponse<Payment> response = iamPortProvider.pay(onetimePaymentData);
 
         if (!iamPortProvider.checkResponse(response)) {
@@ -69,7 +69,5 @@ public class PaymentServiceImpl implements PaymentService {
             );
             throw new CustomException(ErrorCode.CARD_REGISTRATION_FAILED);
         }
-
-        return null;
     }
 }
