@@ -12,16 +12,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ExtendWith(MockitoExtension.class)
 class PaymentTest {
 
-    private Payment payment;
+    private Payments payment;
 
     @BeforeEach
     void setUp() {
         String userId = "test123";
-        String cardNum4Digit = "1234";
+        String cardNum = "1234-1234-1234-1234";
         String customerUid = "test-test-test-test-test-test-test";
-        this.payment = Payment.builder()
+        this.payment = Payments.builder()
                 .userId(userId)
-                .cardNum4Digit(cardNum4Digit)
+                .cardNum(cardNum)
                 .customerUid(customerUid)
                 .build();
     }

@@ -38,7 +38,7 @@ public class Product extends BaseTimeEntity {
             , updatable = false
     )
     @ManyToOne(fetch = FetchType.LAZY)
-    private Payment payment;
+    private Payments payment;
 
     @Column(
             name = "PARTY_NO"
@@ -98,7 +98,7 @@ public class Product extends BaseTimeEntity {
         this.dueDate = this.joinDate.plusMonths(this.subMonth++);
     }
 
-    public void addPayment(Payment payment) {
+    public void addPayment(Payments payment) {
         this.payment = payment;
     }
 
