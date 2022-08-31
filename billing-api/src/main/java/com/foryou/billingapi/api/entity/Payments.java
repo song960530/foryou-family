@@ -22,7 +22,7 @@ import java.util.List;
 
 )
 @Table(name = "PAYMENT")
-public class Payment extends BaseTimeEntity {
+public class Payments extends BaseTimeEntity {
     @Id
     @Column(name = "PAYMENT_NO")
     @GeneratedValue(
@@ -67,7 +67,7 @@ public class Payment extends BaseTimeEntity {
     private List<Product> products = new ArrayList<>();
 
     @Builder
-    public Payment(String userId, String customerUid, String cardNum4Digit) {
+    public Payments(String userId, String customerUid, String cardNum4Digit) {
         this.userId = userId;
         this.customerUid = customerUid;
         this.cardNum4Digit = cardNum4Digit;
