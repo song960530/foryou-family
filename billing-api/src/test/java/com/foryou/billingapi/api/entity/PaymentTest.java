@@ -17,11 +17,11 @@ class PaymentTest {
     @BeforeEach
     void setUp() {
         String userId = "test123";
-        String cardNum4Digit = "1234";
+        String cardNum = "1234-1234-1234-1234";
         String customerUid = "test-test-test-test-test-test-test";
         this.payment = Payments.builder()
                 .userId(userId)
-                .cardNum4Digit(cardNum4Digit)
+                .cardNum(cardNum)
                 .customerUid(customerUid)
                 .build();
     }
