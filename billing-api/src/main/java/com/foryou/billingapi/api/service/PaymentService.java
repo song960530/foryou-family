@@ -8,5 +8,7 @@ import java.math.BigDecimal;
 public interface PaymentService {
     OnetimePaymentData createOnetimePaymentData(String userId, CreatePaymentDto createPaymentDto, String paymentMsg, BigDecimal price);
 
-    void cardRegist(OnetimePaymentData onetimePaymentData);
+    String doFirstPay(OnetimePaymentData onetimePaymentData);
+
+    Long registPayment(String userId, String customerUid, String cardNum);
 }

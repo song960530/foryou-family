@@ -20,9 +20,12 @@ import java.math.BigDecimal;
 public class PaymentController {
     private final PaymentService paymentService;
 
-    @PostMapping("/payment/{userId}")
-    public void createPayment(@PathVariable String userId, @Valid @RequestBody CreatePaymentDto createPaymentDto) {
+    @PostMapping("/payments/{userId}")
+    public Long createPayment(@PathVariable String userId, @Valid @RequestBody CreatePaymentDto createPaymentDto) {
         OnetimePaymentData onetimePaymentData = paymentService.createOnetimePaymentData(userId, createPaymentDto, Constants.CHECK_CARD, BigDecimal.valueOf(100));
-        paymentService.cardRegist(onetimePaymentData);
+        String customerUid = paymentService.doFirstPay(onetimePaymentData);
+        Long paymentNo = paymentService.registPayment(userId, customerUid, createPaymentDto.getCardNum());
+
+        return paymentNo;
     }
 }

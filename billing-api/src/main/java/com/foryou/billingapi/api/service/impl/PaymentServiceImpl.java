@@ -1,6 +1,8 @@
 package com.foryou.billingapi.api.service.impl;
 
 import com.foryou.billingapi.api.dto.CreatePaymentDto;
+import com.foryou.billingapi.api.entity.Payments;
+import com.foryou.billingapi.api.repository.PaymentRepository;
 import com.foryou.billingapi.api.service.PaymentService;
 import com.foryou.billingapi.global.Constants;
 import com.foryou.billingapi.global.error.CustomException;
@@ -26,6 +28,7 @@ import java.time.LocalDateTime;
 public class PaymentServiceImpl implements PaymentService {
 
     private final IamPortProvider iamPortProvider;
+    private final PaymentRepository paymentRepository;
 
     @Override
     public OnetimePaymentData createOnetimePaymentData(String userId, CreatePaymentDto createPaymentDto, String paymentMsg, BigDecimal price) {
@@ -51,8 +54,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    @Transactional
-    public void cardRegist(OnetimePaymentData onetimePaymentData) {
+    public String doFirstPay(OnetimePaymentData onetimePaymentData) {
         IamportResponse<Payment> response = iamPortProvider.pay(onetimePaymentData);
 
         if (!iamPortProvider.checkResponse(response)) {
@@ -69,5 +71,19 @@ public class PaymentServiceImpl implements PaymentService {
             );
             throw new CustomException(ErrorCode.CARD_REGISTRATION_FAILED);
         }
+
+        return response.getResponse().getCustomerUid();
+    }
+
+    @Override
+    @Transactional
+    public Long registPayment(String userId, String customerUid, String cardNum) {
+        Payments payment = Payments.builder()
+                .userId(userId)
+                .customerUid(customerUid)
+                .cardNum(cardNum)
+                .build();
+
+        return paymentRepository.save(payment).getNo();
     }
 }
