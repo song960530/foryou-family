@@ -33,7 +33,7 @@ public class Member extends BaseTimeEntity {
     private Long no;
 
     @Column(
-            name = "USER_ID"
+            name = "MEMBER_ID"
             , unique = true
             , nullable = false
     )
