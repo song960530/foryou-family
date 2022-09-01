@@ -21,7 +21,10 @@ public enum ErrorCode {
 
     /* 500 INTERNAL_SERVER_ERROR: 지정하지  않은 오류 발생 */
     IAMPORT_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "아임포트 서버와 통신을 실패하였습니다."),
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "알 수 없는 오류가 발생했습니다");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "알 수 없는 오류가 발생했습니다"),
+    CIPHER_INIT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AES256 초기화를 실패하였습니다"),
+    CIPHER_ENCRYPT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AES256 암호화를 실패하였습니다"),
+    CIPHER_DECRYPT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AES256 복호화를 실패하였습니다");
 
     private final HttpStatus httpStatus;
     private final String message;

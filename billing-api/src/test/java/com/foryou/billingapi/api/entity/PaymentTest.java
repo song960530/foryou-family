@@ -1,10 +1,13 @@
 package com.foryou.billingapi.api.entity;
 
+import com.foryou.billingapi.global.crypto.AES256Util;
+import com.foryou.billingapi.global.properties.AES256Properties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -13,15 +16,23 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class PaymentTest {
 
     private Payments payment;
+    private AES256Util aes256Util;
+    private AES256Properties aes256Properties;
 
     @BeforeEach
     void setUp() {
+        aes256Properties = new AES256Properties();
+        ReflectionTestUtils.setField(aes256Properties, "key", "abcdefghijklmnopabcdefghijklmnop");
+        ReflectionTestUtils.setField(aes256Properties, "iv", "abcdefghijklmnop");
+        aes256Util = new AES256Util(aes256Properties);
+        aes256Util.init();
+
         String userId = "test123";
-        String cardNum = "1234-1234-1234-1234";
+        String cardNum4Digit = aes256Util.encrypt("1234");
         String customerUid = "test-test-test-test-test-test-test";
         this.payment = Payments.builder()
                 .userId(userId)
-                .cardNum(cardNum)
+                .cardNum4Digit(cardNum4Digit)
                 .customerUid(customerUid)
                 .build();
     }
@@ -31,7 +42,7 @@ class PaymentTest {
     public void successCreatePayment() throws Exception {
         // given
         String userId = "test123";
-        String cardNum4Digit = "1234";
+        String cardNum4Digit = aes256Util.encrypt("1234");
         String customerUid = "test-test-test-test-test-test-test";
 
         // when
