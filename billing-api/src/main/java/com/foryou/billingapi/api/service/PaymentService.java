@@ -6,9 +6,9 @@ import com.siot.IamportRestClient.request.OnetimePaymentData;
 import java.math.BigDecimal;
 
 public interface PaymentService {
-    OnetimePaymentData createOnetimePaymentData(String userId, CreatePaymentDto createPaymentDto, String paymentMsg, BigDecimal price);
+    OnetimePaymentData createOnetimePaymentData(String memberId, CreatePaymentDto createPaymentDto, String paymentMsg, BigDecimal price);
 
     String doFirstPay(OnetimePaymentData onetimePaymentData);
 
-    Long registPayment(String userId, String customerUid, String cardNum);
+    Long registPayment(String memberId, String customerUid, String cardNum);
 }

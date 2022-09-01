@@ -32,11 +32,11 @@ public class Payments extends BaseTimeEntity {
     private Long no;
 
     @Column(
-            name = "USER_ID"
+            name = "MEMBER_ID"
             , nullable = false
             , updatable = false
     )
-    private String userId;
+    private String memberId;
 
     @Column(
             name = "CUSTOMER_UID"
@@ -67,8 +67,8 @@ public class Payments extends BaseTimeEntity {
     private List<Product> products = new ArrayList<>();
 
     @Builder
-    public Payments(String userId, String customerUid, String cardNum4Digit) {
-        this.userId = userId;
+    public Payments(String memberId, String customerUid, String cardNum4Digit) {
+        this.memberId = memberId;
         this.customerUid = customerUid;
         this.cardNum4Digit = cardNum4Digit;
         this.delYN = false;

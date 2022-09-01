@@ -33,10 +33,10 @@ public class PaymentServiceImpl implements PaymentService {
     private final AES256Util aes256Util;
 
     @Override
-    public OnetimePaymentData createOnetimePaymentData(String userId, CreatePaymentDto createPaymentDto, String paymentMsg, BigDecimal price) {
+    public OnetimePaymentData createOnetimePaymentData(String memberId, CreatePaymentDto createPaymentDto, String paymentMsg, BigDecimal price) {
         long milliSeconds = Timestamp.valueOf(LocalDateTime.now()).getTime();
         String merchantUid = Constants.MERCHANT_UID_PREFIX + Constants.UNDER_BAR + milliSeconds;
-        String customerUid = userId + Constants.UNDER_BAR + milliSeconds;
+        String customerUid = memberId + Constants.UNDER_BAR + milliSeconds;
         String pgStoreId = Constants.PG_TYPE_KCP + Constants.COMMA + Constants.KCP_STORE_ID;
 
         CardInfo cardInfo = new CardInfo(
@@ -49,7 +49,7 @@ public class PaymentServiceImpl implements PaymentService {
         OnetimePaymentData onetimePaymentData = new OnetimePaymentData(merchantUid, price, cardInfo);
         onetimePaymentData.setPg(pgStoreId);
         onetimePaymentData.setName(paymentMsg);
-        onetimePaymentData.setBuyerName(userId);
+        onetimePaymentData.setBuyerName(memberId);
         onetimePaymentData.setCustomer_uid(customerUid);
 
         return onetimePaymentData;
@@ -79,9 +79,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public Long registPayment(String userId, String customerUid, String cardNum) {
+    public Long registPayment(String memberId, String customerUid, String cardNum) {
         Payments payment = Payments.builder()
-                .userId(userId)
+                .memberId(memberId)
                 .customerUid(customerUid)
                 .cardNum4Digit(aes256Util.encrypt(aes256Util.decrypt(cardNum).split("-")[3]))
                 .build();

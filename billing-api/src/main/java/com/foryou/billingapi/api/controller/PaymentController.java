@@ -23,11 +23,11 @@ import java.math.BigDecimal;
 public class PaymentController {
     private final PaymentService paymentService;
 
-    @PostMapping("/payments/{userId}")
-    public ResponseEntity<ApiResponse> createPayment(@PathVariable String userId, @Valid @RequestBody CreatePaymentDto createPaymentDto) {
-        OnetimePaymentData onetimePaymentData = paymentService.createOnetimePaymentData(userId, createPaymentDto, Constants.CHECK_CARD, BigDecimal.valueOf(100));
+    @PostMapping("/payments/{memberId}")
+    public ResponseEntity<ApiResponse> createPayment(@PathVariable String memberId, @Valid @RequestBody CreatePaymentDto createPaymentDto) {
+        OnetimePaymentData onetimePaymentData = paymentService.createOnetimePaymentData(memberId, createPaymentDto, Constants.CHECK_CARD, BigDecimal.valueOf(100));
         String customerUid = paymentService.doFirstPay(onetimePaymentData);
-        paymentService.registPayment(userId, customerUid, createPaymentDto.getCardNum());
+        paymentService.registPayment(memberId, customerUid, createPaymentDto.getCardNum());
 
         return ApiResponse.of(HttpStatus.CREATED);
     }

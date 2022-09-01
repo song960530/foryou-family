@@ -60,7 +60,7 @@ class PaymentServiceImplTest {
     @DisplayName("OnetimePaymentData 클래스 생성 확인")
     public void createOntimePaymentData() throws Exception {
         // given
-        String userId = "test123";
+        String memberId = "test123";
         CreatePaymentDto createPaymentDto = new CreatePaymentDto(
                 aes256Util.encrypt("1234-1234-1234-1234")
                 , aes256Util.encrypt("2024-12")
@@ -68,7 +68,7 @@ class PaymentServiceImplTest {
                 , aes256Util.encrypt("00"));
 
         // when
-        OnetimePaymentData result = service.createOnetimePaymentData(userId, createPaymentDto, Constants.CHECK_CARD, BigDecimal.valueOf(100));
+        OnetimePaymentData result = service.createOnetimePaymentData(memberId, createPaymentDto, Constants.CHECK_CARD, BigDecimal.valueOf(100));
 
         // then
         Assertions.assertNotNull(result);
@@ -137,11 +137,11 @@ class PaymentServiceImplTest {
     @DisplayName("결제카드 등록 완료")
     public void successRegistPayment() throws Exception {
         // given
-        String userId = "test123";
+        String memberId = "test123";
         String customerUid = "customerUid";
         String cardNum = aes256Util.encrypt("1234-1234-1234-1234");
         Payments fakePayment = Payments.builder()
-                .userId(userId)
+                .memberId(memberId)
                 .customerUid(customerUid)
                 .cardNum4Digit(aes256Util.decrypt(cardNum).split("-")[3])
                 .build();
@@ -150,7 +150,7 @@ class PaymentServiceImplTest {
         doReturn(fakePayment).when(repository).save(any(Payments.class));
 
         // when
-        Long no = service.registPayment(userId, customerUid, cardNum);
+        Long no = service.registPayment(memberId, customerUid, cardNum);
 
         // then
         assertEquals(1L, no);
