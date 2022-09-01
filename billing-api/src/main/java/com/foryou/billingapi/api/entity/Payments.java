@@ -67,10 +67,10 @@ public class Payments extends BaseTimeEntity {
     private List<Product> products = new ArrayList<>();
 
     @Builder
-    public Payments(String userId, String customerUid, String cardNum) {
+    public Payments(String userId, String customerUid, String cardNum4Digit) {
         this.userId = userId;
         this.customerUid = customerUid;
-        this.cardNum4Digit = cardNum.substring(cardNum.length() - 4);
+        this.cardNum4Digit = cardNum4Digit;
         this.delYN = false;
     }
 

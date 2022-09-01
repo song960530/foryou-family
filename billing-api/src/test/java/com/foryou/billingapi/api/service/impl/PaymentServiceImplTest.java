@@ -4,17 +4,19 @@ import com.foryou.billingapi.api.dto.CreatePaymentDto;
 import com.foryou.billingapi.api.entity.Payments;
 import com.foryou.billingapi.api.repository.PaymentRepository;
 import com.foryou.billingapi.global.Constants;
+import com.foryou.billingapi.global.crypto.AES256Util;
 import com.foryou.billingapi.global.error.CustomException;
 import com.foryou.billingapi.global.error.ErrorCode;
 import com.foryou.billingapi.global.iamport.IamPortProvider;
+import com.foryou.billingapi.global.properties.AES256Properties;
 import com.siot.IamportRestClient.request.OnetimePaymentData;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,7 +32,6 @@ import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentServiceImplTest {
-    @InjectMocks
     private PaymentServiceImpl service;
     @Mock
     IamPortProvider iamPortProvider;
@@ -42,13 +43,29 @@ class PaymentServiceImplTest {
     Payment payment;
     @Mock
     OnetimePaymentData onetimePaymentData;
+    AES256Util aes256Util;
+    AES256Properties aes256Properties;
+
+    @BeforeEach
+    void setUp() {
+        aes256Properties = new AES256Properties();
+        ReflectionTestUtils.setField(aes256Properties, "key", "abcdefghijklmnopabcdefghijklmnop");
+        ReflectionTestUtils.setField(aes256Properties, "iv", "abcdefghijklmnop");
+        aes256Util = new AES256Util(aes256Properties);
+        aes256Util.init();
+        service = new PaymentServiceImpl(iamPortProvider, repository, aes256Util);
+    }
 
     @Test
     @DisplayName("OnetimePaymentData 클래스 생성 확인")
     public void createOntimePaymentData() throws Exception {
         // given
         String userId = "test123";
-        CreatePaymentDto createPaymentDto = new CreatePaymentDto("1234-1234-1234-1234", "2024-12", "960530", "00");
+        CreatePaymentDto createPaymentDto = new CreatePaymentDto(
+                aes256Util.encrypt("1234-1234-1234-1234")
+                , aes256Util.encrypt("2024-12")
+                , aes256Util.encrypt("960530")
+                , aes256Util.encrypt("00"));
 
         // when
         OnetimePaymentData result = service.createOnetimePaymentData(userId, createPaymentDto, Constants.CHECK_CARD, BigDecimal.valueOf(100));
@@ -122,11 +139,11 @@ class PaymentServiceImplTest {
         // given
         String userId = "test123";
         String customerUid = "customerUid";
-        String cardNum = "1234-1234-1234-1234";
+        String cardNum = aes256Util.encrypt("1234-1234-1234-1234");
         Payments fakePayment = Payments.builder()
                 .userId(userId)
                 .customerUid(customerUid)
-                .cardNum(cardNum)
+                .cardNum4Digit(aes256Util.decrypt(cardNum).split("-")[3])
                 .build();
         ReflectionTestUtils.setField(fakePayment, "no", 1L);
 

@@ -5,6 +5,7 @@ import com.foryou.billingapi.api.entity.Payments;
 import com.foryou.billingapi.api.repository.PaymentRepository;
 import com.foryou.billingapi.api.service.PaymentService;
 import com.foryou.billingapi.global.Constants;
+import com.foryou.billingapi.global.crypto.AES256Util;
 import com.foryou.billingapi.global.error.CustomException;
 import com.foryou.billingapi.global.error.ErrorCode;
 import com.foryou.billingapi.global.iamport.IamPortProvider;
@@ -29,6 +30,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final IamPortProvider iamPortProvider;
     private final PaymentRepository paymentRepository;
+    private final AES256Util aes256Util;
 
     @Override
     public OnetimePaymentData createOnetimePaymentData(String userId, CreatePaymentDto createPaymentDto, String paymentMsg, BigDecimal price) {
@@ -38,10 +40,10 @@ public class PaymentServiceImpl implements PaymentService {
         String pgStoreId = Constants.PG_TYPE_KCP + Constants.COMMA + Constants.KCP_STORE_ID;
 
         CardInfo cardInfo = new CardInfo(
-                createPaymentDto.getCardNum()
-                , createPaymentDto.getExpiredDate()
-                , createPaymentDto.getBirthDate()
-                , createPaymentDto.getPwd2digit()
+                aes256Util.decrypt(createPaymentDto.getCardNum())
+                , aes256Util.decrypt(createPaymentDto.getExpiredDate())
+                , aes256Util.decrypt(createPaymentDto.getBirthDate())
+                , aes256Util.decrypt(createPaymentDto.getPwd2digit())
         );
 
         OnetimePaymentData onetimePaymentData = new OnetimePaymentData(merchantUid, price, cardInfo);
@@ -81,7 +83,7 @@ public class PaymentServiceImpl implements PaymentService {
         Payments payment = Payments.builder()
                 .userId(userId)
                 .customerUid(customerUid)
-                .cardNum(cardNum)
+                .cardNum4Digit(aes256Util.encrypt(aes256Util.decrypt(cardNum).split("-")[3]))
                 .build();
 
         return paymentRepository.save(payment).getNo();
