@@ -27,11 +27,11 @@ class PaymentTest {
         aes256Util = new AES256Util(aes256Properties);
         aes256Util.init();
 
-        String userId = "test123";
+        String memberId = "test123";
         String cardNum4Digit = aes256Util.encrypt("1234");
         String customerUid = "test-test-test-test-test-test-test";
         this.payment = Payments.builder()
-                .userId(userId)
+                .memberId(memberId)
                 .cardNum4Digit(cardNum4Digit)
                 .customerUid(customerUid)
                 .build();
@@ -41,14 +41,14 @@ class PaymentTest {
     @DisplayName("최초 Payment 객체 정상 생성")
     public void successCreatePayment() throws Exception {
         // given
-        String userId = "test123";
+        String memberId = "test123";
         String cardNum4Digit = aes256Util.encrypt("1234");
         String customerUid = "test-test-test-test-test-test-test";
 
         // when
 
         // then
-        assertEquals(userId, payment.getUserId());
+        assertEquals(memberId, payment.getMemberId());
         assertEquals(cardNum4Digit, payment.getCardNum4Digit());
         assertEquals(customerUid, payment.getCustomerUid());
         assertEquals(false, payment.isDelYN());
