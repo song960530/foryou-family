@@ -11,7 +11,7 @@ public interface PartyService {
 
     Party createOwnerParty(PartyOwnerReqDto partyReqDto);
 
-    MatchingRequestMessage createMatchingMessage(Party party, int MatchCnt);
+    MatchingRequestMessage createMatchingMessage(Party party, int MatchCnt, Long paymentNo);
 
     void finishMatch(MatchingResponseMessage response);
 }

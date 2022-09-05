@@ -144,17 +144,19 @@ class PartyServiceImplTest {
     public void createMatchingMessageMember() throws Exception {
         // given
         Long fakeNo = 1L;
+        Long fakePaymentNo = 1L;
         Party member = partyMember.toEntity();
         ReflectionTestUtils.setField(member, "no", fakeNo);
 
         // when
-        MatchingRequestMessage result = service.createMatchingMessage(member, 1);
+        MatchingRequestMessage result = service.createMatchingMessage(member, 1, fakePaymentNo);
 
         // then
         assertEquals(member.getNo(), result.getPartyNo());
         assertEquals(member.getOtt(), result.getOtt());
         assertEquals(member.getRole(), result.getRole());
         assertEquals(1, result.getInwon());
+        assertEquals(fakePaymentNo, result.getPaymentNo());
     }
 
     @Test
@@ -168,13 +170,14 @@ class PartyServiceImplTest {
         ReflectionTestUtils.setField(owner.getPartyInfo(), "no", fakeNo);
 
         // when
-        MatchingRequestMessage result = service.createMatchingMessage(owner, owner.getPartyInfo().getInwon());
+        MatchingRequestMessage result = service.createMatchingMessage(owner, owner.getPartyInfo().getInwon(), 0L);
 
         // then
         assertEquals(owner.getNo(), result.getPartyNo());
         assertEquals(owner.getOtt(), result.getOtt());
         assertEquals(owner.getRole(), result.getRole());
         assertEquals(owner.getPartyInfo().getInwon(), result.getInwon());
+        assertEquals(0L, result.getPaymentNo());
     }
 
     @Test

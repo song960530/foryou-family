@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MatchingRequestMessage {
+    private String memberId;
+    private Long paymentNo;
     private Long partyNo;
     private Integer inwon;
     private OttType ott;
@@ -20,6 +22,8 @@ public class MatchingRequestMessage {
 
     public Match toEntity() {
         return Match.builder()
+                .memberId(memberId)
+                .paymentNo(paymentNo)
                 .partyNo(partyNo)
                 .ott(ott)
                 .role(role)

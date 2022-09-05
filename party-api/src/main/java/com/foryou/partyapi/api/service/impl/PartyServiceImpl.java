@@ -48,9 +48,11 @@ public class PartyServiceImpl implements PartyService {
     }
 
     @Override
-    public MatchingRequestMessage createMatchingMessage(Party party, int MatchCnt) {
+    public MatchingRequestMessage createMatchingMessage(Party party, int MatchCnt, Long paymentNo) {
         return MatchingRequestMessage.builder()
                 .partyNo(party.getNo())
+                .paymentNo(paymentNo)
+                .memberId(party.getMemberId())
                 .inwon(MatchCnt)
                 .ott(party.getOtt())
                 .role(party.getRole())

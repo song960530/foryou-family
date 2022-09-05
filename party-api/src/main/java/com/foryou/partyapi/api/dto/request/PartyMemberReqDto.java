@@ -6,14 +6,12 @@ import com.foryou.partyapi.api.enums.PartyRole;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
 public class PartyMemberReqDto {
 
-    @NotBlank(message = "요청자 아이디를 입력해주세요")
     private String memberId;
 
     @NotNull(message = "OTT 타입을 확인해주세요")
@@ -21,6 +19,9 @@ public class PartyMemberReqDto {
 
     @NotNull(message = "역할정보를 확인해주세요")
     private PartyRole role;
+
+    @NotNull(message = "결제카드 정보를 확인해주세요")
+    private Long paymentNo;
 
     public Party toEntity() {
         return Party.builder()
