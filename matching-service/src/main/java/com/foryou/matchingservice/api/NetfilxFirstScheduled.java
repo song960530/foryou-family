@@ -26,7 +26,7 @@ public class NetfilxFirstScheduled {
     private final FirstQueue watcha;
     @Qualifier("Wavve")
     private final FirstQueue wavve;
- 
+
     private final SecondQueue secondQueue;
     private final ThirdQueue thirdQueue;
     private final ScheduledService service;
@@ -86,8 +86,7 @@ public class NetfilxFirstScheduled {
                 .ifPresent(pollQueue -> {
                     log.info("{}: [Second Match] OwnerPk: {}, MemberPk: {}", Thread.currentThread().getName(), pollQueue.getOwnerPk(), pollQueue.getMemberPk());
 
-                    Response completed = service.secondMatchJob(pollQueue.getOwnerPk(), pollQueue.getMemberPk());
-                    thirdQueue.offerCompleted(completed);
+                    service.secondMatchJob(pollQueue.getOwnerPk(), pollQueue.getMemberPk());
                 });
     }
 

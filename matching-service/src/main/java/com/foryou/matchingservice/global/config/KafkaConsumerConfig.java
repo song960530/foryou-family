@@ -1,4 +1,4 @@
-package com.foryou.matchingservice.global.kafka;
+package com.foryou.matchingservice.global.config;
 
 import com.foryou.matchingservice.global.Constants;
 import lombok.RequiredArgsConstructor;

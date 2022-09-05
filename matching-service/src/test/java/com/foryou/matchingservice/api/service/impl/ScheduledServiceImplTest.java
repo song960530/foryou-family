@@ -7,6 +7,7 @@ import com.foryou.matchingservice.api.enums.PartyRole;
 import com.foryou.matchingservice.api.enums.StatusType;
 import com.foryou.matchingservice.api.repository.MatchRepository;
 import com.foryou.matchingservice.api.service.kafka.KafkaMatchResultProducer;
+import com.foryou.matchingservice.api.service.kafka.KafkaPaymentRequestProducer;
 import com.foryou.matchingservice.global.error.CustomException;
 import com.foryou.matchingservice.global.error.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +36,8 @@ class ScheduledServiceImplTest {
     private MatchRepository repository;
     @Mock
     private KafkaMatchResultProducer producer;
+    @Mock
+    private KafkaPaymentRequestProducer paymentRequestProducer;
     private Match owner;
     private Match member;
 
@@ -104,17 +107,15 @@ class ScheduledServiceImplTest {
     }
 
     @Test
-    @DisplayName("secondMatchJob 정상동작_Owner")
+    @DisplayName("secondMatchJob 정상동작")
     public void successSecondMatchJob() throws Exception {
         // given
-        doReturn(Optional.of(owner)).when(repository).findByNoAndStatus(anyLong(), any(StatusType.class));
+        doReturn(Optional.of(member)).when(repository).findByNoAndStatus(anyLong(), any(StatusType.class));
 
         // when
-        Response result = service.secondMatchJob(owner.getNo(), member.getNo());
+        service.secondMatchJob(owner.getNo(), member.getNo());
 
         // then
-        assertNotNull(result);
-        assertEquals(owner.getNo(), result.getOwnerPk());
     }
 
     @Test
