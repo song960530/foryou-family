@@ -14,8 +14,10 @@ public enum ErrorCode {
 
     /* 401 UNAUTHORIZED: 리소스에 유효한 인증 자격이 증명되지 않음*/
     NOT_VALID_IAMPORT_KEY(HttpStatus.UNAUTHORIZED, "Key 정보가 잘못되었습니다. 인증에 실패하였습니다"),
+    NOT_MATCH_MEMBERID(HttpStatus.UNAUTHORIZED, "결제 요청 정보가 잘못되었습니다"),
 
     /* 404 요청에 대한 리소스를 찾지 못하였거나 없음*/
+    NOT_FOUND_PAYMENT(HttpStatus.BAD_REQUEST, "결제 정보를 찾을 수 없습니다"),
 
     /* 409 CONFLICT: 중복 Resource 존재 */
 
