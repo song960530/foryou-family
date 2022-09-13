@@ -23,7 +23,6 @@ class PaymentHistoryTest {
                 .product(product)
                 .status(PaymentType.PAYMENT)
                 .price(1000)
-                .successYN(true)
                 .response("response")
                 .build();
 

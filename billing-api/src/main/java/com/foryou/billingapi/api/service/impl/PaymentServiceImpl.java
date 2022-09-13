@@ -1,7 +1,14 @@
 package com.foryou.billingapi.api.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foryou.billingapi.api.dto.CreatePaymentDto;
+import com.foryou.billingapi.api.dto.request.PaymentRequestMessage;
+import com.foryou.billingapi.api.entity.PaymentHistory;
 import com.foryou.billingapi.api.entity.Payments;
+import com.foryou.billingapi.api.entity.Product;
+import com.foryou.billingapi.api.enums.OttType;
+import com.foryou.billingapi.api.enums.PaymentType;
 import com.foryou.billingapi.api.repository.PaymentRepository;
 import com.foryou.billingapi.api.service.PaymentService;
 import com.foryou.billingapi.global.Constants;
@@ -9,6 +16,8 @@ import com.foryou.billingapi.global.crypto.AES256Util;
 import com.foryou.billingapi.global.error.CustomException;
 import com.foryou.billingapi.global.error.ErrorCode;
 import com.foryou.billingapi.global.iamport.IamPortProvider;
+import com.siot.IamportRestClient.exception.IamportResponseException;
+import com.siot.IamportRestClient.request.AgainPaymentData;
 import com.siot.IamportRestClient.request.CardInfo;
 import com.siot.IamportRestClient.request.OnetimePaymentData;
 import com.siot.IamportRestClient.response.IamportResponse;
@@ -18,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -87,5 +97,115 @@ public class PaymentServiceImpl implements PaymentService {
                 .build();
 
         return paymentRepository.save(payment).getNo();
+    }
+
+    @Override
+    @Transactional
+    public boolean doPayAgain(PaymentRequestMessage request) throws IamportResponseException, IOException {
+        long milliSeconds = Timestamp.valueOf(LocalDateTime.now()).getTime();
+        String merchantUid = Constants.MERCHANT_UID_PREFIX + Constants.UNDER_BAR + milliSeconds;
+
+        Payments payment = findAndCheckMemberId(request.getPaymentNo(), request.getMemberId());
+        AgainPaymentData againPaymentData = new AgainPaymentData(payment.getCustomerUid(), merchantUid, OttType.valueOfOtt(request.getOtt()).calcPrice());
+
+        IamportResponse<Payment> response = iamPortProvider.payAgain(againPaymentData);
+
+        // 카드에 이상이 생겨 결제를 실패했을 경우
+        if (!iamPortProvider.checkResponse(response)) {
+            log.info("결제 실패: " + response.getMessage() != null ? response.getMessage() : response.getResponse().getFailReason());
+
+            PaymentHistory failPaymentHistory = createPaymentHistory(response, PaymentType.PAYMENT);
+            failPaymentHistory.cancel();
+
+            recordProduct(
+                    payment
+                    , createProduct(OttType.valueOfOtt(request.getOtt()).calcPrice().intValue(), request.getPartyNo(), false)
+                    , failPaymentHistory
+            );
+
+            return false;
+        }
+
+        // 정상적으로 결제가 이뤄졌을 경우
+        Product product = createProduct(OttType.valueOfOtt(request.getOtt()).calcPrice().intValue(), request.getPartyNo(), true);
+        recordProduct(
+                payment
+                , product
+                , createPaymentHistory(response, PaymentType.PAYMENT)
+        );
+
+        // 결제 금액이 잘못되었을 경우
+        if (!iamPortProvider.validAmount(OttType.valueOfOtt(request.getOtt()).calcPrice(), response.getResponse().getAmount())) {
+            log.info("결제 실패: 결제 금액 불일치로 인하여 결제 취소 처리 진행");
+
+            IamportResponse<Payment> cancelResponse = iamPortProvider.cancelPay(
+                    response.getResponse().getMerchantUid()
+                    , response.getResponse().getAmount()
+                    , Constants.PAYMENT_AMOUNT_MISMATCH
+            );
+
+            product.cancel();
+
+            recordProduct(
+                    null
+                    , product
+                    , createPaymentHistory(cancelResponse, PaymentType.ALL_CANCEL)
+            );
+
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public void recordProduct(Payments payment, Product product, PaymentHistory paymentHistory) {
+        if (payment != null)
+            payment.addProduct(product);
+        product.addPaymentHistory(paymentHistory);
+    }
+
+    private PaymentHistory createPaymentHistory(IamportResponse<Payment> response, PaymentType paymentType) {
+        PaymentHistory paymentHistory = null;
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            paymentHistory = PaymentHistory.builder()
+                    .response(objectMapper.writeValueAsString(response))
+                    .price(response.getResponse().getAmount().intValue())
+                    .status(paymentType)
+                    .build();
+
+        } catch (JsonProcessingException e) {
+            log.error("TOPIC: " + Constants.KAFKA_TOPIC_PARTY + ", Json Parsing Fail");
+        }
+
+        return paymentHistory;
+    }
+
+    private Product createProduct(int price, Long partyNo, boolean success) {
+        Product product = Product.builder()
+                .partyNo(partyNo)
+                .price(price)
+                .build();
+
+        if (!success)
+            product.cancel();
+
+        return product;
+    }
+
+    private Payments findAndCheckMemberId(Long paymentNo, String memberId) {
+        Payments payment = paymentRepository.findById(paymentNo).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_FOUND_PAYMENT);
+        });
+
+        if (!payment.getMemberId().equals(memberId)) {
+            throw new CustomException(ErrorCode.NOT_MATCH_MEMBERID);
+        }
+
+        return payment;
     }
 }

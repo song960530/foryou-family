@@ -5,6 +5,7 @@ import com.foryou.billingapi.global.error.ErrorCode;
 import com.foryou.billingapi.global.properties.IamPortProperties;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
+import com.siot.IamportRestClient.request.AgainPaymentData;
 import com.siot.IamportRestClient.request.CancelData;
 import com.siot.IamportRestClient.request.OnetimePaymentData;
 import com.siot.IamportRestClient.response.IamportResponse;
@@ -88,6 +89,10 @@ public class IamPortProvider {
         }
 
         return response;
+    }
+
+    public IamportResponse<Payment> payAgain(AgainPaymentData againPaymentData) throws IamportResponseException, IOException {
+        return client.againPayment(againPaymentData);
     }
 
     public boolean checkResponse(IamportResponse<Payment> response) {

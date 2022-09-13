@@ -91,6 +91,7 @@ public class Product extends BaseTimeEntity {
         this.price = price;
         this.joinDate = LocalDate.now();
         this.subMonth = 0;
+        this.cancelYN = false;
         calcNextDueDate();
     }
 
@@ -105,5 +106,9 @@ public class Product extends BaseTimeEntity {
     public void addPaymentHistory(PaymentHistory history) {
         this.paymentHistories.add(history);
         history.addProduct(this);
+    }
+
+    public void cancel() {
+        this.cancelYN = true;
     }
 }
