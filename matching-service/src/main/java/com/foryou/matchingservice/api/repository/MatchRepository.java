@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface MatchRepository extends JpaRepository<Match, Long> {
 
     Optional<Match> findByNoAndStatus(Long no, StatusType statusType);
+
+    Optional<Match> findByMemberIdAndPartyNo(String memberId, Long partyNo);
 }
