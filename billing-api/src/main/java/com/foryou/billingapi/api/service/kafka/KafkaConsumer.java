@@ -3,11 +3,10 @@ package com.foryou.billingapi.api.service.kafka;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foryou.billingapi.api.dto.request.PaymentRequestMessage;
+import com.foryou.billingapi.api.dto.response.PaymentResponseMessage;
 import com.foryou.billingapi.api.service.PaymentService;
 import com.foryou.billingapi.global.Constants;
 import com.siot.IamportRestClient.exception.IamportResponseException;
-import com.siot.IamportRestClient.response.IamportResponse;
-import com.siot.IamportRestClient.response.Payment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -23,6 +22,7 @@ public class KafkaConsumer {
 
     private final ObjectMapper objMapper;
     private final PaymentService paymentService;
+    private final KafkaPaymentResultProducer producer;
 
     @KafkaListener(
             topics = Constants.KAFKA_TOPIC_PARTY
@@ -36,21 +36,28 @@ public class KafkaConsumer {
             , @Header(KafkaHeaders.OFFSET) long offset
             , @Header(KafkaHeaders.RECEIVED_TIMESTAMP) long ts
             , String msg) {
-        PaymentRequestMessage request = null;
         try {
-            request = objMapper.readValue(msg, PaymentRequestMessage.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        log.info("message: {}, topic: {}, groupId: {}, partition: {}, offset: {}, time: {}", request, topic, groupId, partition, offset, ts);
+            PaymentRequestMessage request = objMapper.readValue(msg, PaymentRequestMessage.class);
+            log.info("message: {}, topic: {}, groupId: {}, partition: {}, offset: {}, time: {}", request, topic, groupId, partition, offset, ts);
 
-        try {
-            IamportResponse<Payment> response = paymentService.doPayAgain(request);
+            PaymentResponseMessage resultMessage = createResultMessage(request, paymentService.doPayAgain(request));
+            producer.sendMessage(resultMessage);
+        } catch (JsonProcessingException e) {
+            log.error(e.getMessage());
         } catch (IamportResponseException e) {
             log.error(e.getMessage());
         } catch (Exception e) {
             log.error(e.getMessage());
         }
         ack.acknowledge();
+    }
+
+    private PaymentResponseMessage createResultMessage(PaymentRequestMessage request, boolean isSuccess) {
+        return PaymentResponseMessage.builder()
+                .memberId(request.getMemberId())
+                .partyNo(request.getPartyNo())
+                .paymentNo(request.getPaymentNo())
+                .success(isSuccess)
+                .build();
     }
 }
