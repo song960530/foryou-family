@@ -17,7 +17,7 @@ public enum ErrorCode {
     NOT_MATCH_MEMBERID(HttpStatus.UNAUTHORIZED, "결제 요청 정보가 잘못되었습니다"),
 
     /* 404 요청에 대한 리소스를 찾지 못하였거나 없음*/
-    NOT_FOUND_PAYMENT(HttpStatus.BAD_REQUEST, "결제 정보를 찾을 수 없습니다"),
+    NOT_FOUND_PAYMENT(HttpStatus.NOT_FOUND, "결제 정보를 찾을 수 없습니다"),
 
     /* 409 CONFLICT: 중복 Resource 존재 */
 
