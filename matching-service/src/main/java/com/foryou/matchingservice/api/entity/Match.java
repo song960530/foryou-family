@@ -26,6 +26,7 @@ public class Match {
             strategy = GenerationType.SEQUENCE
             , generator = "SEQ_MATCH_GENERATOR"
     )
+    @Column(name = "MATCH_NO")
     private Long no;
 
     @Column(
