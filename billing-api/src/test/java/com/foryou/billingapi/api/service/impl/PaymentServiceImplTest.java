@@ -1,9 +1,9 @@
 package com.foryou.billingapi.api.service.impl;
 
-import com.foryou.billingapi.api.dto.CreatePaymentDto;
+import com.foryou.billingapi.api.dto.request.CreatePaymentDto;
 import com.foryou.billingapi.api.entity.Payments;
 import com.foryou.billingapi.api.repository.PaymentRepository;
-import com.foryou.billingapi.global.Constants;
+import com.foryou.billingapi.global.constants.Constants;
 import com.foryou.billingapi.global.crypto.AES256Util;
 import com.foryou.billingapi.global.error.CustomException;
 import com.foryou.billingapi.global.error.ErrorCode;

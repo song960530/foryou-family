@@ -1,12 +1,12 @@
-package com.foryou.billingapi.api.service.kafka;
+package com.foryou.billingapi.api.service.kafka.consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foryou.billingapi.api.dto.request.PaymentRequestMessage;
 import com.foryou.billingapi.api.dto.response.PaymentResponseMessage;
 import com.foryou.billingapi.api.service.PaymentService;
-import com.foryou.billingapi.global.Constants;
-import com.siot.IamportRestClient.exception.IamportResponseException;
+import com.foryou.billingapi.api.service.kafka.producer.KafkaPaymentResultProducer;
+import com.foryou.billingapi.global.constants.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -43,12 +43,9 @@ public class KafkaConsumer {
             PaymentResponseMessage resultMessage = createResultMessage(request, paymentService.doPayAgain(request));
             producer.sendMessage(resultMessage);
         } catch (JsonProcessingException e) {
-            log.error(e.getMessage());
-        } catch (IamportResponseException e) {
-            log.error(e.getMessage());
-        } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("파싱 오류 발생");
         }
+        
         ack.acknowledge();
     }
 

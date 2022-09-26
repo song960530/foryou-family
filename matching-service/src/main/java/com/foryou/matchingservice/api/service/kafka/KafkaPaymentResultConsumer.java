@@ -69,6 +69,7 @@ public class KafkaPaymentResultConsumer {
                 List<Match> matches = matchingService.createMatch(MatchingRequestMessage.builder()
                         .partyNo(owner.getPartyNo())
                         .inwon(1)
+                        .memberId(owner.getMemberId())
                         .ott(owner.getOtt())
                         .role(PartyRole.OWNER)
                         .paymentNo(0L)

@@ -2,7 +2,7 @@ package com.foryou.billingapi.api.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.foryou.billingapi.api.dto.CreatePaymentDto;
+import com.foryou.billingapi.api.dto.request.CreatePaymentDto;
 import com.foryou.billingapi.api.dto.request.PaymentRequestMessage;
 import com.foryou.billingapi.api.entity.PaymentHistory;
 import com.foryou.billingapi.api.entity.Payments;
@@ -11,7 +11,7 @@ import com.foryou.billingapi.api.enums.OttType;
 import com.foryou.billingapi.api.enums.PaymentType;
 import com.foryou.billingapi.api.repository.PaymentRepository;
 import com.foryou.billingapi.api.service.PaymentService;
-import com.foryou.billingapi.global.Constants;
+import com.foryou.billingapi.global.constants.Constants;
 import com.foryou.billingapi.global.crypto.AES256Util;
 import com.foryou.billingapi.global.error.CustomException;
 import com.foryou.billingapi.global.error.ErrorCode;
@@ -100,15 +100,35 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    @Transactional
-    public boolean doPayAgain(PaymentRequestMessage request) throws IamportResponseException, IOException {
+    @Transactional(noRollbackFor = {IamportResponseException.class, IOException.class})
+    public boolean doPayAgain(PaymentRequestMessage request) {
         long milliSeconds = Timestamp.valueOf(LocalDateTime.now()).getTime();
         String merchantUid = Constants.MERCHANT_UID_PREFIX + Constants.UNDER_BAR + milliSeconds;
 
         Payments payment = findAndCheckMemberId(request.getPaymentNo(), request.getMemberId());
         AgainPaymentData againPaymentData = new AgainPaymentData(payment.getCustomerUid(), merchantUid, OttType.valueOfOtt(request.getOtt()).calcPrice());
 
-        IamportResponse<Payment> response = iamPortProvider.payAgain(againPaymentData);
+        IamportResponse<Payment> response = null;
+
+        try {
+            response = iamPortProvider.payAgain(againPaymentData);
+        } catch (IamportResponseException | IOException e) {
+            // 통신 오류로 인한 처리
+            log.error("서버 통신 오류 발생으로 인한 처리 불가능");
+            int price = OttType.valueOfOtt(request.getOtt()).calcPrice().intValue();
+
+            recordProduct(
+                    payment
+                    , createProduct(price, request.getPartyNo(), false)
+                    , PaymentHistory.builder()
+                            .status(PaymentType.PAYMENT)
+                            .price(price)
+                            .response("서버 통신 오류 발생으로 인한 처리 불가능")
+                            .build()
+            );
+
+            return false;
+        }
 
         // 카드에 이상이 생겨 결제를 실패했을 경우
         if (!iamPortProvider.checkResponse(response)) {
@@ -154,6 +174,8 @@ public class PaymentServiceImpl implements PaymentService {
 
             return false;
         }
+        
+        log.info(request.getMemberId() + "회원 " + request.getOtt() + "결제 성공");
 
         return true;
     }

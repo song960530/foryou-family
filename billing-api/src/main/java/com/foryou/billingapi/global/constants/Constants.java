@@ -1,4 +1,4 @@
-package com.foryou.billingapi.global;
+package com.foryou.billingapi.global.constants;
 
 public class Constants {
     public static final String MERCHANT_UID_PREFIX = "FORYOU_ORDER";

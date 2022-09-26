@@ -1,4 +1,4 @@
-package com.foryou.billingapi.api.dto;
+package com.foryou.billingapi.api.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
