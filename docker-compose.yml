@@ -193,7 +193,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:h2:tcp://h2:1521/billingapi
       - SPRING_DATASOURCE_USERNAME=billingapi
       - SPRING_DATASOURCE_PASSWORD=
-      - PORT=8092
+      - PORT=8093
       - EUREKA_SERVER_NAME=eureka-server
       - EUREKA_SERVER_PORT=8761
       - KAFKA_SERVER_NAME1=kafka1

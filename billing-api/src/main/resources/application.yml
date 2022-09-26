@@ -23,7 +23,7 @@ spring:
 
   kafka:
     producer:
-      bootstrap-servers: ${KAFKA_SERVER_NAME1:kafka1}:${KAFKA_SERVER_PORT1:9093}, ${KAFKA_SERVER_NAME2:kafka2}:${KAFKA_SERVER_PORT2:9094}, ${KAFKA_SERVER_NAME3:kafka3}:${KAFKA_SERVER_PORT3:9095}
+      bootstrap-servers: ${KAFKA_SERVER_NAME1:localhost}:${KAFKA_SERVER_PORT1:9093}, ${KAFKA_SERVER_NAME2:localhost}:${KAFKA_SERVER_PORT2:9094}, ${KAFKA_SERVER_NAME3:localhost}:${KAFKA_SERVER_PORT3:9095}
 
 eureka:
   instance:
