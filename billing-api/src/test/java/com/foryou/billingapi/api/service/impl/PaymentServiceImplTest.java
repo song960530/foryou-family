@@ -87,7 +87,7 @@ class PaymentServiceImplTest {
     public void failFirstPayCauseCard() throws Exception {
         // given
         doReturn(iamportResponse).when(iamPortProvider).pay(onetimePaymentData);
-        doReturn(false).when(iamPortProvider).checkResponse(any()); // TODO: any???
+        doReturn(false).when(iamPortProvider).checkResponse(any(IamportResponse.class));
 
         // when
         CustomException customException = Assertions.assertThrows(CustomException.class, () -> {
@@ -104,7 +104,7 @@ class PaymentServiceImplTest {
     public void notMatchedExpectedAmount() throws Exception {
         // given
         doReturn(iamportResponse).when(iamPortProvider).pay(onetimePaymentData);
-        doReturn(true).when(iamPortProvider).checkResponse(any()); // TODO: any????
+        doReturn(true).when(iamPortProvider).checkResponse(any(IamportResponse.class));
         doReturn(false).when(iamPortProvider).validAmount(any(BigDecimal.class), any(BigDecimal.class));
 
         // when
@@ -125,7 +125,7 @@ class PaymentServiceImplTest {
         ReflectionTestUtils.setField(iamportResponse.getResponse(), "amount", BigDecimal.valueOf(100L));
         ReflectionTestUtils.setField(iamportResponse.getResponse(), "customer_uid", customerUid);
         doReturn(iamportResponse).when(iamPortProvider).pay(onetimePaymentData);
-        doReturn(true).when(iamPortProvider).checkResponse(any()); // TODO: any????
+        doReturn(true).when(iamPortProvider).checkResponse(any(IamportResponse.class));
         doReturn(true).when(iamPortProvider).validAmount(any(BigDecimal.class), any(BigDecimal.class));
 
         // when
@@ -252,7 +252,7 @@ class PaymentServiceImplTest {
 
         doReturn(Optional.of(payment)).when(repository).findById(anyLong());
         doReturn(iamportResponse).when(iamPortProvider).payAgain(any(AgainPaymentData.class));
-        doReturn(false).when(iamPortProvider).checkResponse(any()); // TODO: any?????
+        doReturn(false).when(iamPortProvider).checkResponse(any(IamportResponse.class));
 
         // when
         boolean result = service.doPayAgain(request);
@@ -270,7 +270,7 @@ class PaymentServiceImplTest {
 
         doReturn(Optional.of(payment)).when(repository).findById(anyLong());
         doReturn(iamportResponse).when(iamPortProvider).payAgain(any(AgainPaymentData.class));
-        doReturn(true).when(iamPortProvider).checkResponse(any()); // TODO: any?????
+        doReturn(true).when(iamPortProvider).checkResponse(any(IamportResponse.class));
         doReturn(true).when(iamPortProvider).validAmount(any(BigDecimal.class), any(BigDecimal.class));
 
         // when
@@ -289,7 +289,7 @@ class PaymentServiceImplTest {
 
         doReturn(Optional.of(payment)).when(repository).findById(anyLong());
         doReturn(iamportResponse).when(iamPortProvider).payAgain(any(AgainPaymentData.class));
-        doReturn(true).when(iamPortProvider).checkResponse(any()); // TODO: any?????
+        doReturn(true).when(iamPortProvider).checkResponse(any(IamportResponse.class));
         doReturn(false).when(iamPortProvider).validAmount(any(BigDecimal.class), any(BigDecimal.class));
         doReturn(createResponse(createIamPortPayment())).when(iamPortProvider).cancelPay(anyString(), any(BigDecimal.class), anyString());
 
