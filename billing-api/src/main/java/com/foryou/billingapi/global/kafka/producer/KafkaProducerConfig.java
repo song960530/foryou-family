@@ -1,10 +1,8 @@
 package com.foryou.billingapi.global.kafka.producer;
 
-import com.foryou.billingapi.api.dto.response.PaymentResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,17 +26,17 @@ public class KafkaProducerConfig {
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        
         return configProps;
     }
 
     @Bean
-    public ProducerFactory<String, PaymentResponseMessage> producerPaymentResponseFactory() {
+    public ProducerFactory<String, Object> producerFactory() {
         return new DefaultKafkaProducerFactory<>(makeConfigProps());
     }
 
     @Bean
-    @Qualifier("KafkaTemplatePaymentResult")
-    public KafkaTemplate<String, PaymentResponseMessage> kafkaPaymentRequestTemplate() {
-        return new KafkaTemplate<>(producerPaymentResponseFactory());
+    public KafkaTemplate<String, Object> kafkaTemplate() {
+        return new KafkaTemplate<>(producerFactory());
     }
 }
