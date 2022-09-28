@@ -4,19 +4,21 @@ import com.foryou.matchingservice.api.dto.response.Response;
 import com.foryou.matchingservice.api.enums.OttType;
 import com.foryou.matchingservice.api.enums.PartyRole;
 import com.foryou.matchingservice.api.enums.StatusType;
-import com.foryou.matchingservice.api.queue.first.Netflix;
+import com.foryou.matchingservice.api.queue.FirstQueue;
+import com.foryou.matchingservice.api.queue.first.*;
 import com.foryou.matchingservice.api.queue.second.MatchQueue;
 import com.foryou.matchingservice.api.queue.third.CompleteQueue;
 import com.foryou.matchingservice.api.repository.InitRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,16 +29,36 @@ import static org.mockito.Mockito.doReturn;
 @ExtendWith(MockitoExtension.class)
 class InitServiceImplTest {
 
-    @InjectMocks
     private InitServiceImpl service;
     @Mock
     private InitRepository initRepository;
     @Spy
     private Netflix netflix;
     @Spy
+    private Tving tving;
+    @Spy
+    private Disney disney;
+    @Spy
+    private Watcha watcha;
+    @Spy
+    private Wavve wavve;
+    @Spy
     private MatchQueue secondQueue;
     @Spy
     private CompleteQueue thirdQueue;
+    private List<FirstQueue> firstQueues;
+
+    @BeforeEach
+    void setUp() {
+        service = new InitServiceImpl(initRepository, netflix, tving, disney, watcha, wavve, secondQueue, thirdQueue);
+
+        firstQueues = new ArrayList<>();
+        firstQueues.add(netflix);
+        firstQueues.add(tving);
+        firstQueues.add(disney);
+        firstQueues.add(wavve);
+        firstQueues.add(watcha);
+    }
 
 
     @Test
@@ -48,10 +70,10 @@ class InitServiceImplTest {
         doReturn(noList).when(initRepository).selectUnprocessedWait(any(OttType.class), any(PartyRole.class));
 
         // when
-        service.uploadWaitUnprocessData(OttType.NETFLIX, PartyRole.MEMBER);
+        Arrays.stream(OttType.values()).forEach(ott -> service.uploadWaitUnprocessData(ott, PartyRole.MEMBER));
 
         // then
-        assertEquals(3, netflix.memberQueueSize());
+        firstQueues.forEach(queue -> assertEquals(3, queue.memberQueueSize()));
     }
 
     @Test
@@ -63,10 +85,10 @@ class InitServiceImplTest {
         doReturn(noList).when(initRepository).selectUnprocessedWait(any(OttType.class), any(PartyRole.class));
 
         // when
-        service.uploadWaitUnprocessData(OttType.NETFLIX, PartyRole.OWNER);
+        Arrays.stream(OttType.values()).forEach(ott -> service.uploadWaitUnprocessData(ott, PartyRole.OWNER));
 
         // then
-        assertEquals(3, netflix.ownerQueueSize());
+        firstQueues.forEach(queue -> assertEquals(3, queue.ownerQueueSize()));
     }
 
     @Test

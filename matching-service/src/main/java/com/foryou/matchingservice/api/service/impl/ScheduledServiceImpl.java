@@ -1,5 +1,6 @@
 package com.foryou.matchingservice.api.service.impl;
 
+import com.foryou.matchingservice.api.dto.request.PaymentRequestMessage;
 import com.foryou.matchingservice.api.dto.response.MatchingResultMessage;
 import com.foryou.matchingservice.api.dto.response.Response;
 import com.foryou.matchingservice.api.entity.Match;
@@ -7,6 +8,7 @@ import com.foryou.matchingservice.api.enums.StatusType;
 import com.foryou.matchingservice.api.repository.MatchRepository;
 import com.foryou.matchingservice.api.service.ScheduledService;
 import com.foryou.matchingservice.api.service.kafka.KafkaMatchResultProducer;
+import com.foryou.matchingservice.api.service.kafka.KafkaPaymentRequestProducer;
 import com.foryou.matchingservice.global.error.CustomException;
 import com.foryou.matchingservice.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class ScheduledServiceImpl implements ScheduledService {
 
     private final MatchRepository repository;
     private final KafkaMatchResultProducer producer;
+    private final KafkaPaymentRequestProducer paymentRequestProducer;
 
 
     private Match findWaitPeople(Long no) {
@@ -58,15 +61,9 @@ public class ScheduledServiceImpl implements ScheduledService {
     }
 
     @Override
-    @Transactional
-    public Response secondMatchJob(Long ownerPk, Long memberPk) {
-        Match owner = findStartPeople(ownerPk);
+    public void secondMatchJob(Long ownerPk, Long memberPk) {
         Match member = findStartPeople(memberPk);
-
-        owner.changeStatus(StatusType.COMPLETE);
-        member.changeStatus(StatusType.COMPLETE);
-
-        return new Response(ownerPk, memberPk);
+        paymentRequestProducer.sendMessage(createPaymentRequestMessage(member));
     }
 
     @Override
@@ -79,6 +76,15 @@ public class ScheduledServiceImpl implements ScheduledService {
 
         owner.changeStatus(StatusType.ALL_COMPLETE);
         member.changeStatus(StatusType.ALL_COMPLETE);
+    }
+
+    private PaymentRequestMessage createPaymentRequestMessage(Match member) {
+        return PaymentRequestMessage.builder()
+                .memberId(member.getMemberId())
+                .partyNo(member.getPartyNo())
+                .paymentNo(member.getPaymentNo())
+                .ott(member.getOtt())
+                .build();
     }
 
     private MatchingResultMessage createResultMessage(Match owner, Match member) {

@@ -7,13 +7,15 @@ import com.foryou.partyapi.api.enums.PartyRole;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
 public class PartyOwnerReqDto {
 
-    @NotBlank(message = "요청자 아이디를 입력해주세요")
     private String memberId;
 
     @NotNull(message = "OTT 타입을 확인해주세요")

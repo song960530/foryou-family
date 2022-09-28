@@ -1,5 +1,5 @@
 server:
-  port: 8093
+  port: ${PORT:8093}
 
 spring:
   application:
@@ -20,6 +20,21 @@ spring:
         format_sql: true
         # use_sql_comments: true
     open-in-view: false
+
+  kafka:
+    producer:
+      bootstrap-servers: ${KAFKA_SERVER_NAME1:localhost}:${KAFKA_SERVER_PORT1:9093}, ${KAFKA_SERVER_NAME2:localhost}:${KAFKA_SERVER_PORT2:9094}, ${KAFKA_SERVER_NAME3:localhost}:${KAFKA_SERVER_PORT3:9095}
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port} # eureka instance id
+
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${EUREKA_SERVER_NAME:eureka-server}:${EUREKA_SERVER_PORT:8761}/eureka # eureka server 가 위치하고 있는 기본 주소
 
 config:
   iamport:

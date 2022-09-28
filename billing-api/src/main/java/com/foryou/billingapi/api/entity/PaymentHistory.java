@@ -43,6 +43,7 @@ public class PaymentHistory extends BaseTimeEntity {
             , nullable = false
             , updatable = false
     )
+    @Enumerated(EnumType.STRING)
     private PaymentType status;
 
     @Column(
@@ -68,15 +69,19 @@ public class PaymentHistory extends BaseTimeEntity {
     private String response;
 
     @Builder
-    public PaymentHistory(Product product, PaymentType status, int price, boolean successYN, String response) {
+    public PaymentHistory(Product product, PaymentType status, int price, String response) {
         this.product = product;
         this.status = status;
         this.price = price;
-        this.successYN = successYN;
         this.response = response;
+        this.successYN = true;
     }
 
     public void addProduct(Product product) {
         this.product = product;
+    }
+
+    public void cancel() {
+        this.successYN = false;
     }
 }

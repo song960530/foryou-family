@@ -26,7 +26,22 @@ public class Match {
             strategy = GenerationType.SEQUENCE
             , generator = "SEQ_MATCH_GENERATOR"
     )
+    @Column(name = "MATCH_NO")
     private Long no;
+
+    @Column(
+            name = "MEMBER_ID"
+            , nullable = false
+            , updatable = false
+    )
+    private String memberId;
+
+    @Column(
+            name = "PAYMENT_NO"
+            , nullable = false
+            , updatable = false
+    )
+    private Long paymentNo;
 
     @Column(
             name = "PARTY_NO"
@@ -62,7 +77,9 @@ public class Match {
     private Long linkedNo;
 
     @Builder
-    public Match(Long partyNo, OttType ott, PartyRole role) {
+    public Match(String memberId, Long paymentNo, Long partyNo, OttType ott, PartyRole role) {
+        this.memberId = memberId;
+        this.paymentNo = paymentNo;
         this.partyNo = partyNo;
         this.ott = ott;
         this.role = role;

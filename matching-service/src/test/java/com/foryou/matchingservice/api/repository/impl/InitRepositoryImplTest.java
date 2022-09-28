@@ -35,7 +35,7 @@ class InitRepositoryImplTest {
     @DisplayName("미처리된 Netflix, Member, Wait 만 검색한다")
     public void selectUnprocessedWaitMemberNetflix() throws Exception {
         // given
-        Match member = new Match(0L, OttType.NETFLIX, PartyRole.MEMBER);
+        Match member = new Match("member", 1L, 0L, OttType.NETFLIX, PartyRole.MEMBER);
         em.persist(member);
 
         // when
@@ -50,7 +50,7 @@ class InitRepositoryImplTest {
     @DisplayName("Netflix, Member, Wait말고 다른 파라미터값으로 조회시 조회되는 데이터가 없다")
     public void justSearchMemberNetflixWait() throws Exception {
         // given
-        Match member = new Match(0L, OttType.NETFLIX, PartyRole.MEMBER);
+        Match member = new Match("member", 1L, 0L, OttType.NETFLIX, PartyRole.MEMBER);
         em.persist(member);
 
         // when
@@ -64,9 +64,9 @@ class InitRepositoryImplTest {
     @DisplayName("상태가 START이면서 OWNER인 데이터만 조회한다")
     public void searchStartAndOwner() throws Exception {
         // given
-        Match member1 = new Match(1L, OttType.NETFLIX, PartyRole.OWNER);
-        Match member2 = new Match(2L, OttType.NETFLIX, PartyRole.OWNER);
-        Match member3 = new Match(3L, OttType.NETFLIX, PartyRole.MEMBER);
+        Match member1 = new Match("member", 1L, 1L, OttType.NETFLIX, PartyRole.OWNER);
+        Match member2 = new Match("member", 2L, 2L, OttType.NETFLIX, PartyRole.OWNER);
+        Match member3 = new Match("member", 3L, 3L, OttType.NETFLIX, PartyRole.MEMBER);
         member1.changeStatus(StatusType.START);
         member2.changeStatus(StatusType.START);
         member3.changeStatus(StatusType.START);
