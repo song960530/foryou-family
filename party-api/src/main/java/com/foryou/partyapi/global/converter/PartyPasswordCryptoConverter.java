@@ -1,6 +1,6 @@
 package com.foryou.partyapi.global.converter;
 
-import com.foryou.partyapi.global.AES256Util;
+import com.foryou.partyapi.global.crypto.AES256Util;
 import lombok.RequiredArgsConstructor;
 
 import javax.persistence.AttributeConverter;

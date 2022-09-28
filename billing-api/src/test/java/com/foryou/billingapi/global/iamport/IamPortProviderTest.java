@@ -1,6 +1,6 @@
 package com.foryou.billingapi.global.iamport;
 
-import com.foryou.billingapi.global.Constants;
+import com.foryou.billingapi.global.constants.Constants;
 import com.foryou.billingapi.global.error.CustomException;
 import com.foryou.billingapi.global.error.ErrorCode;
 import com.foryou.billingapi.global.properties.IamPortProperties;

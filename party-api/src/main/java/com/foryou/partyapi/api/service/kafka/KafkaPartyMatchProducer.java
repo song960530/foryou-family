@@ -1,7 +1,7 @@
 package com.foryou.partyapi.api.service.kafka;
 
-import com.foryou.partyapi.Constants;
 import com.foryou.partyapi.api.dto.request.MatchingRequestMessage;
+import com.foryou.partyapi.global.constants.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;

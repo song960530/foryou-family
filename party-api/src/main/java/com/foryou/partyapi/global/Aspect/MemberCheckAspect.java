@@ -1,6 +1,6 @@
 package com.foryou.partyapi.global.Aspect;
 
-import com.foryou.partyapi.Constants;
+import com.foryou.partyapi.global.constants.Constants;
 import com.foryou.partyapi.global.error.CustomException;
 import com.foryou.partyapi.global.error.ErrorCode;
 import org.aspectj.lang.annotation.Aspect;

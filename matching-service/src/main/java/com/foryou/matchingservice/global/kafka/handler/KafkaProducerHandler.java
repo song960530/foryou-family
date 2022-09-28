@@ -1,4 +1,4 @@
-package com.foryou.matchingservice.global.handler;
+package com.foryou.matchingservice.global.kafka.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;

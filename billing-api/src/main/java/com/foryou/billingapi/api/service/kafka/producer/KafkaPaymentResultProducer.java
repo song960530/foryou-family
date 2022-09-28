@@ -1,7 +1,7 @@
-package com.foryou.billingapi.api.service.kafka;
+package com.foryou.billingapi.api.service.kafka.producer;
 
 import com.foryou.billingapi.api.dto.response.PaymentResponseMessage;
-import com.foryou.billingapi.global.Constants;
+import com.foryou.billingapi.global.constants.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;

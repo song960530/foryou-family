@@ -28,6 +28,14 @@ public class InitServiceImpl implements InitService {
     private final InitRepository initRepository;
     @Qualifier("Netflix")
     private final FirstQueue netflix;
+    @Qualifier("Tving")
+    private final FirstQueue tving;
+    @Qualifier("Disney")
+    private final FirstQueue disney;
+    @Qualifier("Watcha")
+    private final FirstQueue watcha;
+    @Qualifier("Wavve")
+    private final FirstQueue wavve;
     private final SecondQueue secondQueue;
     private final ThirdQueue thirdQueue;
 
@@ -74,9 +82,41 @@ public class InitServiceImpl implements InitService {
         List<Long> noList = initRepository.selectUnprocessedWait(ott, role);
 
         if (PartyRole.MEMBER.equals(role)) {
-            noList.forEach(no -> netflix.offerMember(no));
+            switch (ott) {
+                case NETFLIX:
+                    noList.forEach(no -> netflix.offerMember(no));
+                    break;
+                case TVING:
+                    noList.forEach(no -> tving.offerMember(no));
+                    break;
+                case WAVVE:
+                    noList.forEach(no -> wavve.offerMember(no));
+                    break;
+                case WATCHA:
+                    noList.forEach(no -> watcha.offerMember(no));
+                    break;
+                case DISNEY_PLUS:
+                    noList.forEach(no -> disney.offerMember(no));
+                    break;
+            }
         } else {
-            noList.forEach(no -> netflix.offerOwner(no));
+            switch (ott) {
+                case NETFLIX:
+                    noList.forEach(no -> netflix.offerOwner(no));
+                    break;
+                case TVING:
+                    noList.forEach(no -> tving.offerOwner(no));
+                    break;
+                case WAVVE:
+                    noList.forEach(no -> wavve.offerOwner(no));
+                    break;
+                case WATCHA:
+                    noList.forEach(no -> watcha.offerOwner(no));
+                    break;
+                case DISNEY_PLUS:
+                    noList.forEach(no -> disney.offerOwner(no));
+                    break;
+            }
         }
 
         log.info("END Status {} Unprocessed Data Upload ({}, {}): {}", StatusType.WAIT, ott, role, noList.size());

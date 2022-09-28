@@ -1,7 +1,6 @@
-package com.foryou.matchingservice.global.config;
+package com.foryou.partyapi.global.kafka.producer;
 
-import com.foryou.matchingservice.api.dto.request.PaymentRequestMessage;
-import com.foryou.matchingservice.api.dto.response.MatchingResultMessage;
+import com.foryou.partyapi.api.dto.request.MatchingRequestMessage;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -24,33 +23,19 @@ public class KafkaProducerConfig {
     @Value("${spring.kafka.producer.bootstrap-servers}")
     private String bootstrapServers;
 
-    private Map<String, Object> makeConfigProps() {
+    @Bean
+    public ProducerFactory<String, MatchingRequestMessage> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        return configProps;
+
+        return new DefaultKafkaProducerFactory<>(configProps);
     }
 
     @Bean
-    public ProducerFactory<String, MatchingResultMessage> producerFactory() {
-        return new DefaultKafkaProducerFactory<>(makeConfigProps());
-    }
-
-    @Bean
-    public ProducerFactory<String, PaymentRequestMessage> producerPaymentRequestFactory() {
-        return new DefaultKafkaProducerFactory<>(makeConfigProps());
-    }
-
-    @Bean
-    @Qualifier("KafkaTemplateMatchingResult")
-    public KafkaTemplate<String, MatchingResultMessage> kafkaTemplate() {
+    @Qualifier("KafkaTemplatePartyRequest")
+    public KafkaTemplate<String, MatchingRequestMessage> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
-    }
-
-    @Bean
-    @Qualifier("KafkaTemplatePaymentRequest")
-    public KafkaTemplate<String, PaymentRequestMessage> kafkaPaymentRequestTemplate() {
-        return new KafkaTemplate<>(producerPaymentRequestFactory());
     }
 }
