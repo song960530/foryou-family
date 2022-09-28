@@ -79,8 +79,8 @@ public class PaymentResultConsumer {
             }
         } catch (JsonProcessingException e) {
             e.printStackTrace();
+        } finally {
+            ack.acknowledge();
         }
-
-        ack.acknowledge();
     }
 }

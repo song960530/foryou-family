@@ -36,17 +36,16 @@ public class MatchingRequestConsumer {
             , @Header(KafkaHeaders.OFFSET) long offset
             , @Header(KafkaHeaders.RECEIVED_TIMESTAMP) long ts
             , String msg) {
-        MatchingRequestMessage request = null;
         try {
-            request = objMapper.readValue(msg, MatchingRequestMessage.class);
+            MatchingRequestMessage request = objMapper.readValue(msg, MatchingRequestMessage.class);
+            log.info("message: {}, topic: {}, groupId: {}, partition: {}, offset: {}, time: {}", request, topic, groupId, partition, offset, ts);
+
+            List<Match> Matches = matchingService.createMatch(request);
+            matchingService.offerQueue(Matches);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
+        } finally {
+            ack.acknowledge();
         }
-        log.info("message: {}, topic: {}, groupId: {}, partition: {}, offset: {}, time: {}", request, topic, groupId, partition, offset, ts);
-
-        List<Match> Matches = matchingService.createMatch(request);
-        matchingService.offerQueue(Matches);
-
-        ack.acknowledge();
     }
 }
