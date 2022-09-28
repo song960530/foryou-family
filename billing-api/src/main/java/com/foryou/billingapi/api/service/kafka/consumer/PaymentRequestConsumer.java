@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class KafkaConsumer {
+public class PaymentRequestConsumer {
 
     private final ObjectMapper objMapper;
     private final PaymentService paymentService;
@@ -44,9 +44,9 @@ public class KafkaConsumer {
             producer.sendMessage(Constants.KAFKA_TOPIC_PAYMENT_RESULT, resultMessage);
         } catch (JsonProcessingException e) {
             log.error("파싱 오류 발생");
+        } finally {
+            ack.acknowledge();
         }
-
-        ack.acknowledge();
     }
 
     private PaymentResponseMessage createResultMessage(PaymentRequestMessage request, boolean isSuccess) {
