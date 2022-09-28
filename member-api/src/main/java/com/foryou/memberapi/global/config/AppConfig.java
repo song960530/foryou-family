@@ -1,4 +1,4 @@
-package com.foryou.memberapi.global;
+package com.foryou.memberapi.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.foryou.matchingservice.api;
+package com.foryou.matchingservice.api.schedule;
 
 import com.foryou.matchingservice.api.dto.response.Response;
 import com.foryou.matchingservice.api.queue.FirstQueue;

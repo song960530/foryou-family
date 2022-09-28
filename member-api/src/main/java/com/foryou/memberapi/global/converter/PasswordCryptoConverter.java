@@ -1,4 +1,4 @@
-package com.foryou.memberapi.global.crypto;
+package com.foryou.memberapi.global.converter;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

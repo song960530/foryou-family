@@ -2,7 +2,7 @@ package com.foryou.memberapi.api.entity;
 
 import com.foryou.memberapi.api.entity.common.BaseTimeEntity;
 import com.foryou.memberapi.api.enums.MemberRole;
-import com.foryou.memberapi.global.crypto.PasswordCryptoConverter;
+import com.foryou.memberapi.global.converter.PasswordCryptoConverter;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

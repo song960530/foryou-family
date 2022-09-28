@@ -2,9 +2,9 @@ package com.foryou.partyapi.api.service.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.foryou.partyapi.Constants;
 import com.foryou.partyapi.api.dto.response.MatchingResponseMessage;
 import com.foryou.partyapi.api.service.PartyService;
+import com.foryou.partyapi.global.constants.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;

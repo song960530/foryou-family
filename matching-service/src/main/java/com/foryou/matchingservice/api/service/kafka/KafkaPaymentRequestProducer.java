@@ -1,7 +1,7 @@
 package com.foryou.matchingservice.api.service.kafka;
 
 import com.foryou.matchingservice.api.dto.request.PaymentRequestMessage;
-import com.foryou.matchingservice.global.Constants;
+import com.foryou.matchingservice.global.constants.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;

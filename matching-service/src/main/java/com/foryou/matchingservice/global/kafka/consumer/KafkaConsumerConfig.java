@@ -1,6 +1,6 @@
-package com.foryou.billingapi.global.kafka;
+package com.foryou.matchingservice.global.kafka.consumer;
 
-import com.foryou.billingapi.global.Constants;
+import com.foryou.matchingservice.global.constants.Constants;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -30,7 +30,7 @@ public class KafkaConsumerConfig {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, Constants.KAFKA_AUTO_OFFSET_RESET_EARLIEST);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, Constants.KAFKA_GROPU_ID_PAYMENT);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, Constants.KAFKA_GROPU_ID_PARTY);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringSerializer.class);
 

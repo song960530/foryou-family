@@ -1,6 +1,6 @@
-package com.foryou.partyapi.global.kafka.config;
+package com.foryou.billingapi.global.kafka.producer;
 
-import com.foryou.partyapi.api.dto.request.MatchingRequestMessage;
+import com.foryou.billingapi.api.dto.response.PaymentResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -23,19 +23,22 @@ public class KafkaProducerConfig {
     @Value("${spring.kafka.producer.bootstrap-servers}")
     private String bootstrapServers;
 
-    @Bean
-    public ProducerFactory<String, MatchingRequestMessage> producerFactory() {
+    private Map<String, Object> makeConfigProps() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-
-        return new DefaultKafkaProducerFactory<>(configProps);
+        return configProps;
     }
 
     @Bean
-    @Qualifier("KafkaTemplatePartyRequest")
-    public KafkaTemplate<String, MatchingRequestMessage> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory());
+    public ProducerFactory<String, PaymentResponseMessage> producerPaymentResponseFactory() {
+        return new DefaultKafkaProducerFactory<>(makeConfigProps());
+    }
+
+    @Bean
+    @Qualifier("KafkaTemplatePaymentResult")
+    public KafkaTemplate<String, PaymentResponseMessage> kafkaPaymentRequestTemplate() {
+        return new KafkaTemplate<>(producerPaymentResponseFactory());
     }
 }

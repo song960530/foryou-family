@@ -11,7 +11,7 @@ import com.foryou.matchingservice.api.enums.StatusType;
 import com.foryou.matchingservice.api.queue.ThirdQueue;
 import com.foryou.matchingservice.api.repository.MatchRepository;
 import com.foryou.matchingservice.api.service.MatchingService;
-import com.foryou.matchingservice.global.Constants;
+import com.foryou.matchingservice.global.constants.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;

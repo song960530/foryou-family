@@ -1,4 +1,4 @@
-package com.foryou.partyapi.global;
+package com.foryou.partyapi.global.crypto;
 
 import com.foryou.partyapi.global.error.CustomException;
 import com.foryou.partyapi.global.error.ErrorCode;

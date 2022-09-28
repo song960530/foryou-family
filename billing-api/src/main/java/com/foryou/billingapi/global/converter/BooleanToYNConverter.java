@@ -1,4 +1,4 @@
-package com.foryou.billingapi.global.converter.converter;
+package com.foryou.billingapi.global.converter;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

@@ -1,4 +1,4 @@
-package com.foryou.partyapi;
+package com.foryou.partyapi.global.constants;
 
 public final class Constants {
     public static final String KAFKA_TOPIC_PARTY = "party";

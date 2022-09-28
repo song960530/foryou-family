@@ -1,4 +1,4 @@
-package com.foryou.matchingservice.global;
+package com.foryou.matchingservice.global.constants;
 
 public final class Constants {
     public static final String KAFKA_TOPIC_PARTY = "party";
