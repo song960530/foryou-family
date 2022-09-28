@@ -6,8 +6,7 @@ import com.foryou.matchingservice.api.enums.OttType;
 import com.foryou.matchingservice.api.enums.PartyRole;
 import com.foryou.matchingservice.api.enums.StatusType;
 import com.foryou.matchingservice.api.repository.MatchRepository;
-import com.foryou.matchingservice.api.service.kafka.KafkaMatchResultProducer;
-import com.foryou.matchingservice.api.service.kafka.KafkaPaymentRequestProducer;
+import com.foryou.matchingservice.api.service.kafka.KafkaProducer;
 import com.foryou.matchingservice.global.error.CustomException;
 import com.foryou.matchingservice.global.error.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,9 +34,7 @@ class ScheduledServiceImplTest {
     @Mock
     private MatchRepository repository;
     @Mock
-    private KafkaMatchResultProducer producer;
-    @Mock
-    private KafkaPaymentRequestProducer paymentRequestProducer;
+    private KafkaProducer producer;
     private Match owner;
     private Match member;
 

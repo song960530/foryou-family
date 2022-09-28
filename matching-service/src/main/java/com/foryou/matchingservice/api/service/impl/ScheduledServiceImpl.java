@@ -7,8 +7,8 @@ import com.foryou.matchingservice.api.entity.Match;
 import com.foryou.matchingservice.api.enums.StatusType;
 import com.foryou.matchingservice.api.repository.MatchRepository;
 import com.foryou.matchingservice.api.service.ScheduledService;
-import com.foryou.matchingservice.api.service.kafka.KafkaMatchResultProducer;
-import com.foryou.matchingservice.api.service.kafka.KafkaPaymentRequestProducer;
+import com.foryou.matchingservice.api.service.kafka.KafkaProducer;
+import com.foryou.matchingservice.global.constants.Constants;
 import com.foryou.matchingservice.global.error.CustomException;
 import com.foryou.matchingservice.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScheduledServiceImpl implements ScheduledService {
 
     private final MatchRepository repository;
-    private final KafkaMatchResultProducer producer;
-    private final KafkaPaymentRequestProducer paymentRequestProducer;
+    private final KafkaProducer testProducer;
 
 
     private Match findWaitPeople(Long no) {
@@ -63,7 +62,7 @@ public class ScheduledServiceImpl implements ScheduledService {
     @Override
     public void secondMatchJob(Long ownerPk, Long memberPk) {
         Match member = findStartPeople(memberPk);
-        paymentRequestProducer.sendMessage(createPaymentRequestMessage(member));
+        testProducer.sendMessage(Constants.KAFKA_TOPIC_PAYMENT, createPaymentRequestMessage(member));
     }
 
     @Override
@@ -72,7 +71,7 @@ public class ScheduledServiceImpl implements ScheduledService {
         Match owner = findCompletePeople(ownerPk);
         Match member = findCompletePeople(memberPk);
 
-        producer.sendMessage(createResultMessage(owner, member));
+        testProducer.sendMessage(Constants.KAFKA_TOPIC_MATCH_RESULT, createResultMessage(owner, member));
 
         owner.changeStatus(StatusType.ALL_COMPLETE);
         member.changeStatus(StatusType.ALL_COMPLETE);
