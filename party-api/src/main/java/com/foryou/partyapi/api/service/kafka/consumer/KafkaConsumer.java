@@ -1,4 +1,4 @@
-package com.foryou.partyapi.api.service.kafka;
+package com.foryou.partyapi.api.service.kafka.consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,16 +34,15 @@ public class KafkaConsumer {
             , @Header(KafkaHeaders.RECEIVED_TIMESTAMP) long ts
             , String msg) {
 
-        MatchingResponseMessage request = null;
         try {
-            request = objMapper.readValue(msg, MatchingResponseMessage.class);
+            MatchingResponseMessage request = objMapper.readValue(msg, MatchingResponseMessage.class);
+            log.info("message: {}, topic: {}, groupId: {}, partition: {}, offset: {}, time: {}", request, topic, groupId, partition, offset, ts);
+
+            partyService.finishMatch(request);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
+        } finally {
+            ack.acknowledge();
         }
-
-        log.info("message: {}, topic: {}, groupId: {}, partition: {}, offset: {}, time: {}", request, topic, groupId, partition, offset, ts);
-        partyService.finishMatch(request);
-
-        ack.acknowledge();
     }
 }
