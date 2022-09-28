@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScheduledServiceImpl implements ScheduledService {
 
     private final MatchRepository repository;
-    private final KafkaProducer testProducer;
+    private final KafkaProducer producer;
 
 
     private Match findWaitPeople(Long no) {
@@ -62,7 +62,7 @@ public class ScheduledServiceImpl implements ScheduledService {
     @Override
     public void secondMatchJob(Long ownerPk, Long memberPk) {
         Match member = findStartPeople(memberPk);
-        testProducer.sendMessage(Constants.KAFKA_TOPIC_PAYMENT, createPaymentRequestMessage(member));
+        producer.sendMessage(Constants.KAFKA_TOPIC_PAYMENT, createPaymentRequestMessage(member));
     }
 
     @Override
@@ -71,7 +71,7 @@ public class ScheduledServiceImpl implements ScheduledService {
         Match owner = findCompletePeople(ownerPk);
         Match member = findCompletePeople(memberPk);
 
-        testProducer.sendMessage(Constants.KAFKA_TOPIC_MATCH_RESULT, createResultMessage(owner, member));
+        producer.sendMessage(Constants.KAFKA_TOPIC_MATCH_RESULT, createResultMessage(owner, member));
 
         owner.changeStatus(StatusType.ALL_COMPLETE);
         member.changeStatus(StatusType.ALL_COMPLETE);
