@@ -7,7 +7,7 @@ import com.foryou.matchingservice.api.entity.Match;
 import com.foryou.matchingservice.api.enums.StatusType;
 import com.foryou.matchingservice.api.repository.MatchRepository;
 import com.foryou.matchingservice.api.service.ScheduledService;
-import com.foryou.matchingservice.api.service.kafka.KafkaProducer;
+import com.foryou.matchingservice.api.service.kafka.producer.KafkaProducer;
 import com.foryou.matchingservice.global.constants.Constants;
 import com.foryou.matchingservice.global.error.CustomException;
 import com.foryou.matchingservice.global.error.ErrorCode;

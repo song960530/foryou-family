@@ -6,7 +6,7 @@ import com.foryou.matchingservice.api.enums.OttType;
 import com.foryou.matchingservice.api.enums.PartyRole;
 import com.foryou.matchingservice.api.enums.StatusType;
 import com.foryou.matchingservice.api.repository.MatchRepository;
-import com.foryou.matchingservice.api.service.kafka.KafkaProducer;
+import com.foryou.matchingservice.api.service.kafka.producer.KafkaProducer;
 import com.foryou.matchingservice.global.error.CustomException;
 import com.foryou.matchingservice.global.error.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,4 +1,4 @@
-package com.foryou.matchingservice.api.service.kafka;
+package com.foryou.matchingservice.api.service.kafka.consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

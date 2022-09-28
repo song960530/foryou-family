@@ -1,4 +1,4 @@
-package com.foryou.matchingservice.api.service.kafka;
+package com.foryou.matchingservice.api.service.kafka.producer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
