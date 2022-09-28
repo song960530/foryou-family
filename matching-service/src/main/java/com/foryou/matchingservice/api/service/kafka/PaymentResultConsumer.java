@@ -26,7 +26,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class KafkaPaymentResultConsumer {
+public class PaymentResultConsumer {
 
     private final ObjectMapper objMapper;
     private final MatchRepository repository;

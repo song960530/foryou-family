@@ -19,7 +19,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class KafkaConsumer {
+public class MatchingRequestConsumer {
 
     private final ObjectMapper objMapper;
     private final MatchingService matchingService;
