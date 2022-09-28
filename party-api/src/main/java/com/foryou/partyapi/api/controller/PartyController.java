@@ -49,6 +49,7 @@ public class PartyController {
     ) {
         partyReqDto.setMemberId(memberId);
         Party party = partyService.createOwnerParty(partyReqDto);
+        
         producer.sendMessage(
                 Constants.KAFKA_TOPIC_PARTY
                 , partyService.createMatchingMessage(party, party.getPartyInfo().getInwon(), 0L)
