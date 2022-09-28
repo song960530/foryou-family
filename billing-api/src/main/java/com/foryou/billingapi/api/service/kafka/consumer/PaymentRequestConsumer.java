@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foryou.billingapi.api.dto.request.PaymentRequestMessage;
 import com.foryou.billingapi.api.dto.response.PaymentResponseMessage;
 import com.foryou.billingapi.api.service.PaymentService;
-import com.foryou.billingapi.api.service.kafka.producer.KafkaPaymentResultProducer;
+import com.foryou.billingapi.api.service.kafka.producer.KafkaProducer;
 import com.foryou.billingapi.global.constants.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +18,11 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class KafkaConsumer {
+public class PaymentRequestConsumer {
 
     private final ObjectMapper objMapper;
     private final PaymentService paymentService;
-    private final KafkaPaymentResultProducer producer;
+    private final KafkaProducer producer;
 
     @KafkaListener(
             topics = Constants.KAFKA_TOPIC_PARTY
@@ -41,12 +41,12 @@ public class KafkaConsumer {
             log.info("message: {}, topic: {}, groupId: {}, partition: {}, offset: {}, time: {}", request, topic, groupId, partition, offset, ts);
 
             PaymentResponseMessage resultMessage = createResultMessage(request, paymentService.doPayAgain(request));
-            producer.sendMessage(resultMessage);
+            producer.sendMessage(Constants.KAFKA_TOPIC_PAYMENT_RESULT, resultMessage);
         } catch (JsonProcessingException e) {
             log.error("파싱 오류 발생");
+        } finally {
+            ack.acknowledge();
         }
-        
-        ack.acknowledge();
     }
 
     private PaymentResponseMessage createResultMessage(PaymentRequestMessage request, boolean isSuccess) {

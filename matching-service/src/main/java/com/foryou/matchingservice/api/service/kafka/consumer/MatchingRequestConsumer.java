@@ -1,4 +1,4 @@
-package com.foryou.matchingservice.api.service.kafka;
+package com.foryou.matchingservice.api.service.kafka.consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +19,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class KafkaConsumer {
+public class MatchingRequestConsumer {
 
     private final ObjectMapper objMapper;
     private final MatchingService matchingService;
@@ -36,17 +36,16 @@ public class KafkaConsumer {
             , @Header(KafkaHeaders.OFFSET) long offset
             , @Header(KafkaHeaders.RECEIVED_TIMESTAMP) long ts
             , String msg) {
-        MatchingRequestMessage request = null;
         try {
-            request = objMapper.readValue(msg, MatchingRequestMessage.class);
+            MatchingRequestMessage request = objMapper.readValue(msg, MatchingRequestMessage.class);
+            log.info("message: {}, topic: {}, groupId: {}, partition: {}, offset: {}, time: {}", request, topic, groupId, partition, offset, ts);
+
+            List<Match> Matches = matchingService.createMatch(request);
+            matchingService.offerQueue(Matches);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
+        } finally {
+            ack.acknowledge();
         }
-        log.info("message: {}, topic: {}, groupId: {}, partition: {}, offset: {}, time: {}", request, topic, groupId, partition, offset, ts);
-
-        List<Match> Matches = matchingService.createMatch(request);
-        matchingService.offerQueue(Matches);
-
-        ack.acknowledge();
     }
 }

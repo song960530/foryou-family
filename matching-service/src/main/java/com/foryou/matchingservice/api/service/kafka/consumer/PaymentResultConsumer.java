@@ -1,4 +1,4 @@
-package com.foryou.matchingservice.api.service.kafka;
+package com.foryou.matchingservice.api.service.kafka.consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +26,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class KafkaPaymentResultConsumer {
+public class PaymentResultConsumer {
 
     private final ObjectMapper objMapper;
     private final MatchRepository repository;
@@ -79,8 +79,8 @@ public class KafkaPaymentResultConsumer {
             }
         } catch (JsonProcessingException e) {
             e.printStackTrace();
+        } finally {
+            ack.acknowledge();
         }
-
-        ack.acknowledge();
     }
 }
