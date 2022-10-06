@@ -35,13 +35,13 @@ public class Token extends BaseTimeEntity {
     private String memberId;
 
     @Column(
-            name = "ACCESS_TONEK"
+            name = "ACCESS_TOKEN"
             , nullable = false
     )
     private String accessToken;
 
     @Column(
-            name = "REFRESH_TONEK"
+            name = "REFRESH_TOKEN"
             , nullable = false
     )
     private String refreshToken;
