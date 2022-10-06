@@ -10,7 +10,7 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
     service-url:
-      defaultZone: http://${EUREKA_SERVER_NAME:eureka-server}:${EUREKA_SERVER_PORT:8761}/eureka # eureka server 가 위치하고 있는 기본 주소
+      defaultZone: http://${EUREKA_SERVER_NAME:localhost}:${EUREKA_SERVER_PORT:8761}/eureka # eureka server 가 위치하고 있는 기본 주소
 
 spring:
   application:
@@ -21,21 +21,32 @@ spring:
         - name: JwtGlobalFilter
           args:
             baseMessage: GateWay JwtGlobalFilter
+
       routes:
         - id: member-api
           uri: lb://MEMBER-API
           predicates:
-            - Path=/member/**,/auth/**
-#          filters:
-#            - name: MemberFilter
-#              args:
-#                baseMessage: GateWay MemberFilter
-#                excludePath: /member /member/login # 여러개 적을 경우 공백으로 띄어서
-#                requiredRole: ROLE_MEMBER # 한개만 작성
+            - Path=/member/**
+          filters:
+            - name: MemberFilter
+              args:
+                baseMessage: GateWay MemberFilter
+                excludePath: /member /member/login # 여러개 적을 경우 공백으로 띄어서
+
         - id: party-api
           uri: lb://PARTY-API
           predicates:
             - Path=/party/**
+          filters:
+            - name: PartyFilter
+              args:
+                baseMessage: GateWay PartyFilter
+                excludePath: # 여러개 적을 경우 공백으로 띄어서
+
+        - id: auth-api
+          uri: lb://AUTH-API
+          predicates:
+            - Path=/auth/**,/reAuth/**
 
 config:
   jwt:

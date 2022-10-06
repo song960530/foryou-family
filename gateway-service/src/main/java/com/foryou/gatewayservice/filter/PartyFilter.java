@@ -16,9 +16,9 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class MemberFilter extends AbstractGatewayFilterFactory<MemberFilter.Config> {
+public class PartyFilter extends AbstractGatewayFilterFactory<PartyFilter.Config> {
 
-    public MemberFilter() {
+    public PartyFilter() {
         super(Config.class);
     }
 
