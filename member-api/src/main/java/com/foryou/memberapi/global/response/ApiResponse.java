@@ -1,7 +1,9 @@
 package com.foryou.memberapi.global.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -9,10 +11,12 @@ import java.util.Collections;
 
 @Getter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ApiResponse {
 
-    private final int status;
-    private final Object data;
+    private int status;
+    private Object data;
 
     public static final ResponseEntity<ApiResponse> of(final HttpStatus status, final Object data) {
         return ResponseEntity
