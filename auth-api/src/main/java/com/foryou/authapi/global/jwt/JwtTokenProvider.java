@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
-    // 지우기
+
     private final JwtProperties jwtProperties;
     private String encSecretKey;
 
