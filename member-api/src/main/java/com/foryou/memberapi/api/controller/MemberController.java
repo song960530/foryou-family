@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @RestController
@@ -28,8 +29,8 @@ public class MemberController {
     }
 
     @PostMapping("/member/login")
-    public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginReqDto loginReqDto) {
-        return ApiResponse.of(HttpStatus.OK, memberService.login(loginReqDto));
+    public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginReqDto loginReqDto, HttpServletResponse httpServletResponse) {
+        return ApiResponse.of(HttpStatus.OK, memberService.login(loginReqDto, httpServletResponse));
     }
 
     @PostMapping("/auth/token")
@@ -37,6 +38,6 @@ public class MemberController {
             @RequestHeader(value = "Authorization") String accessToken
             , @RequestHeader(value = "Refresh-Token") String refreshToken
     ) {
-        return ApiResponse.of(HttpStatus.OK, memberService.reCreateToken(accessToken,refreshToken));
+        return ApiResponse.of(HttpStatus.OK, memberService.reCreateToken(accessToken, refreshToken));
     }
 }

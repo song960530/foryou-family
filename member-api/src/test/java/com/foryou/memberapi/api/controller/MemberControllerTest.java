@@ -15,6 +15,8 @@ import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.servlet.http.HttpServletResponse;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -93,7 +95,7 @@ class MemberControllerTest {
                 .type("BEARER")
                 .build())
                 .when(memberService)
-                .login(any(LoginReqDto.class));
+                .login(any(LoginReqDto.class), any(HttpServletResponse.class));
 
         // when & then
         mockMvc.perform(post(("/member/login"))
