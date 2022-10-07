@@ -4,14 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foryou.memberapi.api.dto.request.JoinReqDto;
 import com.foryou.memberapi.api.dto.request.LoginReqDto;
 import com.foryou.memberapi.api.dto.response.LoginResDto;
-import com.foryou.memberapi.api.dto.response.TokenResDto;
 import com.foryou.memberapi.api.entity.Member;
-import com.foryou.memberapi.api.entity.Token;
 import com.foryou.memberapi.api.repository.MemberRepository;
-import com.foryou.memberapi.api.repository.TokenRepository;
 import com.foryou.memberapi.global.error.CustomException;
 import com.foryou.memberapi.global.error.ErrorCode;
-import com.foryou.memberapi.global.jwt.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -42,11 +39,7 @@ class MemberServiceImplTest {
     @Mock
     private MemberRepository memberRepository;
     @Mock
-    private TokenRepository tokenRepository;
-    @Mock
     private PasswordEncoder passwordEncoder;
-    @Mock
-    private JwtTokenProvider jwtTokenProvider;
     @Mock
     private RestTemplate restTemplate;
     @Spy
@@ -56,13 +49,11 @@ class MemberServiceImplTest {
     private LoginReqDto loginReqDto;
     private JoinReqDto joinReqDto;
     private Member member;
-    private Token token;
 
     @BeforeEach
     void setUp() {
         joinReqDto = createJoinDto();
         member = createMember(joinReqDto);
-        token = createToken(member);
         loginReqDto = getLoginReqDto();
     }
 
@@ -173,73 +164,12 @@ class MemberServiceImplTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, customException.getErrorCode().getHttpStatus());
     }
 
-    @Test
-    @DisplayName("토큰 재발급시 Header의 요청값이 잘못되었을 때 오류 발생")
-    public void exceptionInValid() throws Exception {
-        // given
-
-
-        // when
-        CustomException customException = assertThrows(CustomException.class, () ->
-                memberService.reCreateToken("test", "test")
-        );
-
-        // then
-        assertEquals(ErrorCode.NOT_VALID_TOKEN_FORM, customException.getErrorCode());
-        assertEquals(HttpStatus.BAD_REQUEST, customException.getErrorCode().getHttpStatus());
-    }
-
-    @Test
-    @DisplayName("Token 테이블에 매칭되는 토큰 정보가 없을 때 오류 발생")
-    public void exceptionExtractSubject() throws Exception {
-        // given
-        String memberId = "test123";
-
-        doReturn(true).when(jwtTokenProvider).isMatchedPrefix(anyString());
-        doReturn(memberId).when(jwtTokenProvider).extractSubject(anyString());
-        doReturn("test").when(jwtTokenProvider).removeTokenPrefix(anyString());
-        doReturn(Optional.empty()).when(tokenRepository).findByAllColumn(anyString(), anyString(), anyString());
-
-
-        // when
-        CustomException customException = assertThrows(CustomException.class, () ->
-                memberService.reCreateToken("Bearer test", "Bearer test")
-        );
-
-        // then
-        assertEquals(ErrorCode.NOT_EXIST_TOKEN, customException.getErrorCode());
-        assertEquals(HttpStatus.NOT_FOUND, customException.getErrorCode().getHttpStatus());
-    }
-
     private Member createMember(JoinReqDto joinDto) {
         Member member = joinDto.toEntity();
         Long fakeId = 1L;
         ReflectionTestUtils.setField(member, "no", fakeId);
 
         return member;
-    }
-
-    @Test
-    @DisplayName("토큰 재발급 정상 완료")
-    public void successReCreateToken() throws Exception {
-        // given
-        String memberId = "test123";
-
-        doReturn(true).when(jwtTokenProvider).isMatchedPrefix(anyString());
-        doReturn(memberId).when(jwtTokenProvider).extractSubject(anyString());
-        doReturn("test").when(jwtTokenProvider).removeTokenPrefix(anyString());
-        doReturn(Optional.of(token)).when(tokenRepository).findByAllColumn(anyString(), anyString(), anyString());
-        doReturn(Optional.of(token)).when(tokenRepository).findByMember(any(Member.class));
-        doReturn("test").when(jwtTokenProvider).createAccessToken(anyString(), anyList());
-        doReturn("test").when(jwtTokenProvider).createRefreshToken(anyString());
-
-        // when
-        TokenResDto result = memberService.reCreateToken("Bearer test", "Bearer test");
-
-        // then
-        assertEquals("test", result.getAccessToken());
-        assertEquals("test", result.getRefreshToken());
-        assertEquals("BEARER", result.getType());
     }
 
     private JoinReqDto createJoinDto() {
@@ -253,14 +183,6 @@ class MemberServiceImplTest {
         return LoginReqDto.builder()
                 .memberId("test123")
                 .password("password123!@3")
-                .build();
-    }
-
-    private Token createToken(Member member) {
-        return Token.builder()
-                .accessToken("test")
-                .refreshToken("test")
-                .member(member)
                 .build();
     }
 }

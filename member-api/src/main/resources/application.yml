@@ -27,13 +27,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://${EUREKA_SERVER_NAME:eureka-server}:${EUREKA_SERVER_PORT:8761}/eureka # eureka server 가 위치하고 있는 기본 주소
-
-config:
-  jwt:
-    secretKey: 01234567890123456789012345678912
-    accessValidTime: 30 # minutes
-    refreshValidTime: 1 # day
+      defaultZone: http://${EUREKA_SERVER_NAME:localhost}:${EUREKA_SERVER_PORT:8761}/eureka # eureka server 가 위치하고 있는 기본 주소
 
 logging.level:
   org.hibernate.SQL: debug
