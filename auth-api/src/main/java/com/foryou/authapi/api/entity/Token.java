@@ -1,6 +1,6 @@
-package com.foryou.memberapi.api.entity;
+package com.foryou.authapi.api.entity;
 
-import com.foryou.memberapi.api.entity.common.BaseTimeEntity;
+import com.foryou.authapi.api.entity.common.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,30 +28,29 @@ public class Token extends BaseTimeEntity {
     private Long no;
 
     @Column(
-            name = "ACCESS_TONEK"
+            name = "MEMBER_ID"
+            , nullable = false
+            , unique = true
+    )
+    private String memberId;
+
+    @Column(
+            name = "ACCESS_TOKEN"
             , nullable = false
     )
     private String accessToken;
 
     @Column(
-            name = "REFRESH_TONEK"
+            name = "REFRESH_TOKEN"
             , nullable = false
     )
     private String refreshToken;
 
-    @OneToOne
-    @JoinColumn(
-            name = "MEMBER_NO"
-            , nullable = false
-            , unique = true
-    )
-    private Member member;
-
     @Builder
-    public Token(String accessToken, String refreshToken, Member member) {
+    public Token(String accessToken, String refreshToken, String memberId) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
-        this.member = member;
+        this.memberId = memberId;
     }
 
     public void changeAccessToken(String accessToken) {

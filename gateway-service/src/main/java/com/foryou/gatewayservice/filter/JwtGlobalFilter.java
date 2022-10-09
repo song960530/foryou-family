@@ -2,7 +2,6 @@ package com.foryou.gatewayservice.filter;
 
 import com.foryou.gatewayservice.constants.Constants;
 import com.foryou.gatewayservice.jwt.JwtTokenProvider;
-import io.jsonwebtoken.Claims;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -33,8 +31,7 @@ public class JwtGlobalFilter extends AbstractGatewayFilterFactory<JwtGlobalFilte
             log.info("Request URI: {}", exchange.getRequest().getURI());
             log.info("Request Authorization: {}", exchange.getRequest().getHeaders().get("Authorization"));
 
-            extractClaims(exchange)
-                    .ifPresent(claims -> addHeader(exchange, claims));
+            addHeader(exchange, extractMemberId(exchange));
 
             return chain.filter(exchange).then(Mono.fromRunnable(() -> {
                 log.info("{} END >>>>>>", config.getBaseMessage());
@@ -42,16 +39,18 @@ public class JwtGlobalFilter extends AbstractGatewayFilterFactory<JwtGlobalFilte
         });
     }
 
-    private Optional<Claims> extractClaims(ServerWebExchange exchange) {
+    private String extractMemberId(ServerWebExchange exchange) {
         return Optional.of(jwtTokenProvider.extractToken(exchange))
                 .filter(token -> !token.equals(Constants.DEFAULT_TOKEN_VALUE))
-                .map(token -> jwtTokenProvider.extractClaims(token));
+                .map(token -> jwtTokenProvider.extractClaims(token))
+                .map(claims -> claims.getSubject())
+                .orElse(Constants.DEFAULT_TOKEN_VALUE)
+                ;
     }
 
-    private void addHeader(ServerWebExchange exchange, Claims claims) {
+    private void addHeader(ServerWebExchange exchange, String memberId) {
         exchange.getRequest().mutate()
-                .header("ROLES", String.join(" ", (List<String>) claims.get("roles")))
-                .header("MEMBER-ID", claims.getSubject())
+                .header(Constants.HEADER_MEMBER_NAME, memberId)
                 .build();
     }
 

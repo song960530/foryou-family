@@ -1,23 +1,22 @@
-package com.foryou.memberapi.global.jwt;
+package com.foryou.authapi.global.jwt;
 
-import com.foryou.memberapi.api.entity.Role;
-import com.foryou.memberapi.api.enums.MemberRole;
-import com.foryou.memberapi.global.constants.Constants;
-import com.foryou.memberapi.global.error.CustomException;
-import com.foryou.memberapi.global.error.ErrorCode;
-import com.foryou.memberapi.global.properties.JwtProperties;
+import com.foryou.authapi.global.constants.Constants;
+import com.foryou.authapi.global.error.CustomException;
+import com.foryou.authapi.global.error.ErrorCode;
+import com.foryou.authapi.global.properties.JwtProperties;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Base64;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -33,9 +32,9 @@ public class JwtTokenProvider {
     }
 
     // Access 토큰 생성
-    public String createAccessToken(String memberId, List<Role> roles) {
+    public String createAccessToken(String memberId) {
         Map<String, Object> headers = createHeader();
-        Claims claims = createClaims(memberId, roles);
+        Claims claims = createClaims(memberId);
         Date now = new Date();
 
         return Jwts.builder()
@@ -48,25 +47,16 @@ public class JwtTokenProvider {
     }
 
     // Refresh 토큰 생성
-    public String createRefreshToken(String memberId) {
+    public String createRefreshToken() {
         Map<String, Object> headers = createHeader();
-        Claims claims = createClaims(memberId);
         Date now = new Date();
 
         return Jwts.builder()
                 .setHeader(headers) // 헤더 설정
-                .setClaims(claims) // 정보 저장
                 .setIssuedAt(now) // 토큰 발생 시간 정보
                 .setExpiration(new Date(now.getTime() + jwtProperties.getRefreshValidTime())) // 만료시간
                 .signWith(Keys.hmacShaKeyFor(encSecretKey.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256) // 암호화 및 encSecretKey 세팅
                 .compact();
-    }
-
-    private Claims createClaims(String memberId, List<Role> roles) {
-        Claims claims = Jwts.claims().setSubject(memberId); // JWT payload에 저장되는 정보단위
-        List<MemberRole> memberRoles = roles.stream().map(Role::getRole).collect(Collectors.toList());
-        claims.put("roles", memberRoles);
-        return claims;
     }
 
     private Claims createClaims(String memberId) {
@@ -93,7 +83,7 @@ public class JwtTokenProvider {
                     .getSubject();
         } catch (ExpiredJwtException e) {
             throw new CustomException(ErrorCode.EXPIRED_TOKEN);
-        } catch (MalformedJwtException | UnsupportedJwtException | SignatureException | IllegalArgumentException e) {
+        } catch (MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
             throw new CustomException(ErrorCode.NOT_VALID_TOKEN_VALUE);
         }
 

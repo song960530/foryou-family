@@ -1,13 +1,9 @@
-package com.foryou.memberapi.api.controller.global.jwt;
+package com.foryou.authapi.global.jwt;
 
-import com.foryou.memberapi.api.dto.request.JoinReqDto;
-import com.foryou.memberapi.api.entity.Member;
-import com.foryou.memberapi.api.entity.Role;
-import com.foryou.memberapi.api.enums.MemberRole;
-import com.foryou.memberapi.global.error.CustomException;
-import com.foryou.memberapi.global.error.ErrorCode;
-import com.foryou.memberapi.global.jwt.JwtTokenProvider;
-import com.foryou.memberapi.global.properties.JwtProperties;
+
+import com.foryou.authapi.global.error.CustomException;
+import com.foryou.authapi.global.error.ErrorCode;
+import com.foryou.authapi.global.properties.JwtProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,10 +13,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,30 +24,12 @@ class JwtTokenProviderTest {
     @Spy
     private JwtProperties jwtProperties;
 
-    private Member member;
-
     @BeforeEach
     void setUp() {
-        member = createMember(createJoinDto());
         ReflectionTestUtils.setField(jwtProperties, "secretKey", "01234567890123456789012345678912");
         ReflectionTestUtils.setField(jwtProperties, "accessValidTime", 30);
         ReflectionTestUtils.setField(jwtProperties, "refreshValidTime", 1);
         jwtTokenProvider.init();
-    }
-
-    private JoinReqDto createJoinDto() {
-        return JoinReqDto.builder()
-                .memberId("test123")
-                .password("password123!@3")
-                .build();
-    }
-
-    private Member createMember(JoinReqDto joinDto) {
-        Member member = joinDto.toEntity();
-        Long fakeId = 1L;
-        ReflectionTestUtils.setField(member, "no", fakeId);
-
-        return member;
     }
 
     @Test
@@ -77,10 +51,9 @@ class JwtTokenProviderTest {
     public void successCreateAccess() throws Exception {
         // given
         String memberId = "test1234";
-        List<Role> roles = Arrays.stream(MemberRole.values()).map(Role::new).collect(Collectors.toList());
 
         // when
-        String token = jwtTokenProvider.createAccessToken(memberId, roles);
+        String token = jwtTokenProvider.createAccessToken(memberId);
 
         // then
         assertNotNull(token);
@@ -90,10 +63,9 @@ class JwtTokenProviderTest {
     @DisplayName("Refresh 토큰 정상 생성")
     public void successCreateRefresh() throws Exception {
         // given
-        String memberId = "test1234";
 
         // when
-        String token = jwtTokenProvider.createRefreshToken(memberId);
+        String token = jwtTokenProvider.createRefreshToken();
 
         // then
         assertNotNull(token);
@@ -104,10 +76,10 @@ class JwtTokenProviderTest {
     public void successExtractSubject() throws Exception {
         // given
         String memberId = "test1234";
-        String refreshToken = jwtTokenProvider.createRefreshToken(memberId);
+        String token = jwtTokenProvider.createAccessToken(memberId);
 
         // when
-        String subject = jwtTokenProvider.extractSubject(refreshToken);
+        String subject = jwtTokenProvider.extractSubject(token);
 
         // then
         assertEquals(memberId, subject);
@@ -132,9 +104,8 @@ class JwtTokenProviderTest {
     @DisplayName("subject 추출 중 만료된 토큰예외 처리")
     public void expiredToken() throws Exception {
         // given
-        String memberId = "test1234";
         ReflectionTestUtils.setField(jwtProperties, "refreshValidTime", 0);
-        String refreshToken = jwtTokenProvider.createRefreshToken(memberId);
+        String refreshToken = jwtTokenProvider.createRefreshToken();
 
         // when
         CustomException customException = assertThrows(CustomException.class, () -> {
@@ -150,8 +121,7 @@ class JwtTokenProviderTest {
     @DisplayName("토큰 패턴 확인")
     public void matchedTokenPattern() throws Exception {
         // given
-        String memberId = "test1234";
-        String refreshToken = jwtTokenProvider.createRefreshToken(memberId);
+        String refreshToken = jwtTokenProvider.createRefreshToken();
 
         // when
         boolean result = jwtTokenProvider.isMatchedPrefix("Bearer " + refreshToken);

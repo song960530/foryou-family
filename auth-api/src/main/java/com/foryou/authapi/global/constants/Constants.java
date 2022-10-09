@@ -1,4 +1,4 @@
-package com.foryou.memberapi.global.constants;
+package com.foryou.authapi.global.constants;
 
 public final class Constants {
     public static final String TOKEN_TYPE = "BEARER";

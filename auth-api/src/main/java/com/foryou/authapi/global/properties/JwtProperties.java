@@ -1,4 +1,4 @@
-package com.foryou.memberapi.global.properties;
+package com.foryou.authapi.global.properties;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;

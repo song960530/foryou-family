@@ -1,4 +1,4 @@
-package com.foryou.memberapi.api.dto.response;
+package com.foryou.authapi.api.dto;
 
 import lombok.Builder;
 import lombok.Data;
