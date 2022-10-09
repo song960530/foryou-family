@@ -18,9 +18,9 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class PartyFilter extends AbstractGatewayFilterFactory<PartyFilter.Config> {
+public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> {
 
-    public PartyFilter() {
+    public AuthFilter() {
         super(Config.class);
     }
 
