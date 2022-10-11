@@ -93,7 +93,7 @@ public class PartyServiceImpl implements PartyService {
 
         return PartyInfoResDto.builder()
                 .ott(partyInfo.getOttType())
-                .inwon(partyInfo.getInwon())
+                .inwon(partyInfo.getInwon() + 1)
                 .partyId(partyInfo.getPartyShareId())
                 .partyPassword(partyInfo.getPartySharePassword())
                 .memberList(partyList.stream()
