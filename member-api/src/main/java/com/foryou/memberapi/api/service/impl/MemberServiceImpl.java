@@ -53,7 +53,7 @@ public class MemberServiceImpl implements MemberService {
     public LoginResDto login(LoginReqDto loginReqDto, HttpServletResponse httpServletResponse) {
         Member member = validLogin(loginReqDto.getMemberId(), loginReqDto.getPassword());
 
-        ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity("http://localhost:8094/auth/" + member.getMemberId(), null, String.class);
+        ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity("http://gateway-server:8000/auth/" + member.getMemberId(), null, String.class);
 
         return Optional.of(stringResponseEntity)
                 .filter(response -> response.getStatusCode() == HttpStatus.OK)
