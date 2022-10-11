@@ -12,6 +12,7 @@ public enum ErrorCode {
     ARGUMENT_NOT_VALID(HttpStatus.BAD_REQUEST, "요청 정보가 잘못되었습니다"),
     NOT_MATCHED_MEMBER_ID(HttpStatus.BAD_REQUEST, "요청자 정보가 잘못되었습니다"),
     NOT_MATCHED_PARTY_NO(HttpStatus.BAD_REQUEST, "사용자 조회를 실패하였습니다"),
+    NOT_EXIST_PARTY(HttpStatus.BAD_REQUEST, "존재하지 않는 파티입니다"),
 
     /* 401 UNAUTHORIZED: 리소스에 유효한 인증 자격이 증명되지 않음*/
     ROLE_NOT_MATCHED(HttpStatus.UNAUTHORIZED, "파티원/파티장 역할정보가 잘못되었습니다"),

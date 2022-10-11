@@ -4,6 +4,8 @@ import com.foryou.partyapi.api.dto.request.MatchingRequestMessage;
 import com.foryou.partyapi.api.dto.request.PartyMemberReqDto;
 import com.foryou.partyapi.api.dto.request.PartyOwnerReqDto;
 import com.foryou.partyapi.api.dto.response.MatchingResponseMessage;
+import com.foryou.partyapi.api.dto.response.MyPartyResDto;
+import com.foryou.partyapi.api.dto.response.PartyInfoResDto;
 import com.foryou.partyapi.api.entity.Party;
 import com.foryou.partyapi.api.entity.PartyInfo;
 import com.foryou.partyapi.api.enums.OttType;
@@ -17,6 +19,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 @Transactional(readOnly = true)
@@ -24,6 +29,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class PartyServiceImpl implements PartyService {
 
     private final PartyRepository partyRepository;
+
+    @Override
+    public PartyInfoResDto partyInfo(Long partyNo) {
+        List<Party> partyList = partyRepository.selectSamePartyMember(partyNo);
+        checkExistParty(partyList);
+
+        return createPartyInfoResDto(partyList);
+    }
+
+    @Override
+    public List<MyPartyResDto> myParty(String memberId) {
+        return partyRepository.selectMyPartyList(memberId);
+    }
 
     @Override
     @Transactional
@@ -70,6 +88,23 @@ public class PartyServiceImpl implements PartyService {
         member.addPartyInfo(owner.getPartyInfo());
     }
 
+    private PartyInfoResDto createPartyInfoResDto(List<Party> partyList) {
+        PartyInfo partyInfo = partyList.get(0).getPartyInfo();
+
+        return PartyInfoResDto.builder()
+                .ott(partyInfo.getOttType())
+                .inwon(partyInfo.getInwon())
+                .partyId(partyInfo.getPartyShareId())
+                .partyPassword(partyInfo.getPartySharePassword())
+                .memberList(partyList.stream()
+                        .map(party -> PartyInfoResDto.PartyMember.builder()
+                                .profile(party.getProfileName())
+                                .role(party.getRole())
+                                .build())
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
     private Party findPartyByNo(Long no) {
         return partyRepository.findById(no).orElseThrow(() -> {
             throw new CustomException(ErrorCode.NOT_MATCHED_PARTY_NO);
@@ -84,5 +119,10 @@ public class PartyServiceImpl implements PartyService {
     private void checkExistOtt(String memberId, OttType ott) {
         if (partyRepository.existOttForMember(memberId, ott))
             throw new CustomException(ErrorCode.DUPLICATE_OTT_JOIN);
+    }
+
+    private void checkExistParty(List<Party> partyList) {
+        if (partyList.isEmpty())
+            throw new CustomException(ErrorCode.NOT_EXIST_PARTY);
     }
 }
