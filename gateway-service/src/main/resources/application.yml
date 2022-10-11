@@ -36,7 +36,7 @@ spring:
         - id: party-api
           uri: lb://PARTY-API
           predicates:
-            - Path=/party/**
+            - Path=/party/**,/myparty/**
           filters:
             - name: PartyFilter
               args:
