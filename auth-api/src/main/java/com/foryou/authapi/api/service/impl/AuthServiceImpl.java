@@ -32,7 +32,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public TokenResDto createOrUpdateToken(String memberId) {
         String accessToken = jwtProvider.createAccessToken(memberId);
-        String refreshToken = jwtProvider.createRefreshToken();
+        String refreshToken = jwtProvider.createRefreshToken(memberId);
 
         Token createdToken = Optional.of(repository.findByMemberId(memberId))
                 .filter(token -> !token.isEmpty())
@@ -46,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
                         Token.builder()
                                 .memberId(memberId)
                                 .accessToken(jwtProvider.createAccessToken(memberId))
-                                .refreshToken(jwtProvider.createRefreshToken())
+                                .refreshToken(jwtProvider.createRefreshToken(memberId))
                                 .build())
                 );
 
@@ -84,7 +84,7 @@ public class AuthServiceImpl implements AuthService {
                 )
                 .map(token -> {
                     token.changeAccessToken(jwtProvider.createAccessToken(memberId));
-                    token.changeRefreshToken(jwtProvider.createRefreshToken());
+                    token.changeRefreshToken(jwtProvider.createRefreshToken(memberId));
 
                     setRefreshTokenInCookie(token.getRefreshToken(), httpServletResponse);
 
