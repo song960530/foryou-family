@@ -47,12 +47,13 @@ public class JwtTokenProvider {
     }
 
     // Refresh 토큰 생성
-    public String createRefreshToken() {
+    public String createRefreshToken(String memberId) {
         Map<String, Object> headers = createHeader();
         Date now = new Date();
 
         return Jwts.builder()
                 .setHeader(headers) // 헤더 설정
+                .setSubject(memberId)
                 .setIssuedAt(now) // 토큰 발생 시간 정보
                 .setExpiration(new Date(now.getTime() + jwtProperties.getRefreshValidTime())) // 만료시간
                 .signWith(Keys.hmacShaKeyFor(encSecretKey.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256) // 암호화 및 encSecretKey 세팅

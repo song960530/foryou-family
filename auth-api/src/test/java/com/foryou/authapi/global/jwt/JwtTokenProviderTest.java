@@ -63,9 +63,10 @@ class JwtTokenProviderTest {
     @DisplayName("Refresh 토큰 정상 생성")
     public void successCreateRefresh() throws Exception {
         // given
+        String memberId = "test1234";
 
         // when
-        String token = jwtTokenProvider.createRefreshToken();
+        String token = jwtTokenProvider.createRefreshToken(memberId);
 
         // then
         assertNotNull(token);
@@ -104,8 +105,9 @@ class JwtTokenProviderTest {
     @DisplayName("subject 추출 중 만료된 토큰예외 처리")
     public void expiredToken() throws Exception {
         // given
+        String memberId = "test1234";
         ReflectionTestUtils.setField(jwtProperties, "refreshValidTime", 0);
-        String refreshToken = jwtTokenProvider.createRefreshToken();
+        String refreshToken = jwtTokenProvider.createRefreshToken(memberId);
 
         // when
         CustomException customException = assertThrows(CustomException.class, () -> {
@@ -121,7 +123,8 @@ class JwtTokenProviderTest {
     @DisplayName("토큰 패턴 확인")
     public void matchedTokenPattern() throws Exception {
         // given
-        String refreshToken = jwtTokenProvider.createRefreshToken();
+        String memberId = "test1234";
+        String refreshToken = jwtTokenProvider.createRefreshToken(memberId);
 
         // when
         boolean result = jwtTokenProvider.isMatchedPrefix("Bearer " + refreshToken);

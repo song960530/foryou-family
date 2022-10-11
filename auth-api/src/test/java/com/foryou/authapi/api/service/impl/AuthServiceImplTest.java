@@ -50,7 +50,7 @@ class AuthServiceImplTest {
     public void firstLogin() throws Exception {
         // given
         doReturn(testData.accessToken).when(provider).createAccessToken(anyString());
-        doReturn(testData.refreshToken).when(provider).createRefreshToken();
+        doReturn(testData.refreshToken).when(provider).createRefreshToken(anyString());
         doReturn(Optional.empty()).when(repository).findByMemberId(anyString());
         doReturn(testData.token).when(repository).save(any(Token.class));
 
@@ -71,7 +71,7 @@ class AuthServiceImplTest {
         String reCreateRfToken = "reCreateRefreshToken";
 
         doReturn(reCreateAcToken).when(provider).createAccessToken(anyString());
-        doReturn(reCreateRfToken).when(provider).createRefreshToken();
+        doReturn(reCreateRfToken).when(provider).createRefreshToken(anyString());
         doReturn(Optional.of(testData.token)).when(repository).findByMemberId(anyString());
 
         // when
@@ -145,7 +145,7 @@ class AuthServiceImplTest {
         doReturn(Arrays.array(new Cookie(Constants.REFRESH_TOKEN_HEADER_NAME, testData.refreshToken))).when(testData.httpServletRequest).getCookies();
         doReturn(Optional.of(testData.token)).when(repository).findByMemberIdAndRefreshToken(testData.memberId, testData.refreshToken);
         doReturn(reCreateAcToken).when(provider).createAccessToken(anyString());
-        doReturn(reCreateRfToken).when(provider).createRefreshToken();
+        doReturn(reCreateRfToken).when(provider).createRefreshToken(anyString());
 
         // when
         TokenResDto result = service.reCreateToken(testData.memberId, testData.httpServletRequest, testData.httpServletResponse);

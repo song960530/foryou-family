@@ -211,6 +211,27 @@ services:
       - kafka2
       - kafka3
 
+  auth-api:
+    build:
+      context: ./auth-api
+      dockerfile: Dockerfile_auth-api
+    container_name: auth-api
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:h2:tcp://h2:1521/authapi
+      - SPRING_DATASOURCE_USERNAME=authapi
+      - SPRING_DATASOURCE_PASSWORD= 
+      - PORT=8094
+      - EUREKA_SERVER_NAME=eureka-server
+      - EUREKA_SERVER_PORT=8761
+    ports:
+      - 8094:8094
+    depends_on:
+      - h2
+      - eureka-server
+      - kafka1
+      - kafka2
+      - kafka3
+
 
   gateway-server:
     restart: always
@@ -228,3 +249,4 @@ services:
       - eureka-server
       - member-api
       - party-api
+      - auth-api
