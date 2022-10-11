@@ -31,7 +31,7 @@ spring:
             - name: MemberFilter
               args:
                 baseMessage: GateWay MemberFilter
-                excludePath: /member /member/login # 여러개 적을 경우 공백으로 띄어서
+                excludePath: POST /member; POST /member/login;
 
         - id: party-api
           uri: lb://PARTY-API
@@ -41,12 +41,27 @@ spring:
             - name: PartyFilter
               args:
                 baseMessage: GateWay PartyFilter
-                excludePath: # 여러개 적을 경우 공백으로 띄어서
+                excludePath:
 
         - id: auth-api
           uri: lb://AUTH-API
           predicates:
             - Path=/auth/**,/reAuth/**
+          filters:
+            - name: AuthFilter
+              args:
+                baseMessage: GateWay AuthFilter
+                excludePath: POST /auth/**; PATCH /reAuth/**;
+
+        - id: billing-api
+          uri: lb://BILLING-API
+          predicates:
+            - Path=/payments/**
+          filters:
+            - name: BillingFilter
+              args:
+                baseMessage: GateWay BillingFilter
+                excludePath:
 
 config:
   jwt:
