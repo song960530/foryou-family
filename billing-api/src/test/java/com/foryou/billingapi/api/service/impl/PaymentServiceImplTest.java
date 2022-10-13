@@ -2,6 +2,7 @@ package com.foryou.billingapi.api.service.impl;
 
 import com.foryou.billingapi.api.dto.request.CreatePaymentDto;
 import com.foryou.billingapi.api.dto.request.PaymentRequestMessage;
+import com.foryou.billingapi.api.dto.response.CardListResDto;
 import com.foryou.billingapi.api.entity.PaymentHistory;
 import com.foryou.billingapi.api.entity.Payments;
 import com.foryou.billingapi.api.entity.Product;
@@ -30,6 +31,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -298,6 +300,33 @@ class PaymentServiceImplTest {
 
         // then
         assertEquals(false, result);
+    }
+
+    @Test
+    @DisplayName("결제카드리스트 정상생성")
+    public void successCardList() throws Exception {
+        // given
+        String memberId = "test123";
+
+        Payments payment1 = Payments.builder()
+                .memberId(memberId)
+                .cardNum4Digit(aes256Util.encrypt("1234-1234-1234-1234".split("-")[3]))
+                .build();
+        Payments payment2 = Payments.builder()
+                .memberId(memberId)
+                .cardNum4Digit(aes256Util.encrypt("1234-1234-1234-4321".split("-")[3]))
+                .build();
+
+        doReturn(List.of(payment1, payment2)).when(repository).usePaymentList(memberId);
+
+        // when
+        CardListResDto result = service.myPaymentCardList(memberId);
+
+        // then
+        assertEquals(2, result.getCount());
+        assertEquals(memberId, result.getMemberId());
+        assertEquals(aes256Util.encrypt("1234"), result.getPaymentCardList().get(0).getCardNum4Digit());
+        assertEquals(aes256Util.encrypt("4321"), result.getPaymentCardList().get(1).getCardNum4Digit());
     }
 
     private IamportResponse<Payment> createResponse(Payment payment) {

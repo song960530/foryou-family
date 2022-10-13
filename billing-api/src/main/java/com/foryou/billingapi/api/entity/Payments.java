@@ -2,6 +2,7 @@ package com.foryou.billingapi.api.entity;
 
 import com.foryou.billingapi.api.entity.common.BaseTimeEntity;
 import com.foryou.billingapi.global.converter.BooleanToYNConverter;
+import com.foryou.billingapi.global.converter.CardDigitConverter;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -51,6 +52,7 @@ public class Payments extends BaseTimeEntity {
             , updatable = false
             , nullable = false
     )
+    @Convert(converter = CardDigitConverter.class)
     private String cardNum4Digit;
 
     @Column(
