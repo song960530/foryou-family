@@ -2,6 +2,7 @@ package com.foryou.billingapi.api.service;
 
 import com.foryou.billingapi.api.dto.request.CreatePaymentDto;
 import com.foryou.billingapi.api.dto.request.PaymentRequestMessage;
+import com.foryou.billingapi.api.dto.response.CardListResDto;
 import com.foryou.billingapi.api.entity.PaymentHistory;
 import com.foryou.billingapi.api.entity.Payments;
 import com.foryou.billingapi.api.entity.Product;
@@ -19,4 +20,6 @@ public interface PaymentService {
     boolean doPayAgain(PaymentRequestMessage request);
 
     void recordProduct(Payments payment, Product product, PaymentHistory paymentHistory);
+
+    CardListResDto myPaymentCardList(String memberId);
 }

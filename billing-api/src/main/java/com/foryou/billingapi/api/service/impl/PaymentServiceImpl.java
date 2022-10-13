@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foryou.billingapi.api.dto.request.CreatePaymentDto;
 import com.foryou.billingapi.api.dto.request.PaymentRequestMessage;
+import com.foryou.billingapi.api.dto.response.CardListResDto;
 import com.foryou.billingapi.api.entity.PaymentHistory;
 import com.foryou.billingapi.api.entity.Payments;
 import com.foryou.billingapi.api.entity.Product;
@@ -31,6 +32,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -41,6 +44,11 @@ public class PaymentServiceImpl implements PaymentService {
     private final IamPortProvider iamPortProvider;
     private final PaymentRepository paymentRepository;
     private final AES256Util aes256Util;
+
+    @Override
+    public CardListResDto myPaymentCardList(String memberId) {
+        return createCardListDto(paymentRepository.usePaymentList(memberId), memberId);
+    }
 
     @Override
     public OnetimePaymentData createOnetimePaymentData(String memberId, CreatePaymentDto createPaymentDto, String paymentMsg, BigDecimal price) {
@@ -174,7 +182,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             return false;
         }
-        
+
         log.info(request.getMemberId() + "회원 " + request.getOtt() + "결제 성공");
 
         return true;
@@ -229,5 +237,21 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         return payment;
+    }
+
+    private CardListResDto createCardListDto(List<Payments> usePaymentList, String memberId) {
+        return CardListResDto.builder()
+                .count(usePaymentList.size())
+                .memberId(memberId)
+                .paymentCardList(usePaymentList.stream()
+                        .map(payment -> CardListResDto.CardList.builder()
+                                .paymentNo(payment.getNo())
+                                .cardNum4Digit(payment.getCardNum4Digit())
+                                .createDate(payment.getCreateDate())
+                                .build()
+                        )
+                        .collect(Collectors.toList())
+                )
+                .build();
     }
 }

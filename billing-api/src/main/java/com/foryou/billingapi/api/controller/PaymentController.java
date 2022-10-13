@@ -1,8 +1,6 @@
 package com.foryou.billingapi.api.controller;
 
 import com.foryou.billingapi.api.dto.request.CreatePaymentDto;
-import com.foryou.billingapi.api.entity.Payments;
-import com.foryou.billingapi.api.repository.PaymentRepository;
 import com.foryou.billingapi.api.service.PaymentService;
 import com.foryou.billingapi.global.constants.Constants;
 import com.foryou.billingapi.global.response.ApiResponse;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -30,5 +27,11 @@ public class PaymentController {
         paymentService.registPayment(memberId, customerUid, createPaymentDto.getCardNum());
 
         return ApiResponse.of(HttpStatus.CREATED);
+    }
+
+    @GetMapping("/payments/{memberId}")
+    public ResponseEntity<ApiResponse> myPaymentCardList(@PathVariable String memberId) {
+
+        return ApiResponse.of(HttpStatus.OK, paymentService.myPaymentCardList(memberId));
     }
 }

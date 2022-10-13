@@ -11,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -49,12 +46,22 @@ public class PartyController {
     ) {
         partyReqDto.setMemberId(memberId);
         Party party = partyService.createOwnerParty(partyReqDto);
-        
+
         producer.sendMessage(
                 Constants.KAFKA_TOPIC_PARTY
                 , partyService.createMatchingMessage(party, party.getPartyInfo().getInwon(), 0L)
         );
 
         return ApiResponse.of(HttpStatus.OK);
+    }
+
+    @GetMapping("/myparty/{memberId}")
+    public ResponseEntity<ApiResponse> myParty(@PathVariable String memberId) {
+        return ApiResponse.of(HttpStatus.OK, partyService.myParty(memberId));
+    }
+
+    @GetMapping("/myparty/{memberId}/parties/{partyNo}")
+    public ResponseEntity<ApiResponse> partyInfo(@PathVariable String memberId, @PathVariable Long partyNo) {
+        return ApiResponse.of(HttpStatus.OK, partyService.partyInfo(partyNo));
     }
 }

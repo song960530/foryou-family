@@ -4,6 +4,8 @@ import com.foryou.partyapi.api.dto.request.MatchingRequestMessage;
 import com.foryou.partyapi.api.dto.request.PartyMemberReqDto;
 import com.foryou.partyapi.api.dto.request.PartyOwnerReqDto;
 import com.foryou.partyapi.api.dto.response.MatchingResponseMessage;
+import com.foryou.partyapi.api.dto.response.MyPartyResDto;
+import com.foryou.partyapi.api.dto.response.PartyInfoResDto;
 import com.foryou.partyapi.api.entity.Party;
 import com.foryou.partyapi.api.entity.PartyInfo;
 import com.foryou.partyapi.api.enums.OttType;
@@ -21,6 +23,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -219,5 +223,58 @@ class PartyServiceImplTest {
         service.finishMatch(response);
 
         // then
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 파티 정보 조회시 오류 발생")
+    public void notExistParty() throws Exception {
+        // given
+        doReturn(new ArrayList<Party>()).when(repository).selectSamePartyMember(anyLong());
+
+        // when
+        CustomException customException = assertThrows(CustomException.class, () -> service.partyInfo(anyLong()));
+
+        // then
+        assertEquals(ErrorCode.NOT_EXIST_PARTY, customException.getErrorCode());
+        assertEquals(HttpStatus.BAD_REQUEST, customException.getErrorCode().getHttpStatus());
+    }
+
+    @Test
+    @DisplayName("파티 정보 정상 조회")
+    public void successPartyInfo() throws Exception {
+        // given
+        Party owner = partyOwner.toEntityParty();
+        owner.addPartyInfo(partyOwner.toEntityPartyInfo());
+        Party member = partyMember.toEntity();
+        member.addPartyInfo(partyOwner.toEntityPartyInfo());
+
+        doReturn(List.of(owner, member)).when(repository).selectSamePartyMember(anyLong());
+
+        // when
+        PartyInfoResDto result = service.partyInfo(anyLong());
+
+        // then
+        assertEquals(OttType.TVING, result.getOtt());
+        assertEquals(4, result.getInwon());
+        assertEquals(owner.getPartyInfo().getPartyShareId(), result.getPartyId());
+        assertEquals(owner.getPartyInfo().getPartySharePassword(), result.getPartyPassword());
+        assertEquals(2, result.getMemberList().size());
+    }
+
+    @Test
+    @DisplayName("내 파티 조회")
+    public void searchMyParty() throws Exception {
+        // given
+        MyPartyResDto dto = new MyPartyResDto(OttType.NETFLIX, PartyRole.OWNER, "매칭중");
+
+        doReturn(List.of(dto)).when(repository).selectMyPartyList(anyString());
+
+        // when
+        List<MyPartyResDto> result = service.myParty(anyString());
+
+        // then
+        assertEquals(dto.getOtt(), result.get(0).getOtt());
+        assertEquals(dto.getRole(), result.get(0).getRole());
+        assertEquals(dto.getStatus(), result.get(0).getStatus());
     }
 }
