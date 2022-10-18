@@ -56,7 +56,7 @@ openapi3 {
     server = 'http://localhost:8000'
     title = 'Member-Api'
     description = 'Member-Api Swagger'
-    version = '0.1.0'
+    version = '1.0.0'
     format = 'json'
     outputFileNamePrefix = 'openapi3-member'
     outputDirectory = 'C:\\Users\\MunJun\\Desktop\\Study\\foryoufamily\\swagger-json'
