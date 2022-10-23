@@ -58,7 +58,7 @@ openapi3 {
     title = 'Billing-Api'
     description = 'Billing-Api Swagger'
     version = '0.1.0'
-    format = 'json'
+    format = 'yaml'
     outputFileNamePrefix = 'openapi3-billing'
     outputDirectory = 'C:\\Users\\MunJun\\Desktop\\Study\\foryoufamily\\swagger-json'
 }

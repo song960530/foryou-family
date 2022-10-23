@@ -8,7 +8,6 @@ import com.foryou.billingapi.api.dto.request.CreatePaymentDto;
 import com.foryou.billingapi.api.service.PaymentService;
 import com.foryou.billingapi.global.error.CustomException;
 import com.foryou.billingapi.global.error.ErrorCode;
-import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +29,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
-import static com.epages.restdocs.apispec.ResourceDocumentation.*;
+import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static com.epages.restdocs.apispec.Schema.schema;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -76,7 +76,6 @@ class PaymentControllerTest {
         // when & then
         mockMvc.perform(
                         post("/payments/{memberId}", "test12345")
-                                .header(HttpHeaders.AUTHORIZATION, "BEARER eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNDUiLCJpYXQiOjE2NjYzMzIwMTQsImV4cCI6MTY2NjMzMzgxNH0.XlbGwsAunHyLX79UN-HJ8PH6IOYmc9SqtvtOZjJFTaA")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(body))
                 .andExpect(status().isCreated())
@@ -130,6 +129,38 @@ class PaymentControllerTest {
                 ));
     }
 
+    @Test
+    @DisplayName("카드 등록을 실패했을 때")
+    public void careRegFail() throws Exception {
+        // given
+        String body = mapper.writeValueAsString(CreatePaymentDto.builder()
+                .cardNum("hqhZbLWfDL9r6kBdPSRmU8LpzjTFY/vWc3hh5O3/rDE=")
+                .expiredDate("gk0d3m+bx3NN9lULXxnZiQ==")
+                .birthDate("6E4EVjS2zs4uvnArEdd0zg==")
+                .pwd2digit("5ALcr/W47lBuO9WOQmu+Kw==")
+                .build());
+
+        doThrow(new CustomException(ErrorCode.CARD_REGISTRATION_FAILED)).when(service).doFirstPay(any());
+
+        // when & then
+        mockMvc.perform(
+                        post("/payments/{memberId}", "test12345")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(body))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", is(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath("$.error", is(HttpStatus.BAD_REQUEST.name())))
+                .andExpect(jsonPath("$.code", is(ErrorCode.CARD_REGISTRATION_FAILED.name())))
+                .andExpect(jsonPath("$.message", is(ErrorCode.CARD_REGISTRATION_FAILED.getMessage())))
+                .andExpect(jsonPath("$.data", is(Collections.emptyList())))
+                .andDo(print())
+                .andDo(document("fail-card-regist"
+                        , preprocessRequest(prettyPrint())
+                        , preprocessResponse(prettyPrint())
+                        , resource(createFailDoc("CreatePaymentDto", createDocCreatePaymentDtoFields(), createDocPathVariable()))
+                ));
+    }
+
     private ResourceSnippetParameters createSuccessDoc(
             String summary
             , String description
@@ -144,7 +175,6 @@ class PaymentControllerTest {
                 .requestSchema(schema(requestSchema))
                 .responseSchema(schema("ApiResponse"))
                 .pathParameters(pathParameters)
-                .requestHeaders(headerWithName("Authorization").description("어케하는거야 시1발"))
                 .requestFields(requestFields)
                 .responseFields(createSuccessDocResponseFields())
                 .build();
