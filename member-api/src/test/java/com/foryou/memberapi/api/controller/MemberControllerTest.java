@@ -1,6 +1,5 @@
 package com.foryou.memberapi.api.controller;
 
-import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foryou.memberapi.api.dto.request.JoinReqDto;
 import com.foryou.memberapi.api.dto.request.LoginReqDto;
@@ -19,16 +18,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
+import java.util.List;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
-import static com.epages.restdocs.apispec.Schema.schema;
+import static com.foryou.memberapi.testUtils.RestDocsUtils.*;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -75,21 +76,15 @@ class MemberControllerTest {
                         , preprocessRequest(prettyPrint())
                         , preprocessResponse(prettyPrint())
                         , resource(
-                                ResourceSnippetParameters.builder()
-                                        .tag("Member-Api")
-                                        .summary("회원가입")
-                                        .description("사용자 정보를 생성한다")
-                                        .requestSchema(schema("JoinReqDto"))
-                                        .responseSchema(schema("ApiResponse"))
-                                        .requestFields(
-                                                fieldWithPath("memberId").description("회원 아이디")
-                                                , fieldWithPath("password").description("비밀번호")
-                                        )
-                                        .responseFields(
-                                                fieldWithPath("status").description("응답 코드")
-                                                , fieldWithPath("data").description("응답 데이터")
-                                        )
-                                        .build()
+                                createSuccessDoc(
+                                        "Member-Api"
+                                        , "회원가입"
+                                        , "사용자 정보를 생성한다"
+                                        , "JoinReqDto"
+                                        , null
+                                        , joinReqDtoRequestField()
+                                        , createSuccessDocResponseFields()
+                                )
                         )
                 ))
         ;
@@ -118,22 +113,12 @@ class MemberControllerTest {
                                 , preprocessRequest(prettyPrint())
                                 , preprocessResponse(prettyPrint())
                                 , resource(
-                                        ResourceSnippetParameters.builder()
-                                                .tag("Member-Api")
-                                                .requestSchema(schema("JoinReqDto"))
-                                                .responseSchema(schema("ApiErrorResponse"))
-                                                .requestFields(
-                                                        fieldWithPath("memberId").description("회원 아이디")
-                                                        , fieldWithPath("password").description("비밀번호")
-                                                )
-                                                .responseFields(
-                                                        fieldWithPath("status").description("응답 코드")
-                                                        , fieldWithPath("error").description("응답 코드 명")
-                                                        , fieldWithPath("code").description("오류 코드")
-                                                        , fieldWithPath("message").description("오류 코드 메세지")
-                                                        , fieldWithPath("data").description("응답 데이터")
-                                                )
-                                                .build()
+                                        createFailDoc(
+                                                "Member-Api"
+                                                , "JoinReqDto"
+                                                , null
+                                                , null
+                                        )
                                 )
                         )
                 );
@@ -164,24 +149,15 @@ class MemberControllerTest {
                                 , preprocessRequest(prettyPrint())
                                 , preprocessResponse(prettyPrint())
                                 , resource(
-                                        ResourceSnippetParameters.builder()
-                                                .tag("Member-Api")
-                                                .summary("로그인")
-                                                .description("사용자 로그인을 시도한다<br>로그인 시도 시 인증서버를 통해 토큰을 발급받는다<br>Access-Token은 Body에, Refresh-Token은 cookie에 저장")
-                                                .requestSchema(schema("LoginReqDto"))
-                                                .responseSchema(schema("ApiResponse"))
-                                                .requestFields(
-                                                        fieldWithPath("memberId").description("회원 아이디")
-                                                        , fieldWithPath("password").description("비밀번호")
-                                                )
-                                                .responseFields(
-                                                        fieldWithPath("status").description("응답 코드")
-                                                        , fieldWithPath("data").description("응답 데이터")
-                                                        , fieldWithPath("data.accessToken").description("액세스토큰")
-                                                        , fieldWithPath("data.refreshToken").description("리프레쉬토큰 cookie에 httponly로 저장")
-                                                        , fieldWithPath("data.type").description("인증타입")
-                                                )
-                                                .build()
+                                        createSuccessDoc(
+                                                "Member-Api"
+                                                , "로그인"
+                                                , "사용자 로그인을 시도한다<br>로그인 시도 시 인증서버를 통해 토큰을 발급받는다<br>Access-Token은 Body에, Refresh-Token은 cookie에 저장"
+                                                , "LoginReqDto"
+                                                , null
+                                                , joinReqDtoRequestField()
+                                                , loginResponseFields()
+                                        )
                                 )
                         )
                 );
@@ -210,22 +186,12 @@ class MemberControllerTest {
                                 , preprocessRequest(prettyPrint())
                                 , preprocessResponse(prettyPrint())
                                 , resource(
-                                        ResourceSnippetParameters.builder()
-                                                .tag("Member-Api")
-                                                .requestSchema(schema("LoginReqDto"))
-                                                .responseSchema(schema("ApiResponse"))
-                                                .requestFields(
-                                                        fieldWithPath("memberId").description("회원 아이디")
-                                                        , fieldWithPath("password").description("비밀번호")
-                                                )
-                                                .responseFields(
-                                                        fieldWithPath("status").description("응답 코드")
-                                                        , fieldWithPath("error").description("응답 코드 명")
-                                                        , fieldWithPath("code").description("오류 코드")
-                                                        , fieldWithPath("message").description("오류 코드 메세지")
-                                                        , fieldWithPath("data").description("응답 데이터")
-                                                )
-                                                .build()
+                                        createFailDoc(
+                                                "Member-Api"
+                                                , "LoginReqDto"
+                                                , null
+                                                , null
+                                        )
                                 )
                         )
                 );
@@ -254,22 +220,12 @@ class MemberControllerTest {
                                 , preprocessRequest(prettyPrint())
                                 , preprocessResponse(prettyPrint())
                                 , resource(
-                                        ResourceSnippetParameters.builder()
-                                                .tag("Member-Api")
-                                                .requestSchema(schema("LoginReqDto"))
-                                                .responseSchema(schema("ApiResponse"))
-                                                .requestFields(
-                                                        fieldWithPath("memberId").description("회원 아이디")
-                                                        , fieldWithPath("password").description("비밀번호")
-                                                )
-                                                .responseFields(
-                                                        fieldWithPath("status").description("응답 코드")
-                                                        , fieldWithPath("error").description("응답 코드 명")
-                                                        , fieldWithPath("code").description("오류 코드")
-                                                        , fieldWithPath("message").description("오류 코드 메세지")
-                                                        , fieldWithPath("data").description("응답 데이터")
-                                                )
-                                                .build()
+                                        createFailDoc(
+                                                "Member-Api"
+                                                , "LoginReqDto"
+                                                , null
+                                                , null
+                                        )
                                 )
                         )
                 );
@@ -297,23 +253,12 @@ class MemberControllerTest {
                 .andDo(document("auth-server-drop"
                                 , preprocessRequest(prettyPrint())
                                 , preprocessResponse(prettyPrint())
-                                , resource(
-                                        ResourceSnippetParameters.builder()
-                                                .tag("Member-Api")
-                                                .requestSchema(schema("LoginReqDto"))
-                                                .responseSchema(schema("ApiResponse"))
-                                                .requestFields(
-                                                        fieldWithPath("memberId").description("회원 아이디")
-                                                        , fieldWithPath("password").description("비밀번호")
-                                                )
-                                                .responseFields(
-                                                        fieldWithPath("status").description("응답 코드")
-                                                        , fieldWithPath("error").description("응답 코드 명")
-                                                        , fieldWithPath("code").description("오류 코드")
-                                                        , fieldWithPath("message").description("오류 코드 메세지")
-                                                        , fieldWithPath("data").description("응답 데이터")
-                                                )
-                                                .build()
+                                , resource(createFailDoc(
+                                                "Member-Api"
+                                                , "LoginReqDto"
+                                                , null
+                                                , null
+                                        )
                                 )
                         )
                 );
@@ -392,5 +337,17 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.data.refreshToken").value("refreshToken"))
                 .andExpect(jsonPath("$.data.type").value("BEARER"))
                 .andDo(print());
+    }
+
+    public static List<FieldDescriptor> loginResponseFields() {
+        return List.of(fieldWithPath("status").description("응답 코드")
+                , fieldWithPath("data").description("응답 데이터")
+                , fieldWithPath("data.accessToken").description("액세스토큰")
+                , fieldWithPath("data.refreshToken").description("리프레쉬토큰 cookie에 httponly로 저장")
+                , fieldWithPath("data.type").description("인증타입"));
+    }
+
+    private List<FieldDescriptor> joinReqDtoRequestField() {
+        return List.of(fieldWithPath("memberId").description("회원 아이디"), fieldWithPath("password").description("비밀번호"));
     }
 }
