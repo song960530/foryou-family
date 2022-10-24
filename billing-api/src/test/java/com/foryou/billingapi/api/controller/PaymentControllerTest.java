@@ -1,10 +1,9 @@
 package com.foryou.billingapi.api.controller;
 
 
-import com.epages.restdocs.apispec.ParameterDescriptorWithType;
-import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foryou.billingapi.api.dto.request.CreatePaymentDto;
+import com.foryou.billingapi.api.dto.response.CardListResDto;
 import com.foryou.billingapi.api.service.PaymentService;
 import com.foryou.billingapi.global.error.CustomException;
 import com.foryou.billingapi.global.error.ErrorCode;
@@ -25,18 +24,21 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
-import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
-import static com.epages.restdocs.apispec.Schema.schema;
+import static com.foryou.billingapi.testUtils.RestDocsUtils.*;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -87,11 +89,13 @@ class PaymentControllerTest {
                         , preprocessResponse(prettyPrint())
                         , resource(
                                 createSuccessDoc(
-                                        "결제 카드 생성"
+                                        "Billing-Api"
+                                        , "결제 카드 생성"
                                         , "결제 카드를 생성한다<br>결제카드는 정상카드 확인을 위하여 최초 100원이 결제되고 확인 후 바로 취소처리된다<br>요청 정보는 AES256으로 암호화하여 전달한다"
                                         , "CreatePaymentDto"
-                                        , createDocCreatePaymentDtoFields()
                                         , createDocPathVariable()
+                                        , requestPaymentDtoFields()
+                                        , createSuccessDocResponseFields()
                                 )
                         )
                 ));
@@ -125,7 +129,14 @@ class PaymentControllerTest {
                 .andDo(document("fail-decrypt"
                         , preprocessRequest(prettyPrint())
                         , preprocessResponse(prettyPrint())
-                        , resource(createFailDoc("CreatePaymentDto", createDocCreatePaymentDtoFields(), createDocPathVariable()))
+                        , resource(
+                                createFailDoc(
+                                        "Billing-Api"
+                                        , "CreatePaymentDto"
+                                        , createDocPathVariable()
+                                        , requestPaymentDtoFields()
+                                )
+                        )
                 ));
     }
 
@@ -157,65 +168,84 @@ class PaymentControllerTest {
                 .andDo(document("fail-card-regist"
                         , preprocessRequest(prettyPrint())
                         , preprocessResponse(prettyPrint())
-                        , resource(createFailDoc("CreatePaymentDto", createDocCreatePaymentDtoFields(), createDocPathVariable()))
+                        , resource(
+                                createFailDoc(
+                                        "Billing-Api"
+                                        , "CreatePaymentDto"
+                                        , createDocPathVariable()
+                                        , requestPaymentDtoFields()
+                                )
+                        )
                 ));
     }
 
-    private ResourceSnippetParameters createSuccessDoc(
-            String summary
-            , String description
-            , String requestSchema
-            , List<FieldDescriptor> requestFields
-            , List<ParameterDescriptorWithType> pathParameters
-    ) {
-        return ResourceSnippetParameters.builder()
-                .tag("Billing-Api")
-                .summary(summary)
-                .description(description)
-                .requestSchema(schema(requestSchema))
-                .responseSchema(schema("ApiResponse"))
-                .pathParameters(pathParameters)
-                .requestFields(requestFields)
-                .responseFields(createSuccessDocResponseFields())
+    @Test
+    @DisplayName("카드 리스트 조회")
+    public void searchCardList() throws Exception {
+        // given
+        CardListResDto result = CardListResDto.builder()
+                .memberId("test12345")
+                .count(2)
+                .paymentCardList(List.of(CardListResDto.CardList.builder()
+                        .paymentNo(1L)
+                        .cardNum4Digit("9999")
+                        .createDate(LocalDateTime.now())
+                        .build(), CardListResDto.CardList.builder()
+                        .paymentNo(2L)
+                        .cardNum4Digit("8786")
+                        .createDate(LocalDateTime.now())
+                        .build()))
                 .build();
+
+        doReturn(result).when(service).myPaymentCardList(anyString());
+
+        // when & then
+        mockMvc.perform(
+                        get("/payments/{memberId}", "test12345")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status", is(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.count", is(2)))
+                .andExpect(jsonPath("$.data.memberId", is("test12345")))
+                .andExpect(jsonPath("$.data.paymentCardList[0].paymentNo", is(1)))
+                .andExpect(jsonPath("$.data.paymentCardList[0].cardNum4Digit", is("9999")))
+                .andExpect(jsonPath("$.data.paymentCardList[0].createDate", notNullValue()))
+                .andExpect(jsonPath("$.data.paymentCardList[1].paymentNo", is(2)))
+                .andExpect(jsonPath("$.data.paymentCardList[1].cardNum4Digit", is("8786")))
+                .andExpect(jsonPath("$.data.paymentCardList[1].createDate", notNullValue()))
+                .andDo(print())
+                .andDo(document("search-cardList"
+                        , preprocessRequest(prettyPrint())
+                        , preprocessResponse(prettyPrint())
+                        , resource(
+                                createSuccessDoc(
+                                        "Billing-Api"
+                                        , "결제 카드 조회"
+                                        , "사용 가능한 결제 카드 리스트 조회"
+                                        , null
+                                        , createDocPathVariable()
+                                        , null
+                                        , responseFieldsCardList()
+                                )
+                        )
+                ));
     }
 
-    private ResourceSnippetParameters createFailDoc(
-            String requestSchema
-            , List<FieldDescriptor> requestFields
-            , List<ParameterDescriptorWithType> pathParameters
-    ) {
-        return ResourceSnippetParameters.builder()
-                .tag("Billing-Api")
-                .requestSchema(schema(requestSchema))
-                .responseSchema(schema("ApiErrorResponse"))
-                .pathParameters(pathParameters)
-                .requestFields(requestFields)
-                .responseFields(createFailDocResponseFields())
-                .build();
-    }
-
-    private List<FieldDescriptor> createFailDocResponseFields() {
+    private List<FieldDescriptor> responseFieldsCardList() {
         return List.of(fieldWithPath("status").description("응답 코드")
-                , fieldWithPath("error").description("응답 코드 명")
-                , fieldWithPath("code").description("오류 코드")
-                , fieldWithPath("message").description("오류 코드 메세지")
-                , fieldWithPath("data").description("응답 데이터"));
+                , fieldWithPath("data").description("응답 데이터")
+                , fieldWithPath("data.count").description("카드 개수")
+                , fieldWithPath("data.memberId").description("회원 명")
+                , fieldWithPath("data.paymentCardList").description("카드 리스트")
+                , fieldWithPath("data.paymentCardList[].paymentNo").description("결제 카드 No")
+                , fieldWithPath("data.paymentCardList[].cardNum4Digit").description("카드 뒤 4자리")
+                , fieldWithPath("data.paymentCardList[].createDate").description("결제 카드 생성일")
+        );
     }
 
-    private List<FieldDescriptor> createSuccessDocResponseFields() {
-        return List.of(fieldWithPath("status").description("응답 코드")
-                , fieldWithPath("data").description("응답 데이터"));
-    }
-
-    private List<FieldDescriptor> createDocCreatePaymentDtoFields() {
+    private List<FieldDescriptor> requestPaymentDtoFields() {
         return List.of(fieldWithPath("cardNum").description("카드번호 '-' 포함")
                 , fieldWithPath("expiredDate").description("만료일 '-' 포함")
                 , fieldWithPath("birthDate").description("생년월일 6자리")
                 , fieldWithPath("pwd2digit").description("카드 비밀번호 앞 2자리"));
-    }
-
-    private List<ParameterDescriptorWithType> createDocPathVariable() {
-        return List.of(parameterWithName("memberId").description("요청자 회원 ID"));
     }
 }
