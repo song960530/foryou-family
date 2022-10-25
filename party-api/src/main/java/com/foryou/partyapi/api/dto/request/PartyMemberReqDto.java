@@ -1,5 +1,6 @@
 package com.foryou.partyapi.api.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.foryou.partyapi.api.entity.Party;
 import com.foryou.partyapi.api.enums.OttType;
 import com.foryou.partyapi.api.enums.PartyRole;
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class PartyMemberReqDto {
 
+    @JsonIgnore
     private String memberId;
 
     @NotNull(message = "OTT 타입을 확인해주세요")
