@@ -1,8 +1,11 @@
 package com.foryou.partyapi.api.controller;
 
+import com.epages.restdocs.apispec.ParameterDescriptorWithType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foryou.partyapi.api.dto.request.PartyMemberReqDto;
 import com.foryou.partyapi.api.dto.request.PartyOwnerReqDto;
+import com.foryou.partyapi.api.dto.response.MyPartyResDto;
+import com.foryou.partyapi.api.dto.response.PartyInfoResDto;
 import com.foryou.partyapi.api.enums.OttType;
 import com.foryou.partyapi.api.enums.PartyRole;
 import com.foryou.partyapi.api.service.PartyService;
@@ -29,12 +32,16 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static com.foryou.partyapi.testUtils.RestDocsUtils.*;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -299,6 +306,127 @@ class PartyControllerTest {
                 ));
     }
 
+    @Test
+    @DisplayName("내가 신청한 Ott 리스트 조회")
+    public void searchMyOttList() throws Exception {
+        // given
+        List<MyPartyResDto> result = List.of(
+                new MyPartyResDto(OttType.NETFLIX, PartyRole.MEMBER, "매칭중")
+                , new MyPartyResDto(OttType.TVING, PartyRole.MEMBER, "매칭완료")
+                , new MyPartyResDto(OttType.WAVVE, PartyRole.OWNER, "매칭중")
+                , new MyPartyResDto(OttType.WATCHA, PartyRole.OWNER, "매칭완료")
+        );
+
+        doReturn(result).when(service).myParty(anyString());
+
+        // when & then 482260
+        mockMvc.perform(get("/myparty/{memberId}", "test12345")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data[*].ott", notNullValue()))
+                .andExpect(jsonPath("$.data[*].role", notNullValue()))
+                .andExpect(jsonPath("$.data[*].status", anything()))
+                .andDo(print())
+                .andDo(document("my-party-list"
+                        , preprocessRequest(prettyPrint())
+                        , preprocessResponse(prettyPrint())
+                        , resource(
+                                createSuccessDoc(
+                                        "Party-Api"
+                                        , "OTT 리스트 조회"
+                                        , "내가 신청한 OTT 리스트 조회"
+                                        , null
+                                        , createDocPathVariable()
+                                        , null
+                                        , myPartyResponseFields()
+                                )
+                        )
+                ));
+
+    }
+
+    @Test
+    @DisplayName("파티 상세 조회")
+    public void searchPartyDetail() throws Exception {
+        // given
+        PartyInfoResDto result = PartyInfoResDto.builder()
+                .ott(OttType.NETFLIX)
+                .inwon(4)
+                .partyId("shard_id")
+                .partyPassword("shard_password")
+                .memberList(List.of(
+                        PartyInfoResDto.PartyMember.builder().profile("파티원1프로파일").role(PartyRole.MEMBER).build()
+                        , PartyInfoResDto.PartyMember.builder().profile("파티원2프로파일").role(PartyRole.MEMBER).build()
+                        , PartyInfoResDto.PartyMember.builder().profile("파티장프로파일").role(PartyRole.OWNER).build()))
+                .build();
+
+        doReturn(result).when(service).partyInfo(anyLong());
+
+        // when & then
+        mockMvc.perform(get("/myparty/{memberId}/parties/{partyNo}", "test12345", "100")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status", is(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.ott", is(OttType.NETFLIX.getValue())))
+                .andExpect(jsonPath("$.data.inwon", is(4)))
+                .andExpect(jsonPath("$.data.partyId", is("shard_id")))
+                .andExpect(jsonPath("$.data.partyPassword", is("shard_password")))
+                .andExpect(jsonPath("$.data.memberList[*]", notNullValue()))
+                .andDo(print())
+                .andDo(document("party-detail"
+                        , preprocessRequest(prettyPrint())
+                        , preprocessResponse(prettyPrint())
+                        , resource(
+                                createSuccessDoc(
+                                        "Party-Api"
+                                        , "파티 상세 조회"
+                                        , "내가 속해있는 파티 중 하나를 상세조회한다"
+                                        , null
+                                        , createDocPathVariable2()
+                                        , null
+                                        , partyDetailResponseFields()
+                                )
+                        )
+                ));
+        ;
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 파티를 조회했을경우")
+    public void notExistPartyDetail() throws Exception {
+        // given
+        doThrow(new CustomException(ErrorCode.NOT_EXIST_PARTY)).when(service).partyInfo(anyLong());
+
+        // when
+        mockMvc.perform(get("/myparty/{memberId}/parties/{partyNo}", "test12345", "999")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", is(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath("$.error", is(HttpStatus.BAD_REQUEST.name())))
+                .andExpect(jsonPath("$.code", is(ErrorCode.NOT_EXIST_PARTY.name())))
+                .andExpect(jsonPath("$.message", is(ErrorCode.NOT_EXIST_PARTY.getMessage())))
+                .andExpect(jsonPath("$.data", is(Collections.emptyList())))
+                .andDo(print())
+                .andDo(document("not-exist-party"
+                        , preprocessRequest(prettyPrint())
+                        , preprocessResponse(prettyPrint())
+                        , resource(
+                                createFailDoc(
+                                        "Party-Api"
+                                        , null
+                                        , createDocPathVariable2()
+                                        , null
+                                )
+                        )
+                ));
+        // then
+    }
+
+    public static List<ParameterDescriptorWithType> createDocPathVariable2() {
+        return List.of(parameterWithName("memberId").description("요청자 회원 ID")
+                , parameterWithName("partyNo").description("파티 No"));
+    }
+
     private List<FieldDescriptor> memberRequestFields() {
         return List.of(fieldWithPath("ott").description("신청 OTT 종류")
                 , fieldWithPath("role").description("파티 멤버 신청 타입")
@@ -311,6 +439,26 @@ class PartyControllerTest {
                 , fieldWithPath("inwon").description("모집 할 인원")
                 , fieldWithPath("id").description("공유할 아이디")
                 , fieldWithPath("password").description("공유할 비밀번호"));
+    }
+
+    private List<FieldDescriptor> myPartyResponseFields() {
+        return List.of(fieldWithPath("status").description("응답 코드")
+                , fieldWithPath("data").description("응답 데이터")
+                , fieldWithPath("data[].ott").description("OTT 종류")
+                , fieldWithPath("data[].role").description("파티 역할 종류")
+                , fieldWithPath("data[].status").description("매칭 진행 상태"));
+    }
+
+    private List<FieldDescriptor> partyDetailResponseFields() {
+        return List.of(fieldWithPath("status").description("응답 코드")
+                , fieldWithPath("data").description("응답 데이터")
+                , fieldWithPath("data.ott").description("OTT 종류")
+                , fieldWithPath("data.inwon").description("파티 전체 인원")
+                , fieldWithPath("data.partyId").description("공유 아이디")
+                , fieldWithPath("data.partyPassword").description("공유 비밀번호")
+                , fieldWithPath("data.memberList[].profile").description("동일 파티멤버 프로파일")
+                , fieldWithPath("data.memberList[].role").description("동일 파티멤버 역할")
+        );
     }
 }
 
