@@ -7,9 +7,7 @@ import com.foryou.memberapi.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -19,6 +17,11 @@ import javax.validation.Valid;
 public class MemberController {
 
     private final MemberService memberService;
+
+    @GetMapping("/")
+    @ResponseStatus(HttpStatus.OK)
+    public void healthCheck() {
+    }
 
     @PostMapping("/member")
     public ResponseEntity<ApiResponse> join(@Valid @RequestBody JoinReqDto joinDto) {
