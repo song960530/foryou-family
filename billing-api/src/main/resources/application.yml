@@ -6,7 +6,7 @@ spring:
     name: billing-api
 
   profiles:
-    active: prod
+    active: local
 
 eureka:
   instance:
