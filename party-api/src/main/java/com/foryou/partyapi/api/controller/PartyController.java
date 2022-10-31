@@ -23,6 +23,11 @@ public class PartyController {
     private final PartyService partyService;
     private final KafkaProducer producer;
 
+    @GetMapping("/")
+    @ResponseStatus(HttpStatus.OK)
+    public void healthCheck() {
+    }
+    
     @PostMapping("/party/{memberId}/member")
     public ResponseEntity<ApiResponse> requestPartyMember(
             @PathVariable String memberId

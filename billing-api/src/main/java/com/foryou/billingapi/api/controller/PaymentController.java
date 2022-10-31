@@ -20,6 +20,11 @@ import java.math.BigDecimal;
 public class PaymentController {
     private final PaymentService paymentService;
 
+    @GetMapping("/")
+    @ResponseStatus(HttpStatus.OK)
+    public void healthCheck() {
+    }
+    
     @PostMapping("/payments/{memberId}")
     public ResponseEntity<ApiResponse> createPayment(@PathVariable String memberId, @Valid @RequestBody CreatePaymentDto createPaymentDto) {
         OnetimePaymentData onetimePaymentData = paymentService.createOnetimePaymentData(memberId, createPaymentDto, Constants.CHECK_CARD, BigDecimal.valueOf(100));
