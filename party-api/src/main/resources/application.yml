@@ -5,35 +5,13 @@ spring:
   application:
     name: party-api
 
-  datasource:
-    driver-class-name: org.h2.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        # show_sql: true
-        format_sql: false
-        # use_sql_comments: true
-    open-in-view: false
-
-  kafka:
-    producer:
-      bootstrap-servers: ${KAFKA_SERVER_NAME1:localhost}:${KAFKA_SERVER_PORT1:9093}, ${KAFKA_SERVER_NAME2:localhost}:${KAFKA_SERVER_PORT2:9094}, ${KAFKA_SERVER_NAME3:localhost}:${KAFKA_SERVER_PORT3:9095}
+  profiles:
+    active: local
 
 eureka:
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${server.port} # eureka가 인식할 instance id
 
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://${EUREKA_SERVER_NAME:eureka-server}:${EUREKA_SERVER_PORT:8761}/eureka # eureka server 가 위치하고 있는 기본 주소
-
-config:
-  cipher:
-    aesKey: abcdefghijklmnopabcdefghijklmnop #32Bytes
-    iv: abcdefghijklmnop #16Bytes
+logging.level:
+  org.hibernate.SQL: debug
