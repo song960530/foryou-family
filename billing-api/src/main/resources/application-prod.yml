@@ -27,6 +27,9 @@ eureka:
       defaultZone: http://${EUREKA_SERVER_NAME:43.200.243.244}:${EUREKA_SERVER_PORT:8761}/eureka # eureka server 가 위치하고 있는 기본 주소
 
 config:
+  iamport:
+    apikey: 9126903185453032
+    apisecret: 21846cf8f313caf697b8909fc177d46f879c92c94439585bb9156172884c36bfd66caa96cf5329ff
   cipher:
     aesKey: abcdefghijklmnopabcdefghijklmnop #32Bytes
     iv: abcdefghijklmnop #16Bytes
