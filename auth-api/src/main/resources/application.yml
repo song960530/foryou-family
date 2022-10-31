@@ -6,7 +6,7 @@ spring:
     name: auth-api
 
   profiles:
-    active: prod
+    active: local
 
 eureka:
   instance:
