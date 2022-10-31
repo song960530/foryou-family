@@ -19,6 +19,7 @@ import javax.persistence.*;
         , initialValue = 1
         , allocationSize = 1
 )
+@Table(name = "PARTY_MATCH")
 public class Match {
 
     @Id
