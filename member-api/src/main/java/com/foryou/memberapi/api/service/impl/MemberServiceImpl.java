@@ -14,6 +14,7 @@ import com.foryou.memberapi.global.error.ErrorCode;
 import com.foryou.memberapi.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,6 +37,9 @@ public class MemberServiceImpl implements MemberService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
+    @Value("${config.gateway.url}")
+    private String gatewayUrl;
+
     @Override
     @Transactional
     public Long join(JoinReqDto joinDto) {
@@ -53,7 +57,7 @@ public class MemberServiceImpl implements MemberService {
     public LoginResDto login(LoginReqDto loginReqDto, HttpServletResponse httpServletResponse) {
         Member member = validLogin(loginReqDto.getMemberId(), loginReqDto.getPassword());
 
-        ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity("http://gateway-server:8000/auth/" + member.getMemberId(), null, String.class);
+        ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity(gatewayUrl + "/auth/" + member.getMemberId(), null, String.class);
 
         return Optional.of(stringResponseEntity)
                 .filter(response -> response.getStatusCode() == HttpStatus.OK)

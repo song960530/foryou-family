@@ -21,3 +21,7 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://${EUREKA_SERVER_NAME:43.200.243.244}:${EUREKA_SERVER_PORT:8761}/eureka # eureka server 가 위치하고 있는 기본 주소
+
+config:
+  gateway:
+    url: http://foryou-family.shop
