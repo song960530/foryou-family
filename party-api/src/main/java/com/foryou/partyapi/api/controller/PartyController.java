@@ -41,7 +41,7 @@ public class PartyController {
                 , partyService.createMatchingMessage(party, 1, partyReqDto.getPaymentNo())
         );
 
-        return ApiResponse.of(HttpStatus.OK);
+        return ApiResponse.of(HttpStatus.CREATED);
     }
 
     @PostMapping("/party/{memberId}/owner")
@@ -54,10 +54,10 @@ public class PartyController {
 
         producer.sendMessage(
                 Constants.KAFKA_TOPIC_PARTY
-                , partyService.createMatchingMessage(party, party.getPartyInfo().getInwon(), 0L)
+                , partyService.createMatchingMessage(party, partyReqDto.getInwon(), 0L)
         );
 
-        return ApiResponse.of(HttpStatus.OK);
+        return ApiResponse.of(HttpStatus.CREATED);
     }
 
     @GetMapping("/myparty/{memberId}")
