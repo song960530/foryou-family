@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.7.1'
     id 'io.spring.dependency-management' version '1.0.13.RELEASE'
     id 'java'
+    id 'com.epages.restdocs-api-spec' version '0.16.2'
 }
 
 group = 'com.foryou'
@@ -36,6 +37,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.16.2'
 }
 
 dependencyManagement {
@@ -46,4 +48,17 @@ dependencyManagement {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+build {
+    dependsOn(':openapi3')
+}
+
+openapi3 {
+    server = 'http://localhost:8000'
+    title = 'Billing-Api'
+    description = 'Billing-Api Swagger'
+    version = '0.1.0'
+    format = 'yaml'
+    outputFileNamePrefix = 'openapi3-billing'
+    outputDirectory = 'C:\\Users\\MunJun\\Desktop\\Study\\foryoufamily\\swagger-json'
 }
