@@ -5,30 +5,13 @@ spring:
   application:
     name: member-api
 
-  datasource:
-    driver-class-name: org.h2.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        # show_sql: true
-        format_sql: true
-        # use_sql_comments: true
-    open-in-view: false
+  profiles:
+    active: local
 
 eureka:
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${server.port} # eureka가 인식할 instance id
 
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://${EUREKA_SERVER_NAME:localhost}:${EUREKA_SERVER_PORT:8761}/eureka # eureka server 가 위치하고 있는 기본 주소
-
 logging.level:
   org.hibernate.SQL: debug
-  # org.hibernate.type: trace

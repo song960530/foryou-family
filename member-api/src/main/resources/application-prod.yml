@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: foryou-family
+    password: foryou-family
+    url: jdbc:mysql://43.200.243.244:3306/foryou_family?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        # show_sql: true
+        format_sql: true
+        # use_sql_comments: true
+    open-in-view: false
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${EUREKA_SERVER_NAME:43.200.243.244}:${EUREKA_SERVER_PORT:8761}/eureka # eureka server 가 위치하고 있는 기본 주소
+
+config:
+  gateway:
+    url: http://foryou-family.shop
