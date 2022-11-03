@@ -38,6 +38,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -74,6 +75,49 @@ class AuthControllerTest {
     }
 
     @Test
+    @DisplayName("JWT 발급 성공")
+    public void successAuth() throws Exception {
+        // given
+        String memberId = "test12345";
+        String accessToken = provider.createAccessToken(memberId);
+        String refreshToken = provider.createRefreshToken(memberId);
+        TokenResDto result = TokenResDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .type(Constants.TOKEN_TYPE)
+                .build();
+
+        doReturn(result).when(service).createOrUpdateToken(anyString());
+
+        // when & then
+        mockMvc.perform(post("/auth/{memberId}", memberId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(HttpStatus.OK.value())))
+                .andExpect(jsonPath("$.data.accessToken", is(accessToken)))
+                .andExpect(jsonPath("$.data.refreshToken", is(refreshToken)))
+                .andExpect(jsonPath("$.data.type", is(Constants.TOKEN_TYPE)))
+                .andDo(print())
+                .andDo(document("create-auth-success"
+                        , preprocessRequest(prettyPrint())
+                        , preprocessResponse(prettyPrint())
+                        , resource(
+                                createSuccessDocWithHeader(
+                                        "Auth-Api"
+                                        , "JWT 토큰 발급"
+                                        , "JWT 토큰을 발급합니다.<br>Member-Api의 login api를 통해 호출됩니다."
+                                        , null
+                                        , createDocPathVariable()
+                                        , null
+                                        , reAuthResponseFields()
+                                        , null
+                                )
+                        )
+                ));
+    }
+
+    @Test
     @DisplayName("JWT 재발급 성공")
     public void successReAuth() throws Exception {
         // given
@@ -97,7 +141,7 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.data.refreshToken", is("httponly")))
                 .andExpect(jsonPath("$.data.type", is(Constants.TOKEN_TYPE)))
                 .andDo(print())
-                .andDo(document("party-member-create"
+                .andDo(document("create-reauth-success"
                         , preprocessRequest(prettyPrint())
                         , preprocessResponse(prettyPrint())
                         , resource(
