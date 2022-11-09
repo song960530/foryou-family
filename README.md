@@ -29,6 +29,6 @@ For You Four Users
 - [AWS를 적극 활용한 무중단 배포 환경 구상](https://github.com/song960530/foryou-family/issues/111)
 
 ### 🛠이렇게 구현했어요
+- [포유패밀리의 System Architecture](https://github.com/song960530/foryou-family/issues/114)
 - [게이트웨이 서버에서의 토큰 검증 및 라우팅](https://github.com/song960530/foryou-family/issues/113)
 - [Jenkins, S3, CodeDeploy, LB, ASG를 통한 무중단 배포](https://github.com/song960530/foryou-family/issues/98)
-- [포유패밀리의 System Architecture](https://github.com/song960530/foryou-family/issues/114)
