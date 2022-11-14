@@ -31,8 +31,10 @@ For You Four Users
 
 ### 🛠이렇게 구현했어요
 - [포유패밀리의 System Architecture](https://github.com/song960530/foryou-family/issues/114)
+- [포유패밀리 ERD](https://github.com/song960530/foryou-family/issues/117)
 - [게이트웨이 서버에서의 토큰 검증 및 라우팅](https://github.com/song960530/foryou-family/issues/113)
 - [Jenkins, S3, CodeDeploy, LB, ASG를 통한 무중단 배포](https://github.com/song960530/foryou-family/issues/98)
 - [매칭 서비스에서 파티 매칭이 이뤄지는 과정](https://github.com/song960530/foryou-family/issues/115)
 - [Spring Scheduler와 Queue로 구현한 매칭 서비스](https://github.com/song960530/foryou-family/issues/116)
+
 
