@@ -38,5 +38,6 @@ For You Four Users
 - [Spring Scheduler와 Queue로 구현한 매칭 서비스](https://github.com/song960530/foryou-family/issues/116)
 
 ### 🤔대용량 트래픽에 대응할 수 있는 방법을 생각해봤습니다
+- [Thread Pool 기본 지식과 Blocking, Non-Blocking 이해](https://github.com/song960530/foryou-family/issues/118)
 - [TPS 테스트 및 대용량 트래픽에 대응하기 위한 성능 향상 테스트](https://github.com/song960530/foryou-family/issues/87)
 
