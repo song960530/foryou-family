@@ -56,16 +56,31 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public LoginResDto login(LoginReqDto loginReqDto, HttpServletResponse httpServletResponse) {
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
         Member member = validLogin(loginReqDto.getMemberId(), loginReqDto.getPassword());
 
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
+
         ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity(gatewayUrl + "/auth/" + member.getMemberId(), null, String.class);
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
 
         return Optional.of(stringResponseEntity)
                 .filter(response -> response.getStatusCode() == HttpStatus.OK)
+                // Conflict 발생시킬 커밋
                 .map(response -> convertLoginResult(httpServletResponse, response))
                 .orElseThrow(() -> {
                     throw new CustomException(ErrorCode.LOGIN_FAIL_ERROR);
-                });
+                });// Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
     }
 
     private LoginResDto convertLoginResult(HttpServletResponse httpServletResponse, ResponseEntity<String> response) {
