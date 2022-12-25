@@ -49,6 +49,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private void checkExistMember(String memberId) {
+        // Conflict 나지 않는 커밋
         if (memberRepository.existsByMemberId(memberId))
             throw new CustomException(ErrorCode.DUPLICATE_MEMBER_ID);
     }
