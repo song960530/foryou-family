@@ -49,6 +49,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private void checkExistMember(String memberId) {
+        // Conflict 나지 않는 커밋
         if (memberRepository.existsByMemberId(memberId))
             throw new CustomException(ErrorCode.DUPLICATE_MEMBER_ID);
         // 충돌이 나겠지
@@ -68,6 +69,8 @@ public class MemberServiceImpl implements MemberService {
         // 충돌이 나겠지
         // 충돌이 나겠지
         // 충돌이 나겠지
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
         Member member = validLogin(loginReqDtodddddd.getMemberId(), loginReqDtodddddd.getPassword());// 충돌이 나겠지
         // 충돌이 나겠지
         // 충돌이 나겠지
@@ -75,7 +78,18 @@ public class MemberServiceImpl implements MemberService {
         // 충돌이 나겠지
         // 충돌이 나겠지// 충돌이 나겠지
         // 충돌이 나겠지
+
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
         ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity(gatewayUrl + "/auth/" + member.getMemberId(), null, String.class);
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
         // 충돌이 나겠지
         // 충돌이 나겠지
         // 충돌이 나겠지
@@ -83,6 +97,7 @@ public class MemberServiceImpl implements MemberService {
 
         return Optional.of(stringResponseEntity)
                 .filter(response -> response.getStatusCode() == HttpStatus.OK)
+                // Conflict 발생시킬 커밋
                 .map(response -> convertLoginResult(httpServletResponse, response))
                 // 충돌이 나겠지
                 .orElseThrow(() -> {
@@ -90,6 +105,8 @@ public class MemberServiceImpl implements MemberService {
                     throw new CustomException(ErrorCode.LOGIN_FAIL_ERROR);
                     // 충돌이 나겠지
                 });
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
         // 충돌이 나겠지
     }
 
