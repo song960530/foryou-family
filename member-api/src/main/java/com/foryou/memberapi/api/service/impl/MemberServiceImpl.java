@@ -49,22 +49,38 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private void checkExistMember(String memberId) {
+        // Conflict 나지 않는 커밋
         if (memberRepository.existsByMemberId(memberId))
             throw new CustomException(ErrorCode.DUPLICATE_MEMBER_ID);
     }
 
     @Override
     public LoginResDto login(LoginReqDto loginReqDto, HttpServletResponse httpServletResponse) {
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
         Member member = validLogin(loginReqDto.getMemberId(), loginReqDto.getPassword());
 
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
+
         ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity(gatewayUrl + "/auth/" + member.getMemberId(), null, String.class);
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
 
         return Optional.of(stringResponseEntity)
                 .filter(response -> response.getStatusCode() == HttpStatus.OK)
+                // Conflict 발생시킬 커밋
                 .map(response -> convertLoginResult(httpServletResponse, response))
                 .orElseThrow(() -> {
                     throw new CustomException(ErrorCode.LOGIN_FAIL_ERROR);
-                });
+                });// Conflict 발생시킬 커밋
+        // Conflict 발생시킬 커밋
     }
 
     private LoginResDto convertLoginResult(HttpServletResponse httpServletResponse, ResponseEntity<String> response) {
